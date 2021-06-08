@@ -1,0 +1,26 @@
+/*{
+    "author": "Author Name",
+    "targets": ["omnifocus"],
+    "type": "action",
+    "identifier": "com.mycompany.CalDAV Sync",
+    "version": "0.1",
+    "description": "A plug-in that...",
+    "label": "CalDAV Sync",
+    "mediumLabel": "CalDAV Sync",
+    "paletteLabel": "CalDAV Sync",
+}*/
+(() => {
+    var action = new PlugIn.Action(function(selection) {
+        // Add code to run when the action is invoked
+        console.log("Invoked with selection", selection);
+    });
+
+    // If needed, uncomment, and add a function that returns true if the current selection is appropriate for the action.
+    /*
+    action.validate = function(selection){
+
+    };
+    */
+        
+    return action;
+})();
