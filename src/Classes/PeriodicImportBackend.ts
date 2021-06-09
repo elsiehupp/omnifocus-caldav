@@ -10,7 +10,7 @@ from GTG.core.interruptible import interruptible
 */
 
 
-export class PeriodicImportBackend extends GenericBackend
+export abstract class PeriodicImportBackend extends GenericBackend
 {
     /*
     This class can be used in place of GenericBackend when a periodic import is
@@ -37,7 +37,7 @@ export class PeriodicImportBackend extends GenericBackend
 
     }
 
-    import_timer: any;
+    import_timer: ReturnType<typeof setTimeout>;
 
     // @interruptible
     start_get_tasks()
@@ -53,10 +53,10 @@ export class PeriodicImportBackend extends GenericBackend
             try {
                 // if (an iteration was scheduled, we cancel it
                 if (this.import_timer) {
-                    this.import_timer.cancel()
+                    clearTimeout(this.import_timer)
                 }
             } finally {
-                pass
+                // pass;
             }
             if (!this.is_enabled()) {
                 return
@@ -64,10 +64,9 @@ export class PeriodicImportBackend extends GenericBackend
 
             // we schedule the next iteration, just in case this one fails
             if (!this.urgent_iteration) {
-                this.import_timer = threading.Timer(
-                    this._parameters['period'] * 60.0,
-                    this.start_get_tasks)
-                this.import_timer.start()
+                this.import_timer = window.setTimeout(
+                    this.start_get_tasks,
+                    this._parameters['period'] * 60.0 * 1000.0)
             }
 
             // execute the iteration
@@ -88,6 +87,7 @@ export class PeriodicImportBackend extends GenericBackend
         }
     }
 
+    abstract do_periodic_import():void;
 
     _start_get_tasks()
     {
@@ -95,11 +95,10 @@ export class PeriodicImportBackend extends GenericBackend
         This function executes an imports and schedules the next
         */
         this.cancellation_point()
-        BackendSignals().backend_sync_started(this.get_id())
+        // BackendSignals().backend_sync_started(this.get_id())
         this.do_periodic_import()
-        BackendSignals().backend_sync_ended(this.get_id())
+        // BackendSignals().backend_sync_ended(this.get_id())
     }
-
 
     quit(disable=false)
     {
@@ -108,14 +107,16 @@ export class PeriodicImportBackend extends GenericBackend
         */
         // super(PeriodicImportBackend, this).quit(disable)
         try {
-            this.import_timer.cancel()
+            clearTimeout(this.import_timer)
         } catch (Exception) {
-            pass
+            // pass;
+            return;
         }
         try {
             this.import_timer.join()
         } catch (Exception) {
-            pass
+            // pass;
+            return;
         }
     }
 }

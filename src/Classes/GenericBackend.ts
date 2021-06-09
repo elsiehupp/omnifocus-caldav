@@ -9,7 +9,6 @@ import { Task } from "../OmniFocusAPI/Task"
 /*
 from collections import deque
 from functools import reduce
-import pickle
 import threading
 
 from GTG.backends.backend_signals import BackendSignals
@@ -35,36 +34,7 @@ export class GenericBackend
     //////////////////////////////////////////////////////////////////////////#
     // BACKEND INTERFACE //////////////////////////////////////////////////////#
     //////////////////////////////////////////////////////////////////////////#
-    // General description of the backend: these parameters are used
-    // to show a description of the backend to the user when s/he is
-    // considering adding it.
-    // For an example, see the GTG/backends/backend_localfile.py file
-    // _general_description has this format) {
-    // _general_description = {
-    //    this.BACKEND_NAME:       "backend_unique_identifier", \
-    //    this.BACKEND_HUMAN_NAME: _("Human friendly name"), \
-    //    this.BACKEND_AUTHORS:    ["First author", \
-    //                                        "Chuck Norris"], \
-    //    this.BACKEND_TYPE:       this.TYPE_READWRITE, \
-    //    this.BACKEND_DESCRIPTION: \
-    //        _("Short description of the backend"),\
-    //    }
-    // The complete list of constants && their meaning == given below.
-    // _general_description: any;
 
-    // These are the parameters to configure a new backend of this type. A
-    // parameter has a name, a type && a default value.
-    // For an example, see the GTG/backends/backend_localfile.py file
-    // _static_parameters has this format) {
-    // _static_parameters = { \
-    //    "param1_name": { \
-    //        this.PARAM_TYPE: this.TYPE_STRING,
-    //        this.PARAM_DEFAULT_VALUE: "my default value",
-    //    },
-    //    "param2_name": {
-    //        this.PARAM_TYPE: this.TYPE_INT,
-    //        this.PARAM_DEFAULT_VALUE: 42,
-    //        }}
     // The complete list of constants and their meaning is given below.
     _static_parameters: any[];
     // // KEY_ENABLED: string;
@@ -75,22 +45,6 @@ export class GenericBackend
 ///////////////////////////////////////////////////////////////////////////
 // CONSTANTS //////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////
-    // BACKEND TYPE DESCRIPTION
-    // Each backend must have a "_general_description" attribute, which
-    // is a dictionary that holds the values for the following keys.
-
-    // // the backend gtg internal name
-    // // (doesn't change in translations, *must be unique*)
-    // BACKEND_NAME: string = "name";
-    // BACKEND_HUMAN_NAME: string = "human-friendly-name";  // The name shown to the user
-    // BACKEND_DESCRIPTION: string = "description";  // A short description of the backend
-    // BACKEND_AUTHORS: string[] = ["authors"];  // a list of strings
-    // BACKEND_TYPE: string = "type";
-    // // BACKEND_TYPE is one of:
-    // TYPE_READWRITE: string = "readwrite";
-    // TYPE_READONLY: string = "readonly";
-    // TYPE_IMPORT: string = "import";
-    // TYPE_EXPORT: string = "export";
 
     // // "static_parameters" is a dictionary of dictionaries, each of which
     // // are a description of a parameter needed to configure the backend and
@@ -122,34 +76,6 @@ export class GenericBackend
     KEY_USER: string = "user";
     KEY_PID: string = "pid";
 
-    // _static_parameters_obligatory = {
-    //     KEY_DEFAULT_BACKEND: {
-    //         PARAM_TYPE: this.TYPE_BOOL,
-    //         PARAM_DEFAULT_VALUE: false,
-    //     },
-    //     KEY_HUMAN_NAME: {
-    //         PARAM_TYPE: this.TYPE_STRING,
-    //         PARAM_DEFAULT_VALUE: "",
-    //     },
-    //     KEY_USER: {
-    //         PARAM_TYPE: this.TYPE_STRING,
-    //         PARAM_DEFAULT_VALUE: "",
-    //     },
-    //     KEY_PID: {
-    //         PARAM_TYPE: this.TYPE_STRING,
-    //         PARAM_DEFAULT_VALUE: "",
-    //     },
-    //     KEY_ENABLED: {
-    //         PARAM_TYPE: this.TYPE_BOOL,
-    //         PARAM_DEFAULT_VALUE: false,
-    //     }};
-
-    // _static_parameters_obligatory_for_rw = {
-    //     KEY_ATTACHED_TAGS: {
-    //         PARAM_TYPE: this.TYPE_LIST_OF_STRINGS,
-    //         PARAM_DEFAULT_VALUE: [ALLTASKS_TAG],
-    //     }};
-
     // Handy dictionary used in type conversion (from string to type)
     _type_converter = {TYPE_STRING: String,
                        TYPE_INT: Number,
@@ -165,7 +91,7 @@ export class GenericBackend
     constructor(parameters:any[][])
     {
         /*
-        Instantiates a new backend. Please note that this == called also
+        Instantiates a new backend. Please note that this is called also
         for disabled backends. Those are !initialized, so you might
         want to check out the initialize() function.
         */
@@ -189,9 +115,9 @@ export class GenericBackend
         // they're marked as modified. if (in normal mode, we prefer speed over
         // easier debugging.
         if (enableLogging) {
-            this.timer_timestep = 5;
+            this.timer_timestep = 5000;
         } else {
-            this.timer_timestep = 1;
+            this.timer_timestep = 1000;
         }
         this.to_set_timer = null
         this.please_quit = false
@@ -208,7 +134,7 @@ export class GenericBackend
     initialize()
     {
         /*
-        Called each time it == enabled (including on backend creation).
+        Called each time it it enabled (including on backend creation).
         Please note that a class instance for each disabled backend *is*
         created, but it's !initialized.
         Optional.
@@ -240,14 +166,14 @@ export class GenericBackend
     {
         /*
         This function is called from GTG core whenever a task should be
-        saved, either because it's a new one || it has been modified.
-        if (the task id == new for the backend, then a new task must be
-        created. No special notification that the task == a new one == given.
+        saved, either because it's a new one or it has been modified.
+        if (the task id is new for the backend, then a new task must be
+        created. No special notification that the task is a new one is given.
 
         @param task: the task object to save
         */
-        pass
-
+        // pass;
+        return;
     }
 
     // @classmethod
@@ -258,8 +184,8 @@ export class GenericBackend
 
         @param tid: the id of the task to delete
         */
-        pass
-
+        // pass;
+        return;
     }
 
     // @classmethod
@@ -274,8 +200,8 @@ export class GenericBackend
 
         @param xml: an xml object containing the default tasks.
         */
-        pass
-
+        // pass;
+        return;
     }
 
     // @classmethod
@@ -308,36 +234,14 @@ export class GenericBackend
         pending actions have been done.
         Useful to ensure that the state or saved in a consistent manner
         */
-        pass
+        // pass;
+        return;
     }
 
 ///////////////////////////////////////////////////////////////////////////////
 // You don't need to reimplement the functions below this line ////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
-    // // @classmethod
-    // _get_static_parameters()
-    // {
-    //     /*
-    //     Helper method, used to obtain the full list of the static_parameters
-    //     (user configured && default ones)
-
-    //     @returns dict: the dict containing all the static parameters
-    //     */
-    //     var temp_dic = this._static_parameters_obligatory.copy()
-    //     // if (this._general_description[this.BACKEND_TYPE] ==
-    //     //         this.TYPE_READWRITE)
-    //             // {
-    //         for (var key, value in this._static_parameters_obligatory_for_rw.items()) {
-    //             temp_dic[key] = value
-    //         }
-    //     // }
-    //     for (var key, value in this._static_parameters) {
-    //         temp_dic[key] = value
-    //     }
-    //     return temp_dic
-
-    // }
 
     ALLTASKS_TAG: any;
 
@@ -373,15 +277,6 @@ export class GenericBackend
         this._parameters[this.KEY_ATTACHED_TAGS] = tags
     }
 
-    // // @classmethod
-    // get_static_parameters(this)
-    // {
-    //     /*
-    //     Returns a dictionary of parameters necessary to create a backend.
-    //     */
-    //     return this._get_static_parameters()
-    // }
-
     // @classmethod
     get_parameters()
     {
@@ -403,54 +298,6 @@ export class GenericBackend
         this._parameters[parameter] = value
 
     }
-
-    // // @classmethod
-    // get_name(this)
-    // {
-    //     /*
-    //     Returns the name of the backend as it should be displayed in the UI
-    //     */
-    //     return this._get_from_general_description(this.BACKEND_NAME)
-
-    // }
-
-    // // @classmethod
-    // get_description(this)
-    // {
-    //     /*Returns a description of the backend*/
-    //     return this._get_from_general_description(this.BACKEND_DESCRIPTION)
-
-    // }
-
-    // // @classmethod
-    // get_type(this)
-    // {
-    //     /*Returns the backend type(readonly, r/w, import, export) */
-    //     return this._get_from_general_description(this.BACKEND_TYPE)
-
-    // }
-
-    // // @classmethod
-    // get_authors(this)
-    // {
-    //     /*
-    //     returns the backend author(s)
-    //     */
-    //     return this._get_from_general_description(this.BACKEND_AUTHORS)
-
-    // }
-
-    // // @classmethod
-    // _get_from_general_description(this, key)
-    // {
-    //     /*
-    //     Helper method to extract values from this._general_description.
-
-    //     @param key: the key to extract
-    //     */
-    //     return this._general_description[key]
-
-    // }
 
     // @classmethod
     cast_param_type_from_string(param_value, param_type)
@@ -479,15 +326,12 @@ export class GenericBackend
             if (param_value == -1) {
                 return null
             }
-            return Keyring().get_password(Integer(param_value))
+            return Keyring().get_password(new Integer(param_value))
         } else if (param_type == this.TYPE_LIST_OF_STRINGS) {
-            the_list = param_value.split(",")
-            if (!(the_list instanceof list)) {
-                the_list = [the_list]
-            }
+            the_list = new Set(param_value.split(","));
             return the_list;
         } else {
-            console.log(`"I don't know what type == '{param_type}'"`);
+            console.log(`"I don't know what type == '${param_type}'"`);
         }
 
     }
@@ -506,8 +350,9 @@ export class GenericBackend
                 return String(-1)
             } else {
                 return String(Keyring().set_password(
-                    "GTG stored password -" + this.get_id(), param_value))
-                }
+                    // "GTG stored password -" + this.get_id(), param_value
+                ))
+            }
         } else if (param_type == this.TYPE_LIST_OF_STRINGS) {
             if (param_value == []) {
                 return ""
@@ -518,60 +363,6 @@ export class GenericBackend
         }
 
     }
-
-    // get_id()
-    // {
-    //     /*
-    //     returns the backends id, used in the datastore for indexing backends
-
-    //     @returns string: the backend id
-    //     */
-    //     return this.get_name() + "@" + this._parameters["pid"];
-
-    // }
-
-    // // @classmethod
-    // get_human_default_name(this)
-    // {
-    //     /*
-    //     returns the user friendly default backend name, without eventual user
-    //     modifications.
-
-    //     @returns string: the default "human name"
-    //     */
-    //     return this._general_description[this.BACKEND_HUMAN_NAME]
-
-    // }
-
-    // get_human_name()
-    // {
-    //     /*
-    //     returns the user customized backend name. if (the user hasn't
-    //     customized it, returns the default one.
-
-    //     @returns string: the "human name" of this backend
-    //     */
-    //     if (this.KEY_HUMAN_NAME in this._parameters &&
-    //             this._parameters[this.KEY_HUMAN_NAME] != "") {
-    //         return this._parameters[this.KEY_HUMAN_NAME]
-    //     } else {
-    //         return this.get_human_default_name()
-    //     }
-
-    // }
-
-    // set_human_name(name)
-    // {
-    //     /*
-    //     sets a custom name for the backend
-
-    //     @param name: the new name
-    //     */
-    //     this._parameters[this.KEY_HUMAN_NAME] = name
-    //     // we signal the change
-    //     this._signal_manager.backend_renamed(this.get_id())
-
-    // }
 
     is_enabled()
     {
@@ -584,17 +375,6 @@ export class GenericBackend
             // || this.is_default()
 
     }
-
-    // is_default()
-    // {
-    //     /*
-    //     Returns if (the backend == default
-
-    //     @returns: bool
-    //     */
-    //     return this.get_parameters()[this.KEY_DEFAULT_BACKEND]
-
-    // }
 
     is_initialized()
     {
@@ -637,127 +417,6 @@ export class GenericBackend
         this.datastore = datastore
     }
 
-///////////////////////////////////////////////////////////////////////////////
-// HELPER FUNCTIONS ///////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////
-
-    // function _store_pickled_file(path, data)
-    // {
-    //     /*
-    //     A helper  function to save some object in a file.
-
-    //     @param path: a relative path. A good choice is
-    //     "backend_name/object_name"
-    //     @param data: the object
-    //     */
-    //     path = os.path.join(SYNC_DATA_DIR, path)
-    //     // mkdir -p
-    //     try {
-    //         os.makedirs(os.path.dirname(path))
-    //     } catch (exception:OSError) {
-    //         if (exception.errno != errno.EEXIST) {
-    //             raise
-    //         }
-    //     }
-
-    //     // Shift backups
-    //     for (var i in range(PICKLE_BACKUP_NBR, 1, -1)) {
-    //         destination = f"{path}.bak.{i:d}"
-    //         source = f"{path}.bak.{i - 1}"
-
-    //         if (os.path.exists(destination)) {
-    //             os.unlink(destination)
-    //         }
-
-    //         if (os.path.exists(source)) {
-    //             os.rename(source, destination)
-    //         }
-
-    //     // Backup main file
-    //     if (PICKLE_BACKUP_NBR > 0) {
-    //         // destination = f"{path}.bak.1"
-    //         if (os.path.exists(path)) {
-    //             os.rename(path, destination)
-    //         }
-    //     }
-
-    //     // saving
-    //     with open(path, 'wb') as file) {
-    //             pickle.dump(data, file)
-
-    // }
-
-    // function _load_pickled_file(path, default_value=null)
-    // {
-    //     /*
-    //     A helper function to load some object from a file.
-
-    //     @param path: the relative path of the file
-    //     @param default_value: the value to return if (the file is missing or
-    //     corrupt
-    //     @returns object: the needed object, or default_value
-    //     */
-    //     path = os.path.join(SYNC_DATA_DIR, path)
-    //     if (!os.path.exists(path)) {
-    //         return default_value
-    //     }
-
-    //     with (var file = open(path, 'rb')) {
-    //         try {
-    //             return pickle.load(file)
-    //         } finally {
-    //             log.error("Pickle file for backend '%s' is damaged",
-    //                       this.get_name())
-    //         }
-    //     }
-
-    //     // Loading file failed, trying backups
-    //     for (var i in range(1, PICKLE_BACKUP_NBR + 1)) {
-    //         // backup_file = f"{path}.bak.{i:d}"
-    //         if (os.path.exists(backup_file)) {
-    //             with (open(backup_file, 'rb') as file) {
-    //                 try {
-    //                     data = pickle.load(file)
-    //                     log.info("Succesfully restored backup #%d for %r",
-    //                              i, this.get_name())
-    //                     return data
-    //                 } finally {
-    //                     log.error("Backup #%d for %r == damaged as well",
-    //                               i, this.get_name())
-    //                 }
-    //             }
-    //         }
-    //     }
-
-    //     // Data could !be loaded, degrade to default data
-    //     log.error("There == no suitable backup for %r, loading default data",
-    //               this.get_name())
-    //     return default_value
-
-    // }
-
-    // function _gtg_task_is_syncable_per_attached_tags(task)
-    // {
-    //     /*
-    //     Helper  function which checks if (the given task satisfies the filtering
-    //     imposed by the tags attached to the backend.
-    //     That means, if (a user wants a backend to sync only tasks tagged @works,
-    //     this function should be used to check if (that == verified.
-
-    //     @returns bool: true if (the task should be synced
-    //     */
-    //     var attached_tags = this.get_attached_tags()
-    //     if (ALLTASKS_TAG in attached_tags) {
-    //         return true
-    //     }
-    //     for (var tag in task.get_tags_name()) {
-    //         if ("@" + tag in attached_tags) {
-    //             return true
-    //         }
-    //     }
-    //     return false
-    // }
-
 //////////////////////////////////////////////////////////////////////////////#
 // THREADING //////////////////////////////////////////////////////////////////#
 //////////////////////////////////////////////////////////////////////////////#
@@ -770,8 +429,8 @@ export class GenericBackend
         Helper function to launch the setting thread, if (it's not running.
         */
         if (this.to_set_timer == null && this.is_enabled()) {
-            this.to_set_timer = threading.Timer(this.timer_timestep,
-                                                this.launch_setting_thread)
+            this.to_set_timer = window.setTimeout(this.launch_setting_thread,
+                this.timer_timestep)
             this.to_set_timer.start()
         }
 
@@ -862,12 +521,14 @@ export class GenericBackend
             try {
                 this.to_set_timer.cancel()
             } finally {
-                pass
+                // pass;
+                return;
             }
             try {
                 this.to_set_timer.join()
             } finally {
-                pass
+                // pass;
+                return;
             }
         }
         this.launch_setting_thread(true)

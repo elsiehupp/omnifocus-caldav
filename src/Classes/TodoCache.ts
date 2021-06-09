@@ -37,7 +37,7 @@ export class TodoCache
                 return calendar;
             }
         }
-        console.log('no calendar for %r or %r', name, url);
+        console.log(`no calendar for ${name} or ${url}`);
     }
 
     // @property

@@ -31,7 +31,8 @@ export class DateField extends Field
                 value = value.replace(microsecond=0);
             }
         } catch (AttributeError) {
-            pass;
+            // pass;
+            return;
         }
         return value;
     }
@@ -92,7 +93,7 @@ export class DateField extends Field
         try {
             return Date(value);
         } catch (ValueError) {
-            console.log("Coudln't translate value %r", value);
+            console.log(`Coudln't translate value ${value}`);
             return Date.no_date();
         }
     }

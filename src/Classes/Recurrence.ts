@@ -47,7 +47,7 @@ export class Recurrence extends Field
             rrule.params['INTERVAL'] = ['2']
         } else {
             rrule.params['FREQ'] = [term.upper() + 'LY'];
-            var start_date = DTSTART.get_dav(vtodo=vtodo);
+            var start_date = DATETIME_START.get_dav(vtodo=vtodo);
             if (term == 'week' && start_date) {
                 var index = new Integer(start_date.stringftime('%w'));
                 rrule.params['BYDAY'] = this.DAV_DAYS[index];

@@ -1,3 +1,4 @@
+import { assert } from "./Assert"
 import { Task } from "../OmniFocusAPI/Task";
 import { iCalendar } from "./iCalendar";
 
@@ -98,8 +99,7 @@ export class Field
         var dav = this.get_dav(todo, vtodo);
         var gtg = this.get_gtg(task, namespace);
         if (dav != gtg) {
-            console.log('%r has differing values (DAV) %r!=%r (GTG)',
-                         this, gtg, dav);
+            console.log(`${this} has differing values (DAV) ${gtg}!=${dav} (GTG)`);
             return false;
         }
         return true
@@ -107,15 +107,15 @@ export class Field
 
     __repr__()
     {
-        return `<${this.__class__.__name__}(${this.dav_name})>`;
+        return `<${typeof this}(${this.dav_name})>`;
     }
 
     // @classmethod
     _browse_subtasks(task: Task)
     {
         yield task
-        for (var subtask in task.get_subtasks()) {
-            yield from this._browse_subtasks(subtask);
+        for (var child:Task in task.children) {
+            yield from this._browse_subtasks(child);
         }
     }
 }

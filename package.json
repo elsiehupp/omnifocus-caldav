@@ -21,6 +21,7 @@
   },
   "homepage": "https://github.com/elsiehupp/omnifocus-caldav#readme",
   "dependencies": {
-    "ts-md5": "^1.2.8"
+    "ts-md5": "^1.2.8",
+    "typescript-collections": "^1.3.3"
   }
 }

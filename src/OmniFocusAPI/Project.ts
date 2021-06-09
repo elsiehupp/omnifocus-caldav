@@ -1,7 +1,7 @@
-import { ChildInsertionLocation } from "./ChildInsertionLocation"
+import { TaskChildInsertionLocation } from "./TaskChildInsertionLocation"
 import { FileWrapper } from "./FileWrapper"
 import { Folder } from "./Folder"
-import { TaskStatus } from "./TaskStatus"
+import { Status } from "./Status"
 import { Tag } from "./Tag"
 import { TagArray } from "./TagArray"
 import { Task } from "./Task"
@@ -18,18 +18,18 @@ export interface Project {
 
     // Returns a location refering to position just after this project.
     // const
-    after ():Folder.ChildInsertionLocation;
+    after ():Folder.TaskChildInsertionLocation;
 
     // An array of FileWrapper objects representing the attachments associated with the Project’s root Task.
     attachments ():FileWrapper[];
 
     // Returns a location refering to position just before this project.
     // const
-    before ():Folder.ChildInsertionLocation;
+    before ():Folder.TaskChildInsertionLocation;
 
     // Returns a location referring to the position before the first Task directly contained in the root task of this project.
     // const
-    beginning ():ChildInsertionLocation;
+    beginning ():TaskChildInsertionLocation;
 
     // An alias for the tasks property.
     // const
@@ -90,7 +90,7 @@ export interface Project {
 
     // Returns a location referring to the position before the first Task directly contained in the root task of this project.
     // const
-    ending ():ChildInsertionLocation;
+    ending ():TaskChildInsertionLocation;
 
     // The flagged status of the project.
     flagged ():boolean;
@@ -147,7 +147,7 @@ export interface Project {
     shouldUseFloatingTimeZone ():boolean;
 
     // The current status of the project as a whole. This does not reflect the status of individual tasks within the project root task – a project may be marked with the Done status and its individual tasks will be left with the completion state they had, in case the status is changed again to Active.
-    status ():TaskStatus;
+    status ():Status;
 
     // Returns the Tags associated with this Project.
     // const
@@ -163,7 +163,7 @@ export interface Project {
 
     // Returns the current status of the project.
     // const
-    taskStatus ():TaskStatus;
+    taskStatus ():Status;
 
     /*
     IMPORTANT: every project has an invisible “root” task

@@ -4,7 +4,7 @@ import { Md5 } from "ts-md5"
 import { TAG_REGEX } from "./TAG_REGEX"
 import { Task } from "./Task"
 
-class Description extends Field
+export class Description extends Field
 {
     HASH_PARAM = 'GTGCNTMD5';
     XML_TAGS = ['<content>', '</content>', '<tag>', '</tag>'];
@@ -95,8 +95,8 @@ class Description extends Field
     {
         /*Will extract plain text from task content, replacing subtask
         referenced in the text by their proper titles*/
-        var result, content = ['', task.get_text()];
-        for (var line_no, line in enumerate(content.splitlines())) {
+        var [result, content] = ['', task.get_text()];
+        for (let [line_no, line] of content.splitlines()) {
             for (var tag in this.XML_TAGS) {
                 while (tag in line) {
                     line = line.replace(tag, '');

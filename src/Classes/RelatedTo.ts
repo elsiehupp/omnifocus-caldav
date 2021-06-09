@@ -1,7 +1,6 @@
 import { Field } from "./Field"
-import { List } from "typescript-collections"
 import { iCalendar } from "./iCalendar"
-import { Task } from "./omnifocus"
+import { Task } from "../OmniFocusAPI/Task"
 
 export class RelatedTo extends Field
 {
@@ -11,13 +10,19 @@ export class RelatedTo extends Field
     task_remove_func_name;
     reltype;
 
-    constructor(args, task_remove_func_name: string = null, reltype: string,
-                kwargs)
+    constructor(args:string[], task_remove_func_name: string = null, reltype: string, wargs:any[])
     {
         super(args, task_remove_func_name, reltype, kwargs);
         this.__init__(args, kwargs);
         this.task_remove_func_name = task_remove_func_name;
         this.reltype = reltype.toUpperCase();
+    }
+
+    __init__(args, kwargs)
+    {
+        for (var kw in args) {
+            this[kw] = kwargs[kw];
+        }
     }
 
     _fit_reltype(sub_value)
@@ -30,13 +35,13 @@ export class RelatedTo extends Field
     {
         var value = vtodo.contents.get(this.dav_name);
         if (value) {
-            var index_to_remove = new List();
-            for (var index, sub_value in enumerate(value)) {
+            var index_to_remove = new Set();
+            for (let [index, sub_value] of value) {
                 if (this._fit_reltype(sub_value)) {
-                    index_to_remove.append(index);
+                    index_to_remove.add(index);
                 }
             }
-            for (index in sorted(index_to_remove, reverse=true)) {
+            for (let index in index_to_remove) {
                 value.pop(index);
             }
         }
@@ -52,17 +57,17 @@ export class RelatedTo extends Field
         }
     }
 
-    get_dav(todo=null, vtodo=null)
+    get_dav(todo=null, vtodo=null):Set<string>
     {
         if (todo) {
             vtodo = todo.instance.vtodo
         }
-        var value = vtodo.contents.get(this.dav_name);
-        var result = [];
+        var value = new Set(vtodo.contents.get(this.dav_name));
+        var result = new Set<string>();
         if (value) {
-            for (var sub_value in value) {
+            for (let sub_value of value) {
                 if (this._fit_reltype(sub_value)) {
-                    result.append(sub_value.value);
+                    result.add(sub_value.value);
                 }
             }
         }
@@ -88,16 +93,15 @@ export class RelatedTo extends Field
         if (this.get_dav(todo) == this.get_gtg(task, namespace)) {
             return;  // do not edit if equal
         }
-        var target_uids = this.get_dav(todo);
+        var target_uids = new Set(this.get_dav(todo));
         var gtg_uids = new Set(this.get_gtg(task, namespace));
-        for (var value in new Set(target_uids).difference(gtg_uids)) {
+        for (var value in new Set([...target_uids].filter(x => !gtg_uids.has(x)))) { // difference
             if (!this.write_gtg(task, value, namespace)) {
-                console.log('FAILED writing Task.%s(%r, %r)',
-                             this.task_set_func_name, task, value);
+                console.log(`FAILED writing Task.${this.task_set_func_name}(${task}, ${value})`);
             }
         }
         if (this.task_remove_func_name) {
-            for (value in gtg_uids.difference(target_uids)) {
+            for (value in new Set([...target_uids].filter(x => !gtg_uids.has(x)))) { // difference
                 task.task_remove_func_name(value);
             }
         }
