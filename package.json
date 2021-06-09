@@ -1,0 +1,26 @@
+{
+  "name": "omnifocus-caldav",
+  "version": "1.0.0",
+  "description": "Sync OmniFocus with CalDAV (for compatibility with Getting Things GNOME)",
+  "main": "index.js",
+  "scripts": {
+    "test": "main"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/elsiehupp/omnifocus-caldav.git"
+  },
+  "keywords": [
+    "omnifocus",
+    "caldav"
+  ],
+  "author": "Elsie Hupp",
+  "license": "GPL-3.0-or-later",
+  "bugs": {
+    "url": "https://github.com/elsiehupp/omnifocus-caldav/issues"
+  },
+  "homepage": "https://github.com/elsiehupp/omnifocus-caldav#readme",
+  "dependencies": {
+    "ts-md5": "^1.2.8"
+  }
+}

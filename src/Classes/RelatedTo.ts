@@ -1,4 +1,5 @@
 import { Field } from "./Field"
+import { List } from "typescript-collections"
 import { iCalendar } from "./iCalendar"
 import { Task } from "./omnifocus"
 
@@ -16,20 +17,20 @@ export class RelatedTo extends Field
         super(args, task_remove_func_name, reltype, kwargs);
         this.__init__(args, kwargs);
         this.task_remove_func_name = task_remove_func_name;
-        this.reltype = reltype.upper();
+        this.reltype = reltype.toUpperCase();
     }
 
     _fit_reltype(sub_value)
     {
-        var reltype = sub_value.params.get('RELTYPE') || [this.DEFAULT_RELTYPE];
-        return (len(reltype) == 1 && reltype[0] == this.reltype);
+        var reltype:string = sub_value.params.get('RELTYPE') || [this.DEFAULT_RELTYPE];
+        return (reltype.length == 1 && reltype[0] == this.reltype);
     }
 
     clean_dav(vtodo: iCalendar)
     {
         var value = vtodo.contents.get(this.dav_name);
         if (value) {
-            var index_to_remove = [];
+            var index_to_remove = new List();
             for (var index, sub_value in enumerate(value)) {
                 if (this._fit_reltype(sub_value)) {
                     index_to_remove.append(index);
@@ -87,9 +88,9 @@ export class RelatedTo extends Field
         if (this.get_dav(todo) == this.get_gtg(task, namespace)) {
             return;  // do not edit if equal
         }
-        target_uids = this.get_dav(todo);
-        gtg_uids = set(this.get_gtg(task, namespace));
-        for (value in set(target_uids).difference(gtg_uids)) {
+        var target_uids = this.get_dav(todo);
+        var gtg_uids = new Set(this.get_gtg(task, namespace));
+        for (var value in new Set(target_uids).difference(gtg_uids)) {
             if (!this.write_gtg(task, value, namespace)) {
                 console.log('FAILED writing Task.%s(%r, %r)',
                              this.task_set_func_name, task, value);
@@ -97,7 +98,7 @@ export class RelatedTo extends Field
         }
         if (this.task_remove_func_name) {
             for (value in gtg_uids.difference(target_uids)) {
-                getattr(task, this.task_remove_func_name)(value);
+                task.task_remove_func_name(value);
             }
         }
         task.children.sort(key=this.__sort_key(target_uids));
@@ -105,6 +106,6 @@ export class RelatedTo extends Field
 
     __repr__()
     {
-        return `<${this.__class__.__name__}(${this.reltype}, ${this.dav_name})>`;
+        return `<${typeof this}(${this.reltype}, ${this.dav_name})>`;
     }
 }

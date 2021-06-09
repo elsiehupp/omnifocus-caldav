@@ -13,7 +13,6 @@ import { UID_FIELD } from "./UID_FIELD"
 /*
 from collections import defaultdict
 from datetime import date, datetime
-from hashlib import md5
 
 import caldav
 from dateutil.tz import UTC
@@ -447,12 +446,12 @@ export class CalDavDackend extends PeriodicImportBackend
             calendar = this._cache.get_calendar(name=cname, url=curl)
             if (calendar) {
                 console.log('Found from task attr %r and %r', todo, calendar);
-                return {todo, calendar};
+                return [todo, calendar];
             }
         }
-        if (todo && getattr(todo, 'parent', null)) {
+        if (todo && todo.parent) {
             console.log('Found from todo %r and %r', todo, todo.parent);
-            return {todo, todo.parent};
+            return [todo, todo.parent];
         }
         return [null, null];
     }
@@ -460,6 +459,6 @@ export class CalDavDackend extends PeriodicImportBackend
     // @property
     namespace()
     {
-        return "caldav:%s" % this._parameters['service-url']
+        return `caldav:${this._parameters['service-url']}`
     }
 }

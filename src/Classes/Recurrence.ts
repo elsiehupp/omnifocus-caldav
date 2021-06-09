@@ -57,6 +57,6 @@ export class Recurrence extends Field
 
     write_gtg(task: Task, value, namespace: string = null)
     {
-        return getattr(task, this.task_set_func_name)(value);
+        return task[this.task_set_func_name][value];
     }
 }

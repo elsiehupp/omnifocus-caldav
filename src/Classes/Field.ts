@@ -32,7 +32,7 @@ export class Field
     get_gtg(task: Task, namespace: string = null)
     {
         /*Extract value from GTG.core.task.Task according to specified getter*/
-        return getattr(task, this.task_get_func_name)();
+        return task[this.task_get_func_name];
     }
 
     clean_dav(vtodo: iCalendar):void
@@ -76,7 +76,7 @@ export class Field
     write_gtg(task: Task, value, namespace: string = null)
     {
         /*Will write new value to GTG.core.task.Task*/
-        return getattr(task, this.task_set_func_name)(value)
+        return task[this.task_set_func_name][value]
     }
 
     set_gtg(todo: iCalendar, task: Task,

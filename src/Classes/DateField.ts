@@ -27,7 +27,7 @@ export class DateField extends Field
             if (value.year == 9999) {
                 return null;
             }
-            if (getattr(value, 'microsecond')) {
+            if (value.microsecond)) {
                 value = value.replace(microsecond=0);
             }
         } catch (AttributeError) {

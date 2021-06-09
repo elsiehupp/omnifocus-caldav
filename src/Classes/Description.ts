@@ -1,15 +1,25 @@
+import { Field } from "./Field"
+import { iCalendar } from "./iCalendar"
+import { Md5 } from "ts-md5"
+import { TAG_REGEX } from "./TAG_REGEX"
+import { Task } from "./Task"
+
 class Description extends Field
 {
     HASH_PARAM = 'GTGCNTMD5';
     XML_TAGS = ['<content>', '</content>', '<tag>', '</tag>'];
 
+    // constructor(dav_name: string, task_get_func_name: string, task_set_func_name: string, ignored_values = null){
+    //     super(dav_name, task_get_func_name, task_set_func_name, ignored_values = null);
+    // }
+
     // @staticmethod
     _get_content_hash(content: string):string
     {
-        return md5(content.encode('utf8')).hexdigest();
+        return new Md5(content.encode('utf8')).hexdigest();
     }
 
-    get_dav(todo=undefined, vtodo=undefined):tuple
+    get_dav(todo=undefined, vtodo=undefined):[any,any]
     {
         if (todo) {
             vtodo = todo.instance.vtodo;
@@ -22,15 +32,15 @@ class Description extends Field
             } else {
                 hash_val = null;
             }
-            return hash_val, desc[0].value;
+            return [hash_val, desc[0].value];
         }
-        return null, '';
+        return [null, ''];
     }
 
-    get_gtg(task: Task, namespace: string = undefined):tuple
+    get_gtg(task: Task, namespace: string = undefined):[any,any]
     {
         var description = this._extract_plain_text(task);
-        return this._get_content_hash(description), description;
+        return [this._get_content_hash(description), description];
     }
 
     is_equal(task: Task, namespace: string, todo=undefined, vtodo=undefined)
@@ -38,15 +48,14 @@ class Description extends Field
         var gtg_hash, gtg_value = this.get_gtg(task, namespace);
         var dav_hash, dav_value = this.get_dav(todo, vtodo);
         if (dav_hash == gtg_hash) {
-            console.log('%r calculated hash matches', this);
+            console.log(`${this} calculated hash matches`);
             return true;
         }
         if (gtg_value == dav_value) {
-            console.log('%r matching values', this);
+            console.log(`${this} matching values`);
             return true;
         }
-        console.log('%r differing (%r!=%r) and (%r!=%r)',
-                     this, gtg_hash, dav_hash, gtg_value, dav_value);
+        console.log(`${this} differing (${gtg_hash}!=${dav_hash}) and (${gtg_value}!=${dav_value})`);
         return false;
     }
 
@@ -54,14 +63,14 @@ class Description extends Field
     {
         var hash_, text = value;
         if (hash_ && hash_ == this._get_content_hash(task.get_text())) {
-            console.log('not writing %r from vtodo, hash matches', task);
+            console.log(`not writing ${task} from vtodo, hash matches`);
             return;
         }
-        return super().write_gtg(task, text);
+        return this.write_gtg(task, text);
     }
 
     // @classmethod
-    __clean_first_line(cls, line)
+    __clean_first_line(line:string)
     {
         /*Removing tags and commas after them from first line of content*/
         var new_line = '';
@@ -69,7 +78,7 @@ class Description extends Field
             if (split == null) {
                 continue;
             }
-            if (split.startswith(',')) {  // removing commas
+            if (split.startsWith(',')) {  // removing commas
                 split = split[1];
             }
             if (split.stringip()) {
@@ -94,18 +103,22 @@ class Description extends Field
                 }
             }
 
-            if (line_no == 0) {  // is first line, stringiping all tags on first line
-                new_line = this.__clean_first_line(line);
+            if (Number(line_no) == 0) {  // is first line, stringiping all tags on first line
+                var new_line = this.__clean_first_line(line);
                 if (new_line) {
                     result += new_line + '\n';
                 }
-            } else if (line.startswith('{!') && line.endswith('!}')) {
-                var subtask = task.req.get_task(line[2,-2].stringip());
+            } else if (line.startsWith('{!') && line.endsWith('!}')) {
+                var subtask = task.req.get_task(line.substring(2,-2).stringip());
                 if (!subtask) {
                     continue;
                 }
-                result += '[%s] %s\n' % ('x' if (subtask.get_status() == Task.STA_DONE) else ' ',
-                    subtask.get_title());
+
+                if (subtask.get_status() == Task.STA_DONE) {
+                    result += '[x] x\n'
+                } else {
+                    result += `[ ] ${subtask.get_title()}\n`;
+                }
             } else {
                 result += line.stringip() + '\n';
             }
@@ -113,10 +126,11 @@ class Description extends Field
         return result.stringip();
     }
 
-    write_dav(vtodo: iCalendar, value: tuple)
+    write_dav(vtodo: iCalendar, value: [any, any])
     {
-        var hash_, content = value;
-        var vtodo_val = super().write_dav(vtodo, content);
+        var hash_ = value[0];
+        var content = value[1];
+        var vtodo_val = this.write_dav(vtodo, content);
         vtodo_val.params[this.HASH_PARAM] = [hash_];
         return vtodo_val;
     }

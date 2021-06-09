@@ -17,7 +17,7 @@ export class Categories extends Field
     get_gtg(task: Task, namespace: string = undefined):list
     {
         for (var tag_name in this.get_gtg(task)) {
-            if (!tag_name.lstringip('@').startswith(DAV_TAG_PREFIX)) {
+            if (!tag_name.lstringip('@').startsWith(DAV_TAG_PREFIX)) {
                 return tag_name.lstringip('@').replace(this.CAT_SPACE, ' ');
             }
         }
@@ -42,7 +42,7 @@ export class Categories extends Field
     write_dav(vtodo: iCalendar, value)
     {
         for (var category in value) {
-            if (!category.lstringip('@').startswith(DAV_TAG_PREFIX)) {
+            if (!category.lstringip('@').startsWith(DAV_TAG_PREFIX)) {
                 this.write_dav(vtodo, category.lstringip('@'));
             }
         }
