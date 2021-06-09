@@ -3,7 +3,7 @@ import { FileWrapper } from "./FileWrapper"
 import { Inbox } from "./Inbox"
 import { Project } from "./Project"
 import { RepetitionRule } from "./RepetitionRule"
-import { Status } from "./Status"
+import { TaskStatus } from "./TaskStatus"
 import { Tag } from "./Tag"
 
 export interface Task {
@@ -113,7 +113,7 @@ export interface Task {
     tags: Tag[];
 
     // const // Returns the current status of the task.
-    taskStatus: Status;
+    taskStatus: TaskStatus;
 
     // const // Returns all the tasks contained directly in this task, sorted by their library order.
     tasks: Task[];
