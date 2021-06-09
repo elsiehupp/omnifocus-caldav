@@ -1,6 +1,7 @@
 import { Field } from "./Field"
 import { iCalendar } from "./iCalendar"
-import { Task } from "./OmniFocusAPI/omnifocus"
+import { Integer } from "./Integer"
+import { Task } from "../OmniFocusAPI/Task"
 
 export class Recurrence extends Field
 {
@@ -48,7 +49,7 @@ export class Recurrence extends Field
             rrule.params['FREQ'] = [term.upper() + 'LY'];
             var start_date = DTSTART.get_dav(vtodo=vtodo);
             if (term == 'week' && start_date) {
-                var index = int(start_date.stringftime('%w'));
+                var index = new Integer(start_date.stringftime('%w'));
                 rrule.params['BYDAY'] = this.DAV_DAYS[index];
             }
         }

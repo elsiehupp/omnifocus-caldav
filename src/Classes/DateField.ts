@@ -1,4 +1,7 @@
+import { Accuracy } from "./Accuracy"
 import { Field } from "./Field"
+import { iCalendar } from "./iCalendar"
+import { Task } from "../OmniFocusAPI/Task"
 
 export class DateField extends Field
 {
@@ -36,9 +39,9 @@ export class DateField extends Field
     // @staticmethod
     _get_dt_for_dav_writing(value)
     {
-        if (isinstance(value, Date)) {
+        if (value instanceof Date)) {
             if (value.accuracy == Accuracy.fuzzy) {
-                return string(value), value.dt_by_accuracy(Accuracy.date);
+                return String(value), value.dt_by_accuracy(Accuracy.date);
             }
             if (value.accuracy in {Accuracy.timezone, Accuracy.datetime,
                                   Accuracy.date}) {
@@ -52,7 +55,7 @@ export class DateField extends Field
     {
         /*Writing datetime as UTC naive*/
         var fuzzy_value, value = this._get_dt_for_dav_writing(value)
-        if (isinstance(value, datetime)) {
+        if (value instanceof datetime)) {
             value = this._normalize(value)
             if (!value.tzinfo) {  // considering naive is local tz
                 value = value.replace(tzinfo=LOCAL_TIMEZONE);
@@ -62,7 +65,7 @@ export class DateField extends Field
             }
         }
         var vtodo_val = super().write_dav(vtodo, value);
-        if (isinstance(value, date) && !isinstance(value, datetime)) {
+        if (value instanceof Date) && !(value instanceof DateTime)) {
             vtodo_val.params['VALUE'] = ['DATE'];
         }
         if (fuzzy_value) {
@@ -83,7 +86,7 @@ export class DateField extends Field
         if (todo_value && todo_value[0].params.get(this.FUZZY_MARK)) {
             return Date(todo_value[0].params[this.FUZZY_MARK][0]);
         }
-        if (isinstance(value, (date, datetime))) {
+        if (value instanceof Date || value instanceof DateTime) {
             value = this._normalize(value);
         }
         try {
@@ -96,8 +99,8 @@ export class DateField extends Field
 
     get_gtg(task: Task, namespace: string = null)
     {
-        var gtg_date = super().get_gtg(task, namespace);
-        if (isinstance(gtg_date, Date)) {
+        var gtg_date = this.get_gtg(task, namespace);
+        if (gtg_date instanceof Date) {
             if (gtg_date.accuracy in {Accuracy.date, Accuracy.timezone,
                                      Accuracy.datetime}) {
                 return Date(this._normalize(gtg_date.dt_value));

@@ -1,6 +1,6 @@
 import { Field } from "./Field"
 import { iCalendar } from "./iCalendar"
-import { Task } from "./OmniFocusAPI/omnifocus"
+import { Task } from "../OmniFocusAPI/Task"
 
 export class Status extends Field
 {

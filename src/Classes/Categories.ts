@@ -1,7 +1,7 @@
 import { DAV_TAG_PREFIX } from "./DAV_TAG_PREFIX"
 import { Field } from "./Field"
 import { iCalendar } from "./iCalendar"
-import { Task } from "./OmniFocusAPI/omnifocus"
+import { Task } from "../OmniFocusAPI/Task"
 
 
 export class Categories extends Field

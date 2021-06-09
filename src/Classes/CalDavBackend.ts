@@ -5,7 +5,7 @@ Backend for storing/loading tasks in CalDAV Tasks
 import { CalDav } from "./CalDav"
 import { iCalendar } from "./iCalendar"
 import { PeriodicImportBackend } from "./PeriodicImportBackend";
-import { Task } from "./OmniFocusAPI/omnifocus";
+import { Task } from "../OmniFocusAPI/Task";
 import { Translator } from "./Translator"
 import { TodoCache } from "./TodoCache";
 import { UID_FIELD } from "./UID_FIELD"

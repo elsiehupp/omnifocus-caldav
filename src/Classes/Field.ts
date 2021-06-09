@@ -1,4 +1,4 @@
-import { Task } from "./OmniFocusAPI/omnifocus";
+import { Task } from "../OmniFocusAPI/Task";
 import { iCalendar } from "./iCalendar";
 
 export class Field

@@ -3,7 +3,8 @@ This file contains the most generic representation of a backend,
 the GenericBackend class
 */
 
-import { Task } from "./OmniFocusAPI/omnifocus"
+import { Integer } from "./Integer"
+import { Task } from "../OmniFocusAPI/Task"
 
 /*
 from collections import deque
@@ -478,10 +479,10 @@ export class GenericBackend
             if (param_value == -1) {
                 return null
             }
-            return Keyring().get_password(int(param_value))
+            return Keyring().get_password(Integer(param_value))
         } else if (param_type == this.TYPE_LIST_OF_STRINGS) {
             the_list = param_value.split(",")
-            if (!isinstance(the_list, list)) {
+            if (!(the_list instanceof list)) {
                 the_list = [the_list]
             }
             return the_list;

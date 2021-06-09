@@ -1,5 +1,6 @@
 import { Field } from "./Field"
-import { Task } from "./OmniFocusAPI/omnifocus"
+import { Integer } from "./Integer"
+import { Task } from "../OmniFocusAPI/Task"
 
 export class PercentComplete extends Field
 {
@@ -16,7 +17,7 @@ export class PercentComplete extends Field
             }
         }
         if (total_cnt) {
-            return String(int(100 * done_cnt / total_cnt));
+            return String(new Integer(100 * done_cnt / total_cnt));
         }
         return '0';
     }
