@@ -1,0 +1,109 @@
+import { Field } from "./Field"
+
+export class DateField extends Field
+{
+    /*Offers translation for datetime field.
+    Datetime are :
+     * naive and at local timezone when in GTG
+     * naive or not at UTC timezone from CalDAV
+    */
+    FUZZY_MARK = 'GTGFUZZY'
+
+    constructor(dav_name: string,
+                 task_get_func_name: string, task_set_func_name: string)
+    {
+        super(
+            dav_name, task_get_func_name, task_set_func_name,
+            ['', null, 'null', Date.no_date()]);
+    }
+
+    // @staticmethod
+    _normalize(value)
+    {
+        try {
+            if (value.year == 9999) {
+                return null;
+            }
+            if (getattr(value, 'microsecond')) {
+                value = value.replace(microsecond=0);
+            }
+        } catch (AttributeError) {
+            pass;
+        }
+        return value;
+    }
+
+    // @staticmethod
+    _get_dt_for_dav_writing(value)
+    {
+        if (isinstance(value, Date)) {
+            if (value.accuracy == Accuracy.fuzzy) {
+                return string(value), value.dt_by_accuracy(Accuracy.date);
+            }
+            if (value.accuracy in {Accuracy.timezone, Accuracy.datetime,
+                                  Accuracy.date}) {
+                return '', value.dt_value;
+            }
+        }
+        return '', value
+    }
+
+    write_dav(vtodo: iCalendar, value)
+    {
+        /*Writing datetime as UTC naive*/
+        var fuzzy_value, value = this._get_dt_for_dav_writing(value)
+        if (isinstance(value, datetime)) {
+            value = this._normalize(value)
+            if (!value.tzinfo) {  // considering naive is local tz
+                value = value.replace(tzinfo=LOCAL_TIMEZONE);
+            }
+            if (value.tzinfo != UTC) {  // forcing UTC for value to write on dav
+                value = (value - value.utcoffset()).replace(tzinfo=UTC);
+            }
+        }
+        var vtodo_val = super().write_dav(vtodo, value);
+        if (isinstance(value, date) && !isinstance(value, datetime)) {
+            vtodo_val.params['VALUE'] = ['DATE'];
+        }
+        if (fuzzy_value) {
+            vtodo_val.params[this.FUZZY_MARK] = [fuzzy_value];
+        }
+        return vtodo_val;
+    }
+
+    get_dav(todo=null, vtodo=null)
+    {
+        /*Transforming to local naive,
+        if original value MAY be naive and IS assuming UTC*/
+        var value = this.get_dav(todo, vtodo);
+        if (todo) {
+            vtodo = todo.instance.vtodo;
+        }
+        var todo_value = vtodo.contents.get(this.dav_name);
+        if (todo_value && todo_value[0].params.get(this.FUZZY_MARK)) {
+            return Date(todo_value[0].params[this.FUZZY_MARK][0]);
+        }
+        if (isinstance(value, (date, datetime))) {
+            value = this._normalize(value);
+        }
+        try {
+            return Date(value);
+        } catch (ValueError) {
+            console.log("Coudln't translate value %r", value);
+            return Date.no_date();
+        }
+    }
+
+    get_gtg(task: Task, namespace: string = null)
+    {
+        var gtg_date = super().get_gtg(task, namespace);
+        if (isinstance(gtg_date, Date)) {
+            if (gtg_date.accuracy in {Accuracy.date, Accuracy.timezone,
+                                     Accuracy.datetime}) {
+                return Date(this._normalize(gtg_date.dt_value));
+            }
+            return gtg_date;
+        }
+        return Date(this._normalize(gtg_date));
+    }
+}

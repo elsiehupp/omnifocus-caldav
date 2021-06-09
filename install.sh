@@ -1,1 +1,2 @@
+#!/bin/sh
 cp ./CalDAV\ Sync.omnijs ~/Library/Containers/com.omnigroup.OmniFocus3/Data/Library/Application\ Support/Plug-Ins/
