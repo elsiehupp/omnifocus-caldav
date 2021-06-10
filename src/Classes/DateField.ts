@@ -1,6 +1,6 @@
 import { Accuracy } from "./Accuracy"
 import { Field } from "./Field"
-import { iCalendar } from "./iCalendar"
+import { Todo } from "../CalDav/Todo"
 import { Task } from "../OmniFocusAPI/Task"
 
 export class DateField extends Field
@@ -52,7 +52,7 @@ export class DateField extends Field
         return '', value
     }
 
-    write_dav(vtodo: iCalendar, value)
+    write_dav(vtodo: Todo, value)
     {
         /*Writing datetime as UTC naive*/
         var fuzzy_value, value = this._get_dt_for_dav_writing(value)

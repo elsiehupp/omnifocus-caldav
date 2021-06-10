@@ -78,7 +78,7 @@ export class DataStore
     save;
 
 
-    __init__(global_conf=CoreConfig())
+    constructor(global_conf=CoreConfig())
     {
         /*
         Initializes a DataStore object
@@ -769,7 +769,7 @@ export class DataStore
 
                 var param_type = b.get_parameter_type(key)
                 value = b.cast_param_type_to_string(param_type, value)
-                config.set(str(key), value)
+                config.set(String(key), value)
             }
 
         config.save()
@@ -801,7 +801,7 @@ export class DataStore
 }
 
 
-class TaskSource
+export class TaskSource
 {
     /*
     Transparent interface between the real backend and the DataStore.
@@ -823,7 +823,7 @@ class TaskSource
     queue_remove_task;
     start_get_tasks_thread;
 
-    __init__(requester, backend, datastore)
+    constructor(requester, backend, datastore)
     {
         /*
         Instantiates a TaskSource object.

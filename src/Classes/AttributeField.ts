@@ -1,5 +1,5 @@
 import { Field } from "./Field"
-import { iCalendar } from "./iCalendar"
+import { Todo } from "../CalDav/Todo"
 import { Task } from "../OmniFocusAPI/Task"
 
 export class AttributeField extends Field
@@ -15,7 +15,7 @@ export class AttributeField extends Field
         task.set_attribute(this.dav_name, value, namespace=namespace);
     }
 
-    set_gtg(todo: iCalendar, task: Task,
+    set_gtg(todo: Todo, task: Task,
                 namespace: string = undefined):void
     {
         var value = this.get_dav(todo);

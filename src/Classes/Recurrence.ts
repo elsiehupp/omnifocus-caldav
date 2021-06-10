@@ -1,5 +1,5 @@
 import { Field } from "./Field"
-import { iCalendar } from "./iCalendar"
+import { Todo } from "../CalDav/Todo"
 import { Integer } from "./Integer"
 import { Task } from "../OmniFocusAPI/Task"
 
@@ -32,7 +32,7 @@ export class Recurrence extends Field
         return [false, null];;
     }
 
-    write_dav(vtodo: iCalendar, value: any[])
+    write_dav(vtodo: Todo, value: any[])
     {
         const enabled = value[0];
         const term = value[1];

@@ -2,10 +2,11 @@
 Backend for storing/loading tasks in CalDAV Tasks
 */
 
-import { CalDav } from "./CalDav"
-import { Calendar } from "./Calendar"
+import { DavClient } from "../CalDav/DavClient"
+import { Calendar } from "../CalDav/Calendar"
+import { DavError } from "../CalDav/DavError"
 import { Categories } from "./Categories"
-import { iCalendar } from "./iCalendar"
+import { Todo } from "../CalDav/Todo"
 import { PeriodicImportBackend } from "./PeriodicImportBackend";
 import { Task } from "../OmniFocusAPI/Task";
 import { PARENT_FIELD, Translator, UID_FIELD } from "./Translator"
@@ -42,7 +43,7 @@ export const DAV_IGNORE = ['last-modified',  // often updated alone by GTG
 
 export class CalDavDackend extends PeriodicImportBackend
 {
-    _dav_client;
+    _dav_client:DavClient;
     _cache: TodoCache;
 
     constructor(parameters)
@@ -52,22 +53,17 @@ export class CalDavDackend extends PeriodicImportBackend
         See GenericBackend for an explanation of this function.
         Re-loads the saved state of the synchronization
         */
-        this.__init__(parameters);
-        this._dav_client = null;
-        this._cache = new TodoCache();
-    }
-
-    __init__(parameters)
-    {
         for (var param in parameters) {
             this[param] = param;
         }
+        this._dav_client = null;
+        this._cache = new TodoCache();
     }
 
     initialize():void
     {
         this.initialize();
-        this._dav_client = CalDav.DAVClient(
+        this._dav_client = new DavClient(
             this._parameters['service-url'],
             this._parameters['username'],
             this._parameters['password']);
@@ -165,7 +161,7 @@ export class CalDavDackend extends PeriodicImportBackend
             try {
                 todo.save();
             }
-            catch (caldav.lib.error.DAVError) {
+            catch (DavError) {
                 console.log(`Something went wrong while updating ${task} => ${todo}`);
             }
         } else {  // creating from task
@@ -187,7 +183,7 @@ export class CalDavDackend extends PeriodicImportBackend
     // Dav functions
     //
 
-    _create_todo(task: Task, calendar: iCalendar)
+    _create_todo(task: Task, calendar: Calendar)
     {
         console.log(`SYNCING creating todo for ${task}`);
         var new_todo = null;
@@ -195,11 +191,11 @@ export class CalDavDackend extends PeriodicImportBackend
             task, calendar.name, this.namespace);
         try {
             new_todo = calendar.add_todo(new_vtodo.serialize());
-        } catch (caldav.lib.error.DAVError) {
+        } catch (DavError) {
             console.log(`Something went wrong while creating ${task} => ${new_todo}`);
             return;
         }
-        var uid = UID_FIELD.get_dav(todo=new_todo);
+        var uid = UID_FIELD.get_dav(new_todo);
         this._cache.set_todo(new_todo, uid);
     }
 
@@ -209,7 +205,7 @@ export class CalDavDackend extends PeriodicImportBackend
         this._cache.del_todo(uid);  // cleaning cache
         try {  // deleting through caldav
             todo.delete();
-        } catch (caldav.lib.error.DAVError) {
+        } catch (DavError) {
             console.log(`Something went wrong while deleting ${uid} => ${todo}`);
         }
     }
@@ -304,7 +300,7 @@ export class CalDavDackend extends PeriodicImportBackend
         }
     }
 
-    _import_calendar_todos(calendar: iCalendar,
+    _import_calendar_todos(calendar: Calendar,
                                import_started_on: datetime, counts: dict)
     {
         var todos = calendar.todos(include_completed=not this._cache.initialized);
@@ -342,7 +338,7 @@ export class CalDavDackend extends PeriodicImportBackend
         }
     }
 
-    _update_task(task: Task, todo: iCalendar, force: bool = false)
+    _update_task(task: Task, todo: Todo, force: bool = false)
     {
         if (!force) {
             var task_seq = SEQUENCE.get_gtg(task, this.namespace)
@@ -383,7 +379,7 @@ export class CalDavDackend extends PeriodicImportBackend
         }
     }
 
-    _get_calendar_tasks(calendar: iCalendar)
+    _get_calendar_tasks(calendar: Calendar)
     {
         /*Getting all tasks that has the calendar tag*/
         for (var uid in this.datastore.get_all_tasks()) {

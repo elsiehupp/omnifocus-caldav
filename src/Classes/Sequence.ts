@@ -1,5 +1,5 @@
 import { AttributeField } from "./AttributeField"
-import { iCalendar } from "./iCalendar"
+import { Todo } from "../CalDav/Todo"
 import { Integer } from "./Integer"
 import { Task } from "./omnifocus"
 
@@ -23,7 +23,7 @@ export class Sequence extends AttributeField
         }
     }
 
-    set_dav(task: Task, vtodo: iCalendar, namespace: string)
+    set_dav(task: Task, vtodo: Todo, namespace: string)
     {
         try {
             this.write_dav(vtodo, String(this.get_gtg(task, namespace)));

@@ -1,6 +1,6 @@
 import { DAV_TAG_PREFIX } from "./DAV_TAG_PREFIX"
 import { Field } from "./Field"
-import { iCalendar } from "./iCalendar"
+import { Todo } from "../CalDav/Todo"
 import { Task } from "../OmniFocusAPI/Task"
 
 
@@ -39,7 +39,7 @@ export class Categories extends Field
         return categories;
     }
 
-    write_dav(vtodo: iCalendar, value)
+    write_dav(vtodo: Todo, value)
     {
         for (var category in value) {
             if (!category.lstringip('@').startsWith(DAV_TAG_PREFIX)) {
@@ -49,7 +49,7 @@ export class Categories extends Field
     }
 
 
-    fset_gtg(todo: iCalendar, task: Task,
+    fset_gtg(todo: Todo, task: Task,
                 namespace: string = undefined):void
     {
         var remote_tags = [this.to_tag(categ) for (categ in this.get_dav(todo)]);

@@ -1,5 +1,5 @@
 import { Field } from "./Field"
-import { iCalendar } from "./iCalendar"
+import { Todo } from "../CalDav/Todo"
 import { Task } from "../OmniFocusAPI/Task"
 
 export class RelatedTo extends Field
@@ -13,12 +13,12 @@ export class RelatedTo extends Field
     constructor(args:string[], task_remove_func_name: string = null, reltype: string, wargs:any[])
     {
         super(args, task_remove_func_name, reltype, kwargs);
-        this.__init__(args, kwargs);
+        this.constructor(args, kwargs);
         this.task_remove_func_name = task_remove_func_name;
         this.reltype = reltype.toUpperCase();
     }
 
-    __init__(args, kwargs)
+    constructor(args, kwargs)
     {
         for (var kw in args) {
             this[kw] = kwargs[kw];
@@ -31,7 +31,7 @@ export class RelatedTo extends Field
         return (reltype.length == 1 && reltype[0] == this.reltype);
     }
 
-    clean_dav(vtodo: iCalendar)
+    clean_dav(vtodo: Todo)
     {
         var value = vtodo.contents.get(this.dav_name);
         if (value) {
@@ -47,7 +47,7 @@ export class RelatedTo extends Field
         }
     }
 
-    write_dav(vtodo: iCalendar, value)
+    write_dav(vtodo: Todo, value)
     {
         this.clean_dav(vtodo);
         for (var related_uid in value) {
@@ -87,7 +87,7 @@ export class RelatedTo extends Field
         return wrap;
     }
 
-    set_gtg(todo: iCalendar, task: Task,
+    set_gtg(todo: Todo, task: Task,
                 namespace: string = null):null
     {
         if (this.get_dav(todo) == this.get_gtg(task, namespace)) {

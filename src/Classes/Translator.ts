@@ -5,7 +5,7 @@ import { DAV_IGNORE } from "./CalDavBackend"
 import { Dictionary } from "typescript-collections"
 import { Description } from "./Description"
 import { Field } from "./Field"
-import { iCalendar } from "./iCalendar"
+import { Todo } from "../CalDav/Todo"
 import { OrderField } from "./OrderField"
 import { PercentComplete } from "./PercentComplete"
 import { Recurrence } from "./Recurrence"
@@ -62,9 +62,9 @@ export class Translator
 
 
     // @classmethod
-    _get_new_vcal(): iCalendar
+    _get_new_vcal(): Todo
     {
-        var vcal = new iCalendar();
+        var vcal = new Todo();
         vcal.add('PRODID').value = this.GTG_PRODID;
         vcal.add('vtodo');
         return vcal;
@@ -72,7 +72,7 @@ export class Translator
 
     // @classmethod
     fill_vtodo(task: Task, calendar_name: string, namespace: string,
-                   vtodo: iCalendar = null):iCalendar
+                   vtodo: Todo = null):Todo
     {
         var vcal = null;
         if (vtodo == null) {
@@ -96,7 +96,7 @@ export class Translator
     }
 
     // @classmethod
-    fill_task(todo: iCalendar, task: Task, namespace: string)
+    fill_task(todo: Todo, task: Task, namespace: string)
     {
         var nmspc = {'namespace': namespace};
         // with (DisabledSyncCtx(task)) {

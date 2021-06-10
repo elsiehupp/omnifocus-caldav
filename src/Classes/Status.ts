@@ -1,5 +1,5 @@
 import { Field } from "./Field"
-import { iCalendar } from "./iCalendar"
+import { Todo } from "../CalDav/Todo"
 import { Task } from "../OmniFocusAPI/Task"
 
 export class Status extends Field
@@ -20,7 +20,7 @@ export class Status extends Field
         return this.DEFAULT_STATUS;
     }
 
-    write_dav(vtodo: iCalendar, value)
+    write_dav(vtodo: Todo, value)
     {
         this.clean_dav(vtodo);
         vtodo.add(this.dav_name).value = value;

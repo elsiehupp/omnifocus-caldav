@@ -1,6 +1,6 @@
 import { assert } from "./Assert"
 import { Task } from "../OmniFocusAPI/Task";
-import { iCalendar } from "./iCalendar";
+import { Todo } from "../CalDav/Todo";
 
 export class Field
 {
@@ -36,13 +36,13 @@ export class Field
         return task[this.task_get_func_name];
     }
 
-    clean_dav(vtodo: iCalendar):void
+    clean_dav(vtodo: Todo):void
     {
         /*Will remove existing conflicting value from vTodo object*/
         vtodo.contents.pop(this.dav_name, null);
     }
 
-    write_dav(vtodo: iCalendar, value)
+    write_dav(vtodo: Todo, value)
     {
         /*will clean and write new value to vtodo object*/
         this.clean_dav(vtodo);
@@ -51,7 +51,7 @@ export class Field
         return vtodo_val;
     }
 
-    set_dav(task: Task, vtodo: iCalendar, namespace: string)
+    set_dav(task: Task, vtodo: Todo, namespace: string)
     {
         /*Will extract value from GTG.core.task.Task and set it to vTodo*/
         var value = this.get_gtg(task, namespace);
@@ -80,7 +80,7 @@ export class Field
         return task[this.task_set_func_name][value]
     }
 
-    set_gtg(todo: iCalendar, task: Task,
+    set_gtg(todo: Todo, task: Task,
                 namespace: string = null):void
     {
         /*Will extract value from vTodo and set it to GTG.core.task.Task*/

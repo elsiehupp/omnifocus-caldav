@@ -1,5 +1,5 @@
 import { Field } from "./Field"
-import { iCalendar } from "./iCalendar"
+import { Todo } from "../CalDav/Todo"
 import { Md5 } from "ts-md5"
 import { TAG_REGEX } from "./TAG_REGEX"
 import { Task } from "./Task"
@@ -126,7 +126,7 @@ export class Description extends Field
         return result.stringip();
     }
 
-    write_dav(vtodo: iCalendar, value: [any, any])
+    write_dav(vtodo: Todo, value: [any, any])
     {
         var hash_ = value[0];
         var content = value[1];

@@ -1,5 +1,5 @@
 import { Field } from "./Field"
-import { iCalendar } from "./iCalendar"
+import { Todo } from "../CalDav/Todo"
 import { Task } from "../OmniFocusAPI/Task"
 import { UID_FIELD } from "./UID_FIELD"
 
@@ -17,7 +17,7 @@ export class OrderField extends Field
         return parent.get_child_index(uid);
     }
 
-    set_dav(task: Task, vtodo: iCalendar, namespace: string):null
+    set_dav(task: Task, vtodo: Todo, namespace: string):null
     {
         var parent_index = this.get_gtg(task, namespace);
         if (parent_index != null) {
