@@ -5,6 +5,7 @@ the GenericBackend class
 
 import { Integer } from "./Integer"
 import { Task } from "../OmniFocusAPI/Task"
+import * as Keychain from 'react-native-keychain';
 
 /*
 from collections import deque
@@ -15,7 +16,6 @@ from GTG.backends.backend_signals import BackendSignals
 from GTG.core.tag import ALLTASKS_TAG
 from GTG.core.dirs import SYNC_DATA_DIR
 from GTG.core.interruptible import _cancellation_point
-from GTG.core.keyring import Keyring
 */
 
 var enableLogging: boolean = true;
@@ -31,9 +31,9 @@ export class GenericBackend
     A particular backend should redefine all the methods marked as such.
     */
 
-    //////////////////////////////////////////////////////////////////////////#
-    // BACKEND INTERFACE //////////////////////////////////////////////////////#
-    //////////////////////////////////////////////////////////////////////////#
+    ///////////////////////////////////////////////////////////////////////////
+    // BACKEND INTERFACE ///////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////////
 
     // The complete list of constants and their meaning is given below.
     _static_parameters: any[];
@@ -326,7 +326,18 @@ export class GenericBackend
             if (param_value == -1) {
                 return null
             }
-            return Keyring().get_password(new Integer(param_value))
+            const options = {
+                authenticationPrompt: {
+                    title: 'CalDAV Authentication Needed',
+                    // subtitle: 'Subtitle',
+                    description: 'The username and password for your\
+                        CalDAV server can only be loaded from the Keychain\
+                        and are not stored.',
+                    cancel: 'Cancel',
+                },
+            };
+            return await Keychain.getGenericPassword(options)
+                // new Integer(param_value))
         } else if (param_type == this.TYPE_LIST_OF_STRINGS) {
             the_list = new Set(param_value.split(","));
             return the_list;
@@ -349,7 +360,7 @@ export class GenericBackend
             if (param_value == null) {
                 return String(-1)
             } else {
-                return String(Keyring().set_password(
+                return String(Keychain.set_password(
                     // "GTG stored password -" + this.get_id(), param_value
                 ))
             }
@@ -417,9 +428,9 @@ export class GenericBackend
         this.datastore = datastore
     }
 
-//////////////////////////////////////////////////////////////////////////////#
-// THREADING //////////////////////////////////////////////////////////////////#
-//////////////////////////////////////////////////////////////////////////////#
+///////////////////////////////////////////////////////////////////////////////
+// THREADING ///////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 
     timer_timestep: any;
 
