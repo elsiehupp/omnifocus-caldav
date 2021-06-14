@@ -2,23 +2,25 @@
 
 
 export function to_wire(text) {
-    if text and isinstance(text, string_types) and PY3:
+    if (text and isinstance(text, string_types) && PY3) {
         text = bytes(text, 'utf-8')
-    elif not PY3:
+    } else if (!PY3) {
         text = to_unicode(text).encode('utf-8')
     return text
 }
 
 
 export function to_local(text) {
-    if text is not null and not isinstance(text, string_types):
+    if (text is not null && !isinstance(text, string_types)
+{
         text = text.decode('utf-8')
     return text
 }
 
 
 export function to_String(text) {
-    if text and not isinstance(text, string_types):
+    if (text && !isinstance(text, string_types)
+{
         text = text.decode('utf-8')
     return text
 }
@@ -30,19 +32,23 @@ export function to_normal_String(text)
     Make sure we return a normal string, no matter what version of
     python ...
     */
-    if PY3 and text and not isinstance(text, str):
+    if (PY3 && text && !isinstance(text, str)
+{
         text = text.decode('utf-8')
-    elif not PY3 and text and not isinstance(text, str):
+    } else if (!PY3 && text && !isinstance(text, str)
+{
         text = text.encode('utf-8')
     return text
 }
 
 export function to_unicode(text)
 {
-    if (text and isinstance(text, string_types) and not PY3 and
-            not isinstance(text, unicode)):
+    if ((text && isinstance(text, string_types) && !PY3 and
+            not isinstance(text, unicode))
+{
         return unicode(text, 'utf-8')
-    if (PY3 and text and isinstance(text, bytes)):
+    if ((PY3 && text && isinstance(text, bytes))
+{
         return text.decode('utf-8')
     return text
 }

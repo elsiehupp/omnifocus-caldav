@@ -19,7 +19,7 @@ export class AttributeField extends Field
                 namespace: string = undefined):void
     {
         var value = this.get_dav(todo);
-        if (this._is_value_allowed(value)) {
+        if ((this._is_value_allowed(value)) {
             this.write_gtg(task, value, namespace);
         }
     }

@@ -75,15 +75,15 @@ export class Translator
                    vtodo: Todo = null):Todo
     {
         var vcal = null;
-        if (vtodo == null) {
+        if ((vtodo == null) {
             vcal = this._get_new_vcal();
             vtodo = vcal.vtodo;
         }
         // always write a DTSTAMP field to the `now`
         this.DTSTAMP_FIELD.write_dav(vtodo, DateTime.now(LOCAL_TIMEZONE));
         for (let field of this.fields.values()) {
-            if (field.dav_name == 'uid' && UID_FIELD.get_dav(vtodo=vtodo)) {
-                // not overriding if already set from cache
+            if ((field.dav_name == 'uid' && UID_FIELD.get_dav(vtodo=vtodo)) {
+                // not overriding if (already set from cache
                 continue;
             }
             field.set_dav(task, vtodo, namespace);
@@ -106,7 +106,7 @@ export class Translator
             task.set_attribute("url", string(todo.url), nmspc);
             task.set_attribute("calendar_url", string(todo.parent.url), nmspc);
             task.set_attribute("calendar_name", todo.parent.name, nmspc);
-            if (CATEGORIES.has_calendar_tag(task, todo.parent)) {
+            if ((CATEGORIES.has_calendar_tag(task, todo.parent)) {
                 task.add_tag(CATEGORIES.get_calendar_tag(todo.parent));
             }
         // }
@@ -117,7 +117,7 @@ export class Translator
     changed_attrs(task: Task, namespace: string, todo=undefined, vtodo=undefined)
     {
         for (var field in this.fields) {
-            if (!field.is_equal(task, namespace, todo, vtodo) {
+            if ((!field.is_equal(task, namespace, todo, vtodo) {
                 yield field;
             }
         }
@@ -127,7 +127,7 @@ export class Translator
     should_sync(task: Task, namespace: string, todo=null, vtodo=null)
     {
         for (var field in this.changed_attrs(task, namespace, todo, vtodo)) {
-            if (field.dav_name ! in DAV_IGNORE) {
+            if ((field.dav_name ! in DAV_IGNORE) {
                 return true;
             }
         }

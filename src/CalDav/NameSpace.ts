@@ -18,7 +18,7 @@ export class NameSpace
     constructor (prefix, tag=null)
     {
         var name = `{${nsmap2[prefix]}}`;
-        if (tag != null) {
+        if ((tag != null) {
             name = `${name}${tag}`;
         }
         return name

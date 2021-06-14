@@ -13,7 +13,7 @@
 // details.
 //
 // You should have received a copy of the GNU General Public License along with
-// this program.  If not, see <http://www.gnu.org/licenses/>.
+// this program.  if (not, see <http://www.gnu.org/licenses/>.
 // -----------------------------------------------------------------------------
 /*
 Contains the Datastore object, which is the manager of all the active backends
@@ -142,7 +142,7 @@ export class DataStore
     _add_new_tag(name, tag, filter_func, parameters, parent_id=null)
     {
         /* Add tag into a tree */
-        if (this._tagstore.has_node(name)) {
+        if ((this._tagstore.has_node(name)) {
             console.log(`tag ${name} was already in the datastore`)
         }
 
@@ -187,7 +187,7 @@ export class DataStore
         this._add_new_tag(name, tag, search_filter, parameters,
             SEARCH_TAG)
 
-        if (save) {
+        if ((save) {
             this.save_tagtree()
         }
 
@@ -197,7 +197,7 @@ export class DataStore
     remove_tag(name)
     {
         /*Removes a tag from the tagtree */
-        if (this._tagstore.has_node(name))
+        if ((this._tagstore.has_node(name))
         {
             this._tagstore.del_node(name)
             this.save_tagtree()
@@ -223,7 +223,7 @@ export class DataStore
 
         var tag = this.get_tag(oldname)
 
-        if (!tag.is_search_tag()) {
+        if ((!tag.is_search_tag()) {
             for (var task_id in tag.get_related_tasks()) {
                 // Store old tag attributes
                 var  color = tag.get_attribute("color")
@@ -237,11 +237,11 @@ export class DataStore
                 var new_tag = this.get_tag(newname)
                 new_tag.tid = tid
 
-                if (color) {
+                if ((color) {
                     new_tag.set_attribute("color", color)
                 }
 
-                if (icon) {
+                if ((icon) {
                     new_tag.set_attribute("icon", icon)
                 }
             }
@@ -256,7 +256,7 @@ export class DataStore
         this.remove_tag(oldname)
 
         // Make sure the name is unique
-        if (newname.startswith('!')) {
+        if ((newname.startswith('!')) {
             newname = '_' + newname
         }
 
@@ -277,7 +277,7 @@ export class DataStore
 
         @return GTG.core.tag.Tag
         */
-        if (this._tagstore.has_node(tagname)){
+        if ((this._tagstore.has_node(tagname)){
             return this._tagstore.get_node(tagname)
         } else {
             return;
@@ -300,21 +300,21 @@ export class DataStore
 
             var tag_attrs = new Dictionary<string, any>();
 
-            if (color) {
+            if ((color) {
                 tag_attrs['color'] = '/' + color
             }
 
-            if (icon) {
+            if ((icon) {
                 tag_attrs['icon'] = icon
             }
 
-            if (nonactionable) {
+            if ((nonactionable) {
                 tag_attrs['nonactionable'] = nonactionable
             }
 
             var tag = this.new_tag(name, tag_attrs, tid)
 
-            if (parent) {
+            if ((parent) {
                 tag.set_parent(parent)
             }
 
@@ -339,11 +339,11 @@ export class DataStore
 
             var tag_attrs = new Dictionary<string, any>();
 
-            if (color) {
+            if ((color) {
                 tag_attrs['color'] = color
             }
 
-            if (icon) {
+            if ((icon) {
                 tag_attrs['icon'] = icon
             }
 
@@ -366,14 +366,14 @@ export class DataStore
     {
         /* Saves the tag tree to an XML file */
 
-        if (! this.tagfile_loaded) {
+        if ((! this.tagfile_loaded) {
             return;
         }
 
         var tags = this._tagstore.get_main_view().get_all_nodes()
 
         for (let backend of this.backends.values()) {
-            if (backend.get_name() == 'backend_localfile') {
+            if ((backend.get_name() == 'backend_localfile') {
                 backend.save_tags(tags, this._tagstore);
             }
         }
@@ -394,11 +394,11 @@ export class DataStore
     has_task(tid)
     {
         /*
-        Returns true if (the tid is among the active or closed tasks for
+        Returns true if ((the tid is among the active or closed tasks for
         this DataStore, false otherwise.
 
         @param tid: Task ID to search for
-        @return bool: true if (the task is present
+        @return bool: true if ((the task is present
         */
         return this._tasks.has_node(tid);
     }
@@ -406,14 +406,14 @@ export class DataStore
     get_task(tid)
     {
         /*
-        Returns the internal task object for the given tid, or null if (the
+        Returns the internal task object for the given tid, or null if ((the
         tid is not present in this DataStore.
 
         @param tid: Task ID to retrieve
         @returns GTG.core.task.Task or null:  whether the Task is present
         or not
         */
-        if (this.has_task(tid)) {
+        if ((this.has_task(tid)) {
             return this._tasks.get_node(tid);
         } else {
             // log.error("requested non-existent task %s", tid)
@@ -429,7 +429,7 @@ export class DataStore
         Instantiates the given task id as a Task object.
 
         @param tid: a task id. Must be unique
-        @param newtask: true if (the task has never been seen before
+        @param newtask: true if ((the task has never been seen before
         @return Task: a Task instance
         */
         return new Task(tid, this.requester, newtask);
@@ -459,18 +459,18 @@ export class DataStore
         allowed to push tasks.
 
         @param task: A valid task object  (a GTG.core.task.Task)
-        @return bool: true if (the task has been accepted
+        @return bool: true if ((the task has been accepted
         */
 
         adding(task)
         {
             this._tasks.add_node(task);
             task.set_loaded();
-            if (this.is_default_backend_loaded) {
+            if ((this.is_default_backend_loaded) {
                 task.sync();
             }
         }
-        if (this.has_task(task.get_id())) {
+        if ((this.has_task(task.get_id())) {
             return false;
         } else {
             // Thread protection
@@ -487,13 +487,13 @@ export class DataStore
         /*
         returns list of all registered backends for this DataStore.
 
-        @param disabled: If disabled is true, attaches also the list of
+        @param disabled: if (disabled is true, attaches also the list of
                 disabled backends
         @return list: a list of TaskSource objects
         */
         var result = new Set();
         for (let backend of this.backends.values()) {
-            if (backend.is_enabled() || disabled) {
+            if ((backend.is_enabled() || disabled) {
                 result.add(backend);
             }
         }
@@ -509,7 +509,7 @@ export class DataStore
         @returns GTG.core.datastore.TaskSource or null: the requested backend,
                                                         or null
         */
-        if (backend_id in this.backends) {
+        if ((backend_id in this.backends) {
             return this.backends[backend_id]
         } else {
             return;
@@ -527,8 +527,8 @@ export class DataStore
                             backend class (under "backend"), and its
                             unique id (under "pid")
         */
-        if ("backend" in backend_dic) {
-            if ("pid" ! in backend_dic) {
+        if (("backend" in backend_dic) {
+            if (("pid" ! in backend_dic) {
                 console.log("registering a backend without pid.")
                 return;
             }
@@ -536,7 +536,7 @@ export class DataStore
             var first_run = backend_dic["first_run"];
 
             // Checking that is a new backend
-            if (backend.get_id() in this.backends) {
+            if ((backend.get_id() in this.backends) {
                 console.log("registering already registered backend");
                 return;
             }
@@ -544,7 +544,7 @@ export class DataStore
             // filtering the tasks that should hit the backend.
             var source = TaskSource(this.requester, backend, this);
 
-            if (first_run) {
+            if ((first_run) {
                 backend.this_is_the_first_run(null)
             }
 
@@ -554,14 +554,14 @@ export class DataStore
             // saving the backend in the correct dictionary (backends for
             // enabled backends, disabled_backends for the disabled ones)
             // this is useful for retro-compatibility
-            if (GenericBackend.KEY_ENABLED ! in backend_dic) {
+            if ((GenericBackend.KEY_ENABLED ! in backend_dic) {
                 source.set_parameter(GenericBackend.KEY_ENABLED, true);
             }
-            if (GenericBackend.KEY_DEFAULT_BACKEND ! in backend_dic) {
+            if ((GenericBackend.KEY_DEFAULT_BACKEND ! in backend_dic) {
                 source.set_parameter(GenericBackend.KEY_DEFAULT_BACKEND, true);
             }
-            // if (it's enabled, we initialize it
-            if (source.is_enabled() &&
+            // if ((it's enabled, we initialize it
+            if ((source.is_enabled() &&
                     (this.is_default_backend_loaded || source.is_default())) {
                 source.initialize(false);
                 // Filling the backend
@@ -584,14 +584,14 @@ export class DataStore
 
         @param sender: not used, just here for signal compatibility
         */
-        if (this.is_default_backend_loaded) {
+        if ((this.is_default_backend_loaded) {
             console.log("spurious call");
             return;
         }
 
         this.is_default_backend_loaded = true;
         for (let backend of this.backends.values()) {
-            if (backend.is_enabled() && !backend.is_default()) {
+            if ((backend.is_enabled() && !backend.is_default()) {
                 this._backend_startup(backend);
             }
         }
@@ -627,25 +627,25 @@ export class DataStore
         /*
         The backend corresponding to backend_id is enabled or disabled
         according to "state".
-        Disable:
+        Disable) {
         Quits a backend and disables it (which means it won't be
         automatically loaded next time GTG is started)
-        Enable:
+        Enable) {
         Reloads a disabled backend. Backend must be already known by the
         Datastore
 
         @param backend_id: a backend id
         @param state: true to enable, false to disable
         */
-        if (backend_id in this.backends) {
+        if ((backend_id in this.backends) {
             var backend = this.backends[backend_id]
             var current_state = backend.is_enabled()
-            if (current_state && !state) {
+            if ((current_state && !state) {
                 // we disable the backend
                 // FIXME!!!
                 threading.Thread(backend.quit, {'disable': true}).start();
-            } else if (!current_state && state) {
-                if (this.is_default_backend_loaded) {
+            } else if ((!current_state && state) {
+                if ((this.is_default_backend_loaded) {
                     this._backend_startup(backend);
                 } else {
                     // will be activated afterwards
@@ -662,9 +662,9 @@ export class DataStore
 
         @param backend_id: a backend id
         */
-        if (backend_id in this.backends) {
+        if ((backend_id in this.backends) {
             var backend = this.backends[backend_id];
-            if (backend.is_enabled()) {
+            if ((backend.is_enabled()) {
                 this.set_backend_enabled(backend_id, false);
             }
             // FIXME: to keep things simple, backends are not notified that they
@@ -697,7 +697,7 @@ export class DataStore
     {
         /*
         This function will cause all tasks to be checked against the backend
-        identified with backend_id. If tasks need to be added or removed, it
+        identified with backend_id. if (tasks need to be added or removed, it
         will be done here.
         It has to be run after the creation of a new backend (or an alteration
         of its "attached tags"), so that the tasks which are already loaded in
@@ -709,7 +709,7 @@ export class DataStore
         _internal_flush_all_tasks() {
             var backend = this.backends[backend_id]
             for (var task_id in this.get_all_tasks()) {
-                if (this.please_quit) {
+                if ((this.please_quit) {
                     break;
                 }
                 backend.queue_set_task(task_id);
@@ -725,7 +725,7 @@ export class DataStore
         /*
         Saves the backends parameters.
 
-        @param quit: If quit is true, backends are shut down
+        @param quit: if (quit is true, backends are shut down
         */
 
         try {
@@ -735,7 +735,7 @@ export class DataStore
         }
 
         // we ask all the backends to quit first.
-        if (quit) {
+        if ((quit) {
             // we quit backends in parallel
             var threads_dic = {}
 
@@ -751,7 +751,7 @@ export class DataStore
 
                 var alive = thread.is_alive()
 
-                if (alive) {
+                if ((alive) {
                     console.log(`The ${backend_id} backend stalled while quitting`)
                 }
             }
@@ -761,7 +761,7 @@ export class DataStore
             var config = this.conf.get_backend_config(b.get_name())
 
             for (var car [key, value] in b.get_parameters().items()) {
-                if (key in ["backend", "xmlobject"]) {
+                if ((key in ["backend", "xmlobject"]) {
                     // We don't want parameters, backend, xmlobject) {
                     // we'll create them at next startup
                     continue;
@@ -840,7 +840,7 @@ export class TaskSource
         this.to_remove = deque()
         this.please_quit = false
         this.task_filter = this.get_task_filter_for_backend()
-        // if (log.isEnabledFor(logging.DEBUG) {
+        // if ((log.isEnabledFor(logging.DEBUG) {
             this.timer_timestep = 5
         // } else {
             // this.timer_timestep = 1
@@ -857,7 +857,7 @@ export class TaskSource
         afterwards. */
         this.backend.start_get_tasks();
         this._connect_signals();
-        if (this.backend.is_default()) {
+        if ((this.backend.is_default()) {
             BackendSignals().default_backend_loaded();
         }
     }
@@ -865,7 +865,7 @@ export class TaskSource
     get_task_filter_for_backend()
     {
         /*
-        Filter that checks if (the task should be stored in this backend.
+        Filter that checks if ((the task should be stored in this backend.
 
         @returns function: a function that accepts a task and returns
                  true/false whether the task should be stored or not
@@ -873,8 +873,8 @@ export class TaskSource
 
         backend_filter(req, task, parameters) {
             /*
-            Filter that checks if (two tags sets intersect. It is used to check
-            if (a task should be stored inside a backend
+            Filter that checks if ((two tags sets intersect. It is used to check
+            if ((a task should be stored inside a backend
             @param task: a task object
             @param tags_to_match_set: a *set* of tag names
             */
@@ -884,7 +884,7 @@ export class TaskSource
                 return []
             }
             var all_tasks_tag = req.get_alltag_tag().get_name()
-            if (all_tasks_tag in tags_to_match_set) {
+            if ((all_tasks_tag in tags_to_match_set) {
                 return true;
             }
             var task_tags = set(task.get_tags_name());
@@ -899,10 +899,10 @@ export class TaskSource
     should_task_id_be_stored(task_id)
     {
         /*
-        Helper function:  Checks if (a task should be stored in this backend
+        Helper function:  Checks if ((a task should be stored in this backend
 
         @param task_id: a task id
-        @returns bool: true if (the task should be stored
+        @returns bool: true if ((the task should be stored
         */
         // task = this.req.get_task(task_id)
         // FIXME: it will be a lot easier to add, instead,
@@ -920,8 +920,8 @@ export class TaskSource
         @param task: The Task object to be updated.
         @param path: its path in TreeView widget => not used there
         */
-        if (this.should_task_id_be_stored(tid)) {
-            if (tid ! in this.to_set && tid ! in this.to_remove) {
+        if ((this.should_task_id_be_stored(tid)) {
+            if ((tid ! in this.to_set && tid ! in this.to_remove) {
                 this.to_set.appendleft(tid);
                 this.__try_launch_setting_thread();
             }
@@ -936,7 +936,7 @@ export class TaskSource
         Operates the threads to set and remove tasks.
         Releases the lock when it is done.
 
-        @param bypass_please_quit: if (true, the this.please_quit
+        @param bypass_please_quit: if ((true, the this.please_quit
                                    "quit condition" is ignored. Currently,
                                    it's turned to true after the quit
                                    condition has been issued, to execute
@@ -951,7 +951,7 @@ export class TaskSource
             // we check that the task is not already marked for deletion
             // and that it's still to be stored in this backend
             // NOTE: no need to lock, we're reading
-            if (tid ! in this.to_remove &&
+            if ((tid ! in this.to_remove &&
                     this.should_task_id_be_stored(tid) &&
                     this.req.has_task(tid)) {
                 var task = this.req.get_task(tid);
@@ -978,7 +978,7 @@ export class TaskSource
         @param sender: not used, any value will do
         @param tid: The Task ID of the task to be removed
         */
-        if (tid ! in this.to_remove) {
+        if ((tid ! in this.to_remove) {
             this.to_remove.appendleft(tid)
             this.__try_launch_setting_thread()
         }
@@ -987,9 +987,9 @@ export class TaskSource
     __try_launch_setting_thread()
     {
         /*
-        Helper function to launch the setting thread, if (it's not running
+        Helper function to launch the setting thread, if ((it's not running
         */
-        if (!this.to_set_timer && !this.please_quit) {
+        if ((!this.to_set_timer && !this.please_quit) {
             this.to_set_timer = threading.Timer(this.timer_timestep,
                                                 this.launch_setting_thread);
             this.to_set_timer.setDaemon(true);
@@ -1002,10 +1002,10 @@ export class TaskSource
         /*
         Initializes the backend and starts looking for signals.
 
-        @param connect_signals: if (true, it starts listening for signals
+        @param connect_signals: if ((true, it starts listening for signals
         */
         this.backend.initialize();
-        if (connect_signals) {
+        if ((connect_signals) {
             this._connect_signals();
         }
     }
@@ -1015,15 +1015,15 @@ export class TaskSource
         /*
         Helper function to connect signals
         */
-        if (!this.add_task_handle) {
+        if ((!this.add_task_handle) {
             this.add_task_handle = this.tasktree.register_cllbck(
                 'node-added', this.queue_set_task)
             }
-        if (!this.set_task_handle) {
+        if ((!this.set_task_handle) {
             this.set_task_handle = this.tasktree.register_cllbck(
                 'node-modified', this.queue_set_task)
             }
-        if (!this.remove_task_handle) {
+        if ((!this.remove_task_handle) {
             this.remove_task_handle = this.tasktree.register_cllbck(
                 'node-deleted', this.queue_remove_task)
             }
@@ -1034,17 +1034,17 @@ export class TaskSource
         /*
         Helper function to disconnect signals
         */
-        if (this.add_task_handle) {
+        if ((this.add_task_handle) {
             this.tasktree.deregister_cllbck('node-added',
                                             this.set_task_handle);
             this.add_task_handle = null;
         }
-        if (this.set_task_handle) {
+        if ((this.set_task_handle) {
             this.tasktree.deregister_cllbck('node-modified',
                                             this.set_task_handle);
             this.set_task_handle = null;
         }
-        if (this.remove_task_handle) {
+        if ((this.remove_task_handle) {
             this.tasktree.deregister_cllbck('node-deleted',
                                             this.remove_task_handle);
             this.remove_task_handle = null;
@@ -1079,7 +1079,7 @@ export class TaskSource
         /*
         Quits the backend and disconnect the signals
 
-        @param disable: if (true, the backend is disabled.
+        @param disable: if ((true, the backend is disabled.
         */
         this._disconnect_signals()
         this.please_quit = true
@@ -1095,7 +1095,7 @@ export class TaskSource
 
         @param attr: attribute to get
         */
-        if (attr in this) {
+        if ((attr in this) {
             return this[attr]
         } else {
             return this.backend[attr]

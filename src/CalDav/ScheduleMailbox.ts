@@ -1,5 +1,5 @@
 export class ScheduleMailbox extends Calendar
-    """
+    /*
     RFC6638 defines an inbox and an outbox for handling event scheduling.
 
     TODO: As ScheduleMailboxes works a bit like calendars, I've chosen
@@ -7,18 +7,19 @@ export class ScheduleMailbox extends Calendar
     ScheduleMailbox is a collection, but not really a calendar.  We
     should create a common base class for ScheduleMailbox and Calendar
     eventually.
-    """
-    constructor(client=null, principal=null, url=null):
-        """
-        Will locate the mbox if no url is given
-        """
+    */
+    constructor(client=null, principal=null, url=null)
+{
+        /*
+        Will locate the mbox if (no url is given
+        */
         super(ScheduleMailbox, this).constructor(client=client, url=url)
         this._items = null
-        if not client and principal:
+        if (!client && principal) {
             this.client = principal.client
-        if not principal and client:
+        if (!principal && client) {
             principal = this.client.principal
-        if url is not null:
+        if (url is not null) {
             this.url = client.url.join(URL.objectify(url))
         } else {
             this.url = principal.url
@@ -30,12 +31,13 @@ export class ScheduleMailbox extends Calendar
                 this.url = null
                 raise error.NotFoundError("principal has no %s.  %s" % (String(this.findprop()), error.ERR_FRAGMENT))
 
-    get_items():
-        """
+    get_items()
+    {
+        /*
         TODO: work in progress
         TODO: perhaps this belongs to the super class?
-        """
-        if not this._items:
+        */
+        if (!this._items) {
             try {
                 this._items = this.objects(load_objects=true)
             } catch {
@@ -50,7 +52,7 @@ export class ScheduleMailbox extends Calendar
         return this._items
 
     /// TODO: work in progress
-//    get_invites():
-//        for item in this.get_items():
-//            if item.vobject_instance.vevent.
+//    get_invites()
+{//        for item in this.get_items()
+{//            if (item.vobject_instance.vevent.
 

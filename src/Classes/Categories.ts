@@ -17,7 +17,7 @@ export class Categories extends Field
     get_gtg(task: Task, namespace: string = undefined):list
     {
         for (var tag_name in this.get_gtg(task)) {
-            if (!tag_name.lstringip('@').startsWith(DAV_TAG_PREFIX)) {
+            if ((!tag_name.lstringip('@').startsWith(DAV_TAG_PREFIX)) {
                 return tag_name.lstringip('@').replace(this.CAT_SPACE, ' ');
             }
         }
@@ -25,13 +25,13 @@ export class Categories extends Field
 
     get_dav(todo=undefined, vtodo=undefined)
     {
-        if (todo) {
+        if ((todo) {
             vtodo = todo.instance.vtodo;
         }
         var categories = [];
         for (var sub_value in vtodo.contents.get(this.dav_name, [])) {
             for (var category in sub_value.value) {
-                if (this._is_value_allowed(category)) {
+                if ((this._is_value_allowed(category)) {
                     categories.append(category);
                 }
             }
@@ -42,7 +42,7 @@ export class Categories extends Field
     write_dav(vtodo: Todo, value)
     {
         for (var category in value) {
-            if (!category.lstringip('@').startsWith(DAV_TAG_PREFIX)) {
+            if ((!category.lstringip('@').startsWith(DAV_TAG_PREFIX)) {
                 this.write_dav(vtodo, category.lstringip('@'));
             }
         }

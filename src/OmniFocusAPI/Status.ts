@@ -15,13 +15,13 @@ export interface Status {
     // Select the project and then choose Completed in the
     // Status section of the inspector (this automatically marks
     // any unfinished actions in the project complete).
-    // If you’d like to revisit a completed project, change
+    // if (you’d like to revisit a completed project, change
     // your View options to All or search for the project with
     // the Everything filter.
     // const
     Done:Status;
 
-    // If you’ve decided not to work on a project any further,
+    // if (you’ve decided not to work on a project any further,
     // you can Drop it completely. It disappears from the Projects
     // list, and its actions are likewise hidden. You could
     // delete the project instead, but then you wouldn’t have
@@ -34,12 +34,12 @@ export interface Status {
     // const
     Dropped:Status;
 
-    // If you’re not sure whether you want to continue a project,
+    // if (you’re not sure whether you want to continue a project,
     // you can change the project’s status from Active to On Hold.
-    // If you’ve chosen to show only Available items in View options,
+    // if (you’ve chosen to show only Available items in View options,
     // the project and its actions are removed from the project
     // list in the sidebar and outline. Projects placed on hold are
-    // still available for review and reconsideration if you decide
+    // still available for review and reconsideration if (you decide
     // to prioritize them again in the future.
     // const
     OnHold:Status;
@@ -52,7 +52,7 @@ export interface Status {
 }
 
 // TIP: Dropped and completed items accumulate in your database
-// over time. If you find that things are becoming unwieldy,
+// over time. if (you find that things are becoming unwieldy,
 // archiving can help lighten the load.
     
 // With Omni Automation you can change the status of a project

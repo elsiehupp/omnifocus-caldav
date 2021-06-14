@@ -21,10 +21,10 @@ export class BaseElement extends Object
         this.attributes = {}
         value = String(value)
         this.value = null
-        if (name != null) {
+        if ((name != null) {
             this.attributes['name'] = name;
         }
-        if (value != null) {
+        if ((value != null) {
             this.value = value
         }
     }
@@ -36,7 +36,7 @@ export class BaseElement extends Object
     __str__() {
         var utf8 = etree.tostring(this.xmlelement(), encoding="utf-8",
                               xml_declaration=true, pretty_print=true)
-        if PY3:
+        if (PY3) {
             return String(utf8, 'utf-8')
         return this.xmlelement().tostring()
     }
@@ -44,10 +44,11 @@ export class BaseElement extends Object
     xmlelement()
     {
         root = etree.Element(this.tag, nsmap=nsmap)
-        if this.value is not null:
+        if (this.value is not null) {
             root.text = this.value
-        if len(this.attributes) > 0:
-            for k in list(this.attributes.keys()):
+        if (len(this.attributes) > 0) {
+            for k in list(this.attributes.keys())
+{
                 root.set(k, this.attributes[k])
         this.xmlchildren(root)
         return root
@@ -81,7 +82,7 @@ export class NamedBaseElement extends BaseElement
 
     xmlelement()
     {
-        if this.attributes.get('name') is null:
+        if (this.attributes.get('name') == null) {
             raise Exception("name attribute must be defined")
         return super(NamedBaseElement, this).xmlelement()
     }
@@ -90,7 +91,8 @@ export class NamedBaseElement extends BaseElement
 
 export class ValuedBaseElement extends BaseElement
 {
-    constructor(value=null):
+    constructor(value=null)
+{
         super(ValuedBaseElement, this).constructor(value=value)
 }
 
@@ -172,7 +174,7 @@ export class TextMatch extends ValuedBaseElement
     {
         super(value)
         this.attributes['collation'] = collation
-        if (negate) {
+        if ((negate) {
             this.attributes['negate-condition'] = "yes"
         }
     }
@@ -188,10 +190,10 @@ export class TimeRange extends BaseElement
         super()
         /// start and end should be an icalendar "date with UTC time",
         /// ref https://tools.ietf.org/html/rfc4791/section-9.9
-        if (start != null) {
+        if ((start != null) {
             this.attributes['start'] = toUtcDateString(start)
         }
-        if (end != null) {
+        if ((end != null) {
             this.attributes['end'] = toUtcDateString(end)
         }
     }
@@ -218,10 +220,10 @@ export class Expand extends BaseElement
     constructor(start, end=null)
     {
         super()
-        if (start != null) {
+        if ((start != null) {
             this.attributes['start'] = toUtcDateString(start)
         }
-        if (end != null) {
+        if ((end != null) {
             this.attributes['end'] = toUtcDateString(end)
         }
     }

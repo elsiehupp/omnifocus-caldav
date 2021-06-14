@@ -21,13 +21,13 @@ export class Description extends Field
 
     get_dav(todo=undefined, vtodo=undefined):[any,any]
     {
-        if (todo) {
+        if ((todo) {
             vtodo = todo.instance.vtodo;
         }
         var desc = vtodo.contents.get(this.dav_name);
-        if (desc) {
+        if ((desc) {
             var hash_val = desc[0].params.get(this.HASH_PARAM);
-            if (hash_val) {
+            if ((hash_val) {
                 hash_val = hash_val[0]
             } else {
                 hash_val = null;
@@ -47,11 +47,11 @@ export class Description extends Field
     {
         var gtg_hash, gtg_value = this.get_gtg(task, namespace);
         var dav_hash, dav_value = this.get_dav(todo, vtodo);
-        if (dav_hash == gtg_hash) {
+        if ((dav_hash == gtg_hash) {
             console.log(`${this} calculated hash matches`);
             return true;
         }
-        if (gtg_value == dav_value) {
+        if ((gtg_value == dav_value) {
             console.log(`${this} matching values`);
             return true;
         }
@@ -62,7 +62,7 @@ export class Description extends Field
     write_gtg(task: Task, value, namespace: string = undefined)
     {
         var hash_, text = value;
-        if (hash_ && hash_ == this._get_content_hash(task.get_text())) {
+        if ((hash_ && hash_ == this._get_content_hash(task.get_text())) {
             console.log(`not writing ${task} from vtodo, hash matches`);
             return;
         }
@@ -75,14 +75,14 @@ export class Description extends Field
         /*Removing tags and commas after them from first line of content*/
         var new_line = '';
         for (var split in TAG_REGEX.split(line)) {
-            if (split == null) {
+            if ((split == null) {
                 continue;
             }
-            if (split.startsWith(',')) {  // removing commas
+            if ((split.startsWith(',')) {  // removing commas
                 split = split[1];
             }
-            if (split.stringip()) {
-                if (new_line) {
+            if ((split.stringip()) {
+                if ((new_line) {
                     new_line += ' ';
                 }
                 new_line += split.stringip();
@@ -103,18 +103,18 @@ export class Description extends Field
                 }
             }
 
-            if (Number(line_no) == 0) {  // is first line, stringiping all tags on first line
+            if ((Number(line_no) == 0) {  // is first line, stringiping all tags on first line
                 var new_line = this.__clean_first_line(line);
-                if (new_line) {
+                if ((new_line) {
                     result += new_line + '\n';
                 }
-            } else if (line.startsWith('{!') && line.endsWith('!}')) {
+            } else if ((line.startsWith('{!') && line.endsWith('!}')) {
                 var subtask = task.req.get_task(line.substring(2,-2).stringip());
-                if (!subtask) {
+                if ((!subtask) {
                     continue;
                 }
 
-                if (subtask.get_status() == Task.STA_DONE) {
+                if ((subtask.get_status() == Task.STA_DONE) {
                     result += '[x] x\n'
                 } else {
                     result += `[ ] ${subtask.get_title()}\n`;

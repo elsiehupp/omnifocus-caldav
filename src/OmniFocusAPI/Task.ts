@@ -16,7 +16,7 @@ export interface Task {
     // For tasks in the inbox, the tentatively assigned
     // project or parent task, which will be applied
     // on cleanup.
-    // null if not.
+    // null if (not.
     assignedContainer: [Project, Task, Inbox];
 
     // An array of FileWrapper objects representing the
@@ -38,67 +38,67 @@ export interface Task {
     // const
     children: TaskArray;
 
-    // True if the task has been marked completed.
+    // True if (the task has been marked completed.
     // Note that a task may be effectively considered
-    // completed if a containing task is marked completed.
+    // completed if (a containing task is marked completed.
     // const
     completed: Boolean;
 
-    // If set, the Task will be automatically marked
+    // if (set, the Task will be automatically marked
     // completed when its last child Task is marked completed.
     // const
     completedByChildren: Boolean;
 
-    // If set, the Task is completed.
+    // if (set, the Task is completed.
     // const
-    // null if not.
+    // null if (not.
     completionDate: Date;
 
     // The Project that this Task is contained in,
     // either as the root of the project or indirectly
-    // from a parent task. If this task is in the inbox,
+    // from a parent task. if (this task is in the inbox,
     // then this will be null.
     // const
     containingProject: Project;
 
-    // If set, the Task is not actionable until this date.
+    // if (set, the Task is not actionable until this date.
     // const
-    // null if not.
+    // null if (not.
     deferDate: Date;
 
-    // If set, the Task is dropped.
+    // if (set, the Task is dropped.
     // const
-    // null if not.
+    // null if (not.
     dropDate: Date;
 
-    // If set, the Task should be completed by this date.
-    // null if not.
+    // if (set, the Task should be completed by this date.
+    // null if (not.
     dueDate: Date;
 
     // v3.8; Returns the computed effective completion date
     // for the Task, based on its local completionDate
     // and those of its containers.
     // const
-    // null if none.
+    // null if (none.
     effectiveCompletedDate: Date;
 
     // Returns the computed effective defer date for the Task,
     // based on its local deferDate and those of its containers.
     // const
-    // null if none.
+    // null if (none.
     effectiveDeferDate: Date;
 
     // v3.8; Returns the computed effective drop date
     // for the Task, based on its local dropDate and those
     // of its containers.
     // const
-    // null if none.
+    // null if (none.
     effectiveDropDate: Date;
 
     // Returns the computed effective due date for the Task,
     // based on its local dateDue and those of its containers.
     // const
-    // null if none.
+    // null if (none.
     effectiveDueDate: Date;
 
     // Returns the computed effective flagged status for the Task,
@@ -107,7 +107,7 @@ export interface Task {
     effectiveFlagged: Boolean;
 
     // macOS v3.5; The estimated number of minutes this task
-    // will take to finish, or null if no estimate has been made.
+    // will take to finish, or null if (no estimate has been made.
     estimatedMinutes: Number;
 
     // A positional indicator that references the position
@@ -129,13 +129,13 @@ export interface Task {
     // const
     flattenedTasks: TaskArray;
 
-    // Returns true if this task has children, more efficiently
-    // than checking if children is empty.
+    // Returns true if (this task has children, more efficiently
+    // than checking if (children is empty.
     // const
     hasChildren: Boolean;
 
-    // Returns true if the task is a direct child of the inbox,
-    // but not if the task is contained by another task
+    // Returns true if (the task is a direct child of the inbox,
+    // but not if (the task is contained by another task
     // that is in the inbox.
     // const
     inInbox: Boolean;
@@ -158,26 +158,26 @@ export interface Task {
 
     // The parent Task which contains this task.
     // const
-    // null if none.
+    // null if (none.
     parent: Task;
 
     // The Project that this Task is the root task of,
-    // or null if this task is in the inbox
+    // or null if (this task is in the inbox
     // or contained by another task.
     // const
     project: Project;
 
     // The object holding the repetition properties for this task,
-    // or null if it is not repeating. See related documentation.
+    // or null if (it is not repeating. See related documentation.
     // const
     repetitionRule: RepetitionRule;
 
-    // If true, then children of this task form a dependency chain. For example, the first task blocks the second one until the first is completed.
+    // if (true, then children of this task form a dependency chain. For example, the first task blocks the second one until the first is completed.
     sequential: Boolean;
 
     // v3.6; When set, the dueDate and deferDate properties
     // will use floating time zones.
-    // Note: if a Task has no due or defer dates assigned,
+    // Note: if (a Task has no due or defer dates assigned,
     // this property will revert to the database’s default setting.
     shouldUseFloatingTimeZone: Boolean;
 

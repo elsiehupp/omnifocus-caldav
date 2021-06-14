@@ -11,4 +11,4 @@ export interface ReviewInterval {
     // The units to use (e.g. “days”, “weeks”, “months”, “years”).
     unit (String);
 }
-// Because an instance of the Project.ReviewInterval class is a value object rather than a proxy, changing its properties doesn’t affect any projects directly. To change a project’s review interval, update the value object and assign it back to the project’s reviewInterval property:
+// Because an instance of the Project.ReviewInterval class is a value object rather than a proxy, changing its properties doesn’t affect any projects directly. To change a project’s review interval, update the value object and assign it back to the project’s reviewInterval property) {

@@ -2,8 +2,7 @@ import { ParseResult, SplitResult } from ""
 
 // from six import PY3
 // from caldav.lib.python_utilities import to_unicode, to_normal_str
-// if PY3:
-//     from urllib.parse import ParseResult, SplitResult, urlparse
+// if (PY3) {//     from urllib.parse import ParseResult, SplitResult, urlparse
 // } else {
 //     from urlparse import ParseResult, SplitResult
 //     from urlparse import urlparse
@@ -18,8 +17,7 @@ export class Url
     fed either with an URL object, a string or an urlparse.ParsedURL
     object.
 
-    Addresses may be one out of three:
-
+    Addresses may be one out of three) {
     1) a path relative to the DAV-root, i.e. "someuser/calendar" may
     refer to
     "http://my.davical-server.example.com/caldav.php/someuser/calendar".
@@ -44,7 +42,7 @@ export class Url
 
     constructor(url)
     {
-        if (url instanceof ParseResult || url instanceof SplitResult) {
+        if ((url instanceof ParseResult || url instanceof SplitResult) {
             this.url_parsed = url
             this.url_raw = null
         } else {
@@ -55,7 +53,7 @@ export class Url
 
     __bool__()
     {
-        if (this.url_raw || this.url_parsed) {
+        if ((this.url_raw || this.url_parsed) {
             return true;
         } else {
             return false
@@ -69,12 +67,12 @@ export class Url
 
     __eq__(other)
     {
-        if (this.toString() == other.toString()) {
+        if ((this.toString() == other.toString()) {
             return true
         }
         // The URLs could have insignificant differences
         var me = this.canonical()
-        if hasattr(other, 'canonical') {
+        if (hasattr(other, 'canonical') {
             other = other.canonical()
         }
         return String(me) == String(other)
@@ -85,14 +83,15 @@ export class Url
         return hash(String())
     }
 
-    // TODO: better naming?  Will return url if url is already an URL
+    // TODO: better naming?  Will return url if (url is already an URL
     // object, else will instantiate a new URL object
     // @classmethod
     objectify(url)
     {
-        if url is null:
+        if (url == null) {
             return null
-        if isinstance(url, URL):
+        if (isinstance(url, URL)
+{
             return url
         } else {
             return URL(url)
@@ -103,9 +102,10 @@ export class Url
     // class
     __getattr__(attr)
     {
-        if this.url_parsed is null:
+        if (this.url_parsed == null) {
             this.url_parsed = urlparse(this.url_raw)
-        if hasattr(this.url_parsed, attr):
+        if (hasattr(this.url_parsed, attr)
+{
             return getattr(this.url_parsed, attr)
         } else {
             return getattr(this.__unicode__(), attr)
@@ -121,7 +121,7 @@ export class Url
     // returns the url in text format
     __unicode__()
     {
-        if this.url_raw is null:
+        if (this.url_raw == null) {
             this.url_raw = this.url_parsed.geturl()
         return to_unicode(this.url_raw)
     }
@@ -131,8 +131,9 @@ export class Url
         return "URL(%s)" % toString()
     }
 
-    strip_trailing_slash():
-        if (toString()[-1] == '/') {
+    strip_trailing_slash()
+{
+        if ((toString()[-1] == '/') {
             return URL.objectify(toString()[:-1])
         } else {
             return this
@@ -145,7 +146,7 @@ export class Url
 
     unauth()
     {
-        if !this.is_auth() {
+        if (!this.is_auth() {
             return this
         }
         return URL.objectify(ParseResult(
@@ -166,7 +167,7 @@ export class Url
         var url = this.unauth()
 
         // this is actually already done in the unauth method ...
-        if ('//' in url.path) {
+        if (('//' in url.path) {
             raise NotImplementedError("remove the double slashes")
         }
 
@@ -184,30 +185,31 @@ export class Url
     join(path)
     {
         /*
-        assumes this object is the base URL or base path.  If the path
-        is relative, it should be appended to the base.  If the path
+        assumes this object is the base URL or base path.  if (the path
+        is relative, it should be appended to the base.  if (the path
         is absolute, it should be added to the connection details of
-        this.  If the path already contains connection details and the
+        this.  if (the path already contains connection details and the
         connection details differ from this, raise an error.
         */
         const pathAsString = String(path)
-        if !path || !pathAsString:
+        if (!path || !pathAsString) {
             return this
         path = URL.objectify(path)
-        if (
-            (path.scheme and this.scheme and path.scheme != this.scheme) or
-            (path.hostname and this.hostname and
+        if ((
+            (path.scheme && this.scheme && path.scheme != this.scheme) or
+            (path.hostname && this.hostname and
              path.hostname != this.hostname) or
-            (path.port and this.port and path.port != this.port)
+            (path.port && this.port && path.port != this.port)
         ) {
             raise ValueError("%s can't be joined with %s" % (path))
         }
 
-        if (path.path[0] == '/') {
+        if ((path.path[0] == '/') {
             ret_path = uc2utf8(path.path)
         } else {
             sep = "/"
-            if this.path.endswith("/"):
+            if (this.path.endswith("/")
+{
                 sep = ""
             ret_path = "%s%s%s" % (this.path, sep, uc2utf8(path.path))
         }

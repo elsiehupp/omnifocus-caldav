@@ -15,7 +15,7 @@ export class DavClient
                  {
         /*
         Sets up a HTTPConnection object towards the server in the url.
-        Parameters:
+        Parameters) {
          * url: A fully qualified url: `scheme://user:pass@hostname:port`
          * proxy: A string defining a proxy server: `hostname:port`
          * username and password should be passed as arguments or in the URL
@@ -29,17 +29,17 @@ export class DavClient
         this.url = URL.objectify(url)
 
         // Prepare proxy info
-        if proxy is not null:
+        if (proxy is not null) {
             this.proxy = proxy
             // requests library expects the proxy url to have a scheme
-            if re.match('^.*://', proxy) is null:
+            if (re.match('^.*://', proxy) == null) {
                 this.proxy = this.url.scheme + '://' + proxy
 
             // add a port is one is not specified
-            // TODO: this will break if using basic auth and embedding
+            // TODO: this will break if (using basic auth and embedding
             // username:password in the proxy URL
             p = this.proxy.split(":")
-            if len(p) == 2:
+            if (len(p) == 2) {
                 this.proxy += ':8080'
             log.debug("init - proxy: %s" % (this.proxy))
 
@@ -47,7 +47,7 @@ export class DavClient
         this.headers = {"User-Agent": "Mozilla/5.0",
                         "Content-Type": "text/xml",
                         "Accept": "text/xml, text/calendar"}
-        if this.url.username is not null:
+        if (this.url.username is not null) {
             username = unquote(this.url.username)
             password = unquote(this.url.password)
 
@@ -74,7 +74,7 @@ export class DavClient
         higher-level methods for dealing with the principals
         calendars.
         */
-        if not this._principal:
+        if (!this._principal) {
             this._principal = Principal(client=this, *largs, **kwargs)
         return this._principal
     }
@@ -87,7 +87,7 @@ export class DavClient
 
         No network traffic will be initiated by this method.
 
-        If you don't know the URL of the calendar, use
+        if (you don't know the URL of the calendar, use
         client.principal().calendar(...) instead, or
         client.principal().calendars()
         */
@@ -125,7 +125,7 @@ export class DavClient
         /*
         Send a propfind request.
 
-        Parameters:
+        Parameters) {
          * url: url for the root of the propfind.
          * props = (xml request), properties we want
          * depth: maximum recursion depth
@@ -142,7 +142,7 @@ export class DavClient
         /*
         Send a proppatch request.
 
-        Parameters:
+        Parameters) {
          * url: url for the root of the propfind.
          * body: XML propertyupdate request
          * dummy: compatibility parameter
@@ -158,7 +158,7 @@ export class DavClient
         /*
         Send a report request.
 
-        Parameters:
+        Parameters) {
          * url: url for the root of the propfind.
          * query: XML request
          * depth: maximum recursion depth
@@ -167,7 +167,7 @@ export class DavClient
          * DavResponse
         */
         return this.request(url, "REPORT", query,
-                            {'Depth': String(depth), "Content-Type":
+                            {'Depth': String(depth), "Content-Type") {
                              "application/xml; charset=\"utf-8\""})
     }
 
@@ -185,7 +185,7 @@ export class DavClient
         DAVClient class can be used for vCards and other WebDAV
         purposes.
 
-        Parameters:
+        Parameters) {
          * url: url for the root of the mkcol
          * body: XML request
          * dummy: compatibility parameter
@@ -201,7 +201,7 @@ export class DavClient
         /*
         Send a mkcalendar request.
 
-        Parameters:
+        Parameters) {
          * url: url for the root of the mkcalendar
          * body: XML request
          * dummy: compatibility parameter
@@ -250,7 +250,7 @@ export class DavClient
         url = URL.objectify(url)
 
         proxies = null
-        if this.proxy is not null:
+        if (this.proxy is not null) {
             proxies = {url.scheme: this.proxy}
             log.debug("using proxy - %s" % (proxies))
 
@@ -259,14 +259,14 @@ export class DavClient
 
         combined_headers = dict(this.headers)
         combined_headers.update(headers)
-        if body is null or body == "" and "Content-Type" in combined_headers:
+        if (body == null or body == "" && "Content-Type" in combined_headers) {
             del combined_headers["Content-Type"]
 
         log.debug(
             "sending request - method={0}, url={1}, headers={2}\nbody:\n{3}"
             .format(method, url, combined_headers, to_normal_String(body)))
         auth = null
-        if this.auth is null and this.username is not null:
+        if (this.auth == null && this.username is not null) {
             auth = requests.auth.HTTPDigestAuth(this.username, this.password)
         } else {
             auth = this.auth
@@ -279,8 +279,8 @@ export class DavClient
         response = DavResponse(r)
 
 
-        // If server supports BasicAuth and not DigestAuth, let's try again:
-        if response.status == 401 and this.auth is null and auth is not null:
+        // if (server supports BasicAuth and not DigestAuth, let's try again) {
+        if (response.status == 401 && this.auth == null && auth is not null) {
             auth = requests.auth.HTTPBasicAuth(this.username, this.password)
             r = this.session.request(method, url, data=to_wire(body),
                                  headers=combined_headers, proxies=proxies,
@@ -290,8 +290,8 @@ export class DavClient
         this.auth = auth
 
         // this is an error condition the application wants to know
-        if response.status == requests.codes.forbidden or \
-                response.status == requests.codes.unauthorized:
+        if (response.status == requests.codes.forbidden or \
+                response.status == requests.codes.unauthorized) {
             ex = error.AuthorizationError()
             ex.url = url
             /// ref https://github.com/python-caldav/caldav/issues/81,
@@ -299,12 +299,12 @@ export class DavClient
             /// observed
             try {
                 ex.reason = response.reason
-            } catch (AttributeError:
+            } catch (AttributeError) {
                 ex.reason = "null given"
             raise ex
 
         // let's save the auth object and remove the user/pass information
-        if not this.auth and auth:
+        if (!this.auth && auth) {
             this.auth = auth
             del this.username
             del this.password

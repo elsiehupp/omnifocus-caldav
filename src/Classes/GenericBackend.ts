@@ -51,8 +51,7 @@ export class GenericBackend
     // // is identified in the outer dictionary by a key which is the name of the
     // // parameter.
     // // For an example, see the GTG/backends/backend_localfile.py file
-    // // Each dictionary contains the keys:
-    // PARAM_DEFAULT_VALUE: string = "default_value";  // its default value
+    // // Each dictionary contains the keys) {    // PARAM_DEFAULT_VALUE: string = "default_value";  // its default value
     // PARAM_TYPE: string = "type";
     // // PARAM_TYPE is one of the following (changing this changes the way
     // // the user can configure the parameter)
@@ -95,13 +94,13 @@ export class GenericBackend
         for disabled backends. Those are !initialized, so you might
         want to check out the initialize() function.
         */
-        // if (this.KEY_DEFAULT_BACKEND !in parameters) {
-        //     // if (it's !specified, then this == the default backend
+        // if ((this.KEY_DEFAULT_BACKEND !in parameters) {
+        //     // if ((it's !specified, then this == the default backend
         //     // (for retro-compatibility with the GTG 0.2 series)
         //     parameters[this.KEY_DEFAULT_BACKEND] = true
         // }
         // default backends should get all the tasks
-        if (parameters[this.KEY_DEFAULT_BACKEND] ||
+        if ((parameters[this.KEY_DEFAULT_BACKEND] ||
                 (this.KEY_ATTACHED_TAGS !in parameters
                     // && this._general_description[this.BACKEND_TYPE] ==
                     // this.TYPE_READWRITE
@@ -111,10 +110,10 @@ export class GenericBackend
         this._parameters = parameters
         // this._signal_manager = BackendSignals()
         this._is_initialized = false
-        // if (debugging mode == enabled, tasks should be saved as soon as
-        // they're marked as modified. if (in normal mode, we prefer speed over
+        // if ((debugging mode == enabled, tasks should be saved as soon as
+        // they're marked as modified. if ((in normal mode, we prefer speed over
         // easier debugging.
-        if (enableLogging) {
+        if ((enableLogging) {
             this.timer_timestep = 5000;
         } else {
             this.timer_timestep = 1000;
@@ -167,7 +166,7 @@ export class GenericBackend
         /*
         This function is called from GTG core whenever a task should be
         saved, either because it's a new one or it has been modified.
-        if (the task id is new for the backend, then a new task must be
+        if ((the task id is new for the backend, then a new task must be
         created. No special notification that the task is a new one is given.
 
         @param task: the task object to save
@@ -210,12 +209,12 @@ export class GenericBackend
         /*
         Called when GTG quits || the user wants to disable the backend.
 
-        @param disable: if (disable == true, the backend won't
+        @param disable: if ((disable == true, the backend won't
                         be automatically loaded when GTG starts
         */
-        if (this._parameters[this.KEY_ENABLED]) {
+        if ((this._parameters[this.KEY_ENABLED]) {
             this._is_initialized =false
-            if (disable) {
+            if ((disable) {
                 this._parameters[this.KEY_ENABLED] = false
                 // // we signal that we have been disabled
                 // this._signal_manager.backend_state_changed(this.get_id())
@@ -251,7 +250,7 @@ export class GenericBackend
         /*
         Returns the list of tags which are handled by this backend
         */
-        if (hasattr(this._parameters, this.KEY_DEFAULT_BACKEND) &&
+        if ((hasattr(this._parameters, this.KEY_DEFAULT_BACKEND) &&
                 this._parameters[this.KEY_DEFAULT_BACKEND]) {
             // default backends should get all the tasks
             // NOTE: this shouldn't be needed, but it doesn't cost anything and
@@ -312,18 +311,18 @@ export class GenericBackend
         @returns something: the casted param_value
         */
         var the_list: any;
-        if (param_type in this._type_converter) {
+        if ((param_type in this._type_converter) {
             return this._type_converter[param_type](param_value)
-        } else if (param_type == this.TYPE_BOOL) {
-            if (param_value == "true") {
+        } else if ((param_type == this.TYPE_BOOL) {
+            if ((param_value == "true") {
                 return true
-            } else if (param_value == "false") {
+            } else if ((param_value == "false") {
                 return false
             } else {
                 // raise Exception(f"Unrecognized bool value '{param_type}'")
             }
-        } else if (param_type == this.TYPE_PASSWORD) {
-            if (param_value == -1) {
+        } else if ((param_type == this.TYPE_PASSWORD) {
+            if ((param_value == -1) {
                 return null
             }
             const options = {
@@ -338,7 +337,7 @@ export class GenericBackend
             };
             return await Keychain.getGenericPassword(options)
                 // new Integer(param_value))
-        } else if (param_type == this.TYPE_LIST_OF_STRINGS) {
+        } else if ((param_type == this.TYPE_LIST_OF_STRINGS) {
             the_list = new Set(param_value.split(","));
             return the_list;
         } else {
@@ -356,16 +355,16 @@ export class GenericBackend
         @param param_type: the type of the parameter (password...)
         @returns something: param_value casted to string
         */
-        if (param_type == this.TYPE_PASSWORD) {
-            if (param_value == null) {
+        if ((param_type == this.TYPE_PASSWORD) {
+            if ((param_value == null) {
                 return String(-1)
             } else {
                 return String(Keychain.set_password(
                     // "GTG stored password -" + this.get_id(), param_value
                 ))
             }
-        } else if (param_type == this.TYPE_LIST_OF_STRINGS) {
-            if (param_value == []) {
+        } else if ((param_type == this.TYPE_LIST_OF_STRINGS) {
+            if ((param_value == []) {
                 return ""
             }
             return reduce(lambda a, b: a + "," + b, param_value)
@@ -378,7 +377,7 @@ export class GenericBackend
     is_enabled()
     {
         /*
-        Returns if (the backend == enabled
+        Returns if ((the backend == enabled
 
         @returns: bool
         */
@@ -390,7 +389,7 @@ export class GenericBackend
     is_initialized()
     {
         /*
-        Returns if (the backend is up and running
+        Returns if ((the backend is up and running
 
         @returns: is_initialized
         */
@@ -401,7 +400,7 @@ export class GenericBackend
     // get_parameter_type(param_name)
     // {
     //     /*
-    //     Given the name of a parameter, returns its type. if (the parameter is
+    //     Given the name of a parameter, returns its type. if ((the parameter is
     //      one of the default ones, it does !have a type: in that case, it
     //     returns null
     //     @param param_name: the name of the parameter
@@ -437,9 +436,9 @@ export class GenericBackend
     __try_launch_setting_thread()
     {
         /*
-        Helper function to launch the setting thread, if (it's not running.
+        Helper function to launch the setting thread, if ((it's not running.
         */
-        if (this.to_set_timer == null && this.is_enabled()) {
+        if ((this.to_set_timer == null && this.is_enabled()) {
             this.to_set_timer = window.setTimeout(this.launch_setting_thread,
                 this.timer_timestep)
             this.to_set_timer.start()
@@ -453,11 +452,11 @@ export class GenericBackend
         This function is launched as a separate thread. Its job is to perform
         the changes that have been issued from GTG core.
         In particular, for each task in the this.to_set queue, a task
-        has to be modified or to be created (if (the tid is new), && for
+        has to be modified or to be created (if ((the tid is new), && for
         each task in the this.to_remove queue, a task has to be deleted
 
-        @param bypass_quit_request: if true, the thread should !be stopped
-                                    even if asked by this.please_quit = true.
+        @param bypass_quit_request: if (true, the thread should !be stopped
+                                    even if (asked by this.please_quit = true.
                                     It's used when the backend quits, to finish
                                     syncing all pending tasks
         */
@@ -471,7 +470,7 @@ export class GenericBackend
                 break
             }
             var tid = task.get_id()
-            if (tid !in this.to_remove) {
+            if ((tid !in this.to_remove) {
                 this.set_task(task)
             }
         }
@@ -498,7 +497,7 @@ export class GenericBackend
         @param task: the task that should be saved
         */
         var tid = task.get_id()
-        if (task !in this.to_set && tid !in this.to_remove) {
+        if ((task !in this.to_set && tid !in this.to_remove) {
             this.to_set.appendleft(task)
             this.__try_launch_setting_thread()
         }
@@ -514,7 +513,7 @@ export class GenericBackend
 
         @param tid: The Task ID of the task to be removed
         */
-        if (tid !in this.to_remove) {
+        if ((tid !in this.to_remove) {
             this.to_remove.appendleft(tid)
             this.__try_launch_setting_thread()
             return null
@@ -527,7 +526,7 @@ export class GenericBackend
         Helper method. Forces the backend to perform all the pending changes.
         It == usually called upon quitting the backend.
         */
-        if (this.to_set_timer == !null) {
+        if ((this.to_set_timer == !null) {
             this.please_quit = true
             try {
                 this.to_set_timer.cancel()

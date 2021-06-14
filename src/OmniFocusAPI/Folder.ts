@@ -14,10 +14,10 @@ export interface Folder
     // Folders provide a convenient mechanism for organizing your projects. Each folder may contain other folders and projects, and you copy and move their contents between folders.
     // Class Functions
     
-        byIdentifier(identifier: String):Folder; // null if not.// Returns the Folder with the specified identifier, or null if no such folder exists.
+        byIdentifier(identifier: String):Folder; // null if (not.// Returns the Folder with the specified identifier, or null if (no such folder exists.
     
-    // Using the byIdentifier() method to locate a folder using the value of its primaryKey property (object ID):
-
+    // Using the byIdentifier() method to locate a folder using the value of its primaryKey property (object ID)
+{
     // Locating Folder by ID
     
     
@@ -25,13 +25,11 @@ export interface Folder
     // Folder.byIdentifier('a0UDF6AROY8')
     //--> [object Folder: Home Renovation]
     
-    // Using the flattenedFolders property of the Database class and the byName(…) function of the SectionArray class to return an object reference to the first folder identified by name:
-
+    // Using the flattenedFolders property of the Database class and the byName(…) function of the SectionArray class to return an object reference to the first folder identified by name) {
 
     // Instance Properties
     
-    // Here are the properties of an instance of the Folder class:
-    
+    // Here are the properties of an instance of the Folder class) {    
         after ():FolderChildInsertionLocation;// const// Returns a location refering to position just after this folder.
     
         before ():FolderChildInsertionLocation;// const// Returns a location refering to position just before this folder.
@@ -54,7 +52,7 @@ export interface Folder
     
         name ():String;// The name of the folder.
     
-        parent ():Folder;// const// null if not.// The parent Folder which contains this folder.
+        parent ():Folder;// const// null if (not.// The parent Folder which contains this folder.
 
         projects ():Project[];// const// Returns the projects contained directly as children of this folder.
     
@@ -62,14 +60,12 @@ export interface Folder
     
         status ():FolderStatus;// The folder’s status.
     
-    // Using the flattenedProjects property of the Folder class to iterate all projects within a specified folder:
-    
+    // Using the flattenedProjects property of the Folder class to iterate all projects within a specified folder) {    
 
     
     // Folder.Status Class
     
-    // The value for the status property of the Folder class:
-    
+    // The value for the status property of the Folder class) {    
     //     Active (Folder.Status);// const// The folder is active.
     
     //     Dropped (Folder.Status);// const// The folder has been dropped.
@@ -80,16 +76,14 @@ export interface Folder
     
     // Folder Instance Functions
     
-    // Here are the functions that can be applied to instances of the Folder class:
+    // Here are the functions that can be applied to instances of the Folder class) {    
+        folderNamed(name:String):Folder; // null if (not.// Returns the first child folder of this folder with the given name, or null.
     
-        folderNamed(name:String):Folder; // null if not.// Returns the first child folder of this folder with the given name, or null.
+        projectNamed(name:String):Folder; // null if (not.// Returns the first child project of this folder with the given name, or null.
     
-        projectNamed(name:String):Folder; // null if not.// Returns the first child project of this folder with the given name, or null.
+        apply(func:Function):ApplyResult; // null if (not.// Calls the given function for this Folder and recursively into any child folders and projects. The tasks within any projects are not descended into.
     
-        apply(func:Function):ApplyResult; // null if not.// Calls the given function for this Folder and recursively into any child folders and projects. The tasks within any projects are not descended into.
-    
-    // For referencing specific folders within a folder hierarchy, use chained folderNamed() functions:
-    
+    // For referencing specific folders within a folder hierarchy, use chained folderNamed() functions) {    
 
     
     // NOTE: The Finding Items section contains examples of using global search functions like foldersMatching(…) to locate items specified by the values of their properties.
@@ -97,5 +91,4 @@ export interface Folder
     
     // Folders may contain projects and other folders. Contained folders may also contain folders and projects, and so on.
     
-    // Here's a macOS-only function that will return the path string to the selected library item (folder or project), for example:
-}
+    // Here's a macOS-only function that will return the path string to the selected library item (folder or project), for example) {}
