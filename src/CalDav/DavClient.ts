@@ -1,3 +1,8 @@
+import { Requests } from "./Requests"
+import { Calendar } from "./Calendar"
+import { Principal } from "./Principal"
+import { Url, objectify } from "./Url"
+
 export class DavClient
 {
     /*
@@ -9,6 +14,15 @@ export class DavClient
     */
     proxy = null
     url = null
+    session;
+    headers;
+    username;
+    password;
+    ssl_verify_cert;
+    auth;
+    ssl_cert;
+    principal;
+    support_list;
 
     constructor(url, proxy=null, username=null, password=null,
                  auth=null, ssl_verify_cert=true, ssl_cert=null)
@@ -23,33 +37,37 @@ export class DavClient
          ** ssl_verify_cert can be the path of a CA-bundle or false.
         */
 
-        this.session = requests.Session()
+        this.session = Requests.Session()
 
-        log.debug("url: " + String(url))
+        console.log("url: " + String(url))
         this.url = URL.objectify(url)
 
         // Prepare proxy info
-        if (proxy is not null) {
+        if (proxy != null) {
             this.proxy = proxy
             // requests library expects the proxy url to have a scheme
             if (re.match('^.*://', proxy) == null) {
                 this.proxy = this.url.scheme + '://' + proxy
+            }
 
             // add a port is one is not specified
             // TODO: this will break if (using basic auth and embedding
             // username:password in the proxy URL
-            p = this.proxy.split(":")
-            if (len(p) == 2) {
+            var p = this.proxy.split(":")
+            if (p.length == 2) {
                 this.proxy += ':8080'
-            log.debug("init - proxy: %s" % (this.proxy))
+            }
+            console.log(`init - proxy: ${this.proxy}`)
+        }
 
         // Build global headers
         this.headers = {"User-Agent": "Mozilla/5.0",
                         "Content-Type": "text/xml",
                         "Accept": "text/xml, text/calendar"}
-        if (this.url.username is not null) {
+        if (this.url.username != null) {
             username = unquote(this.url.username)
             password = unquote(this.url.password)
+        }
 
         this.username = username
         this.password = password
@@ -59,12 +77,12 @@ export class DavClient
         this.ssl_verify_cert = ssl_verify_cert
         this.ssl_cert = ssl_cert
         this.url = this.url.unauth()
-        log.debug("this.url: " + String(url))
+        console.log("this.url: " + String(url))
 
-        this._principal = null
+        this.principal = null
     }
 
-    principal(*largs, **kwargs)
+    setPrincipal(largs,kwargs)
     {
         /*
         Convenience method, it gives a bit more object-oriented feel to
@@ -74,9 +92,10 @@ export class DavClient
         higher-level methods for dealing with the principals
         calendars.
         */
-        if (!this._principal) {
-            this._principal = Principal(client=this, *largs, **kwargs)
-        return this._principal
+        if (!this.principal) {
+            this.principal = new Principal(this, largs)
+        }
+        return this.principal
     }
 
     calendar(kwargs)
@@ -91,11 +110,12 @@ export class DavClient
         client.principal().calendar(...) instead, or
         client.principal().calendars()
         */
-        return Calendar(client=this, kwargs)
+        return new Calendar(this, kwargs.client, kwargs.url, kwargs.parent, kwargs.name, kwargs.id, kwargs.props)
     }
 
-    check_dav_support()
+    checkDavSupport()
     {
+        var response;
         try {
             /// SOGo does not return the full capability list on the caldav
             /// root URL, and that's OK according to the RFC ... so apparently
@@ -105,18 +125,19 @@ export class DavClient
             response = this.optioNameSpace(this.principal().url)
         } catch {
             response = this.optioNameSpace(this.url)
+        }
         return response.headers.get('DAV', null)
     }
 
-    check_cdav_support()
+    checkCDavSupport()
     {
-        support_list = this.check_dav_support()
+        var support_list = this.checkDavSupport()
         return 'calendar-access' in support_list
     }
 
-    check_scheduling_support()
+    checkSchedulingSupport()
     {
-        support_list = this.check_dav_support()
+        var support_list = this.checkDavSupport()
         return 'calendar-auto-schedule' in support_list
     }
 
@@ -133,8 +154,7 @@ export class DavClient
         Returns
          * DavResponse
         */
-        return this.request(url or this.url, "PROPFIND", props,
-                            {'Depth': String(depth)})
+        return this.request(url || this.url, "PROPFIND", props, {'Depth': String(depth)})
     }
 
     proppatch(url, body, dummy=null)
@@ -166,9 +186,7 @@ export class DavClient
         Returns
          * DavResponse
         */
-        return this.request(url, "REPORT", query,
-                            {'Depth': String(depth), "Content-Type") {
-                             "application/xml; charset=\"utf-8\""})
+        return this.request(url, "REPORT", query, {'Depth': String(depth), "Content-Type": "application/xml; charset=\"utf-8\""})
     }
 
     mkcol(url, body, dummy=null)
@@ -210,6 +228,7 @@ export class DavClient
          * DavResponse
         */
         return this.request(url, "MKCALENDAR", body)
+    }
 
     put(url, body, headers={})
     {
@@ -247,52 +266,54 @@ export class DavClient
         */
 
         // objectify the url
-        url = URL.objectify(url)
+        url = objectify(url)
 
-        proxies = null
-        if (this.proxy is not null) {
-            proxies = {url.scheme: this.proxy}
-            log.debug("using proxy - %s" % (proxies))
+        var proxies = null
+        if (this.proxy != null) {
+            proxies = new Dict<url.scheme, this.proxy>()
+            console.log(`using proxy - ${proxies}`)
+        }
 
         // ensure that url is a normal string
         url = String(url)
 
-        combined_headers = dict(this.headers)
+        var combined_headers = Dict(this.headers)
         combined_headers.update(headers)
-        if (body == null or body == "" && "Content-Type" in combined_headers) {
-            del combined_headers["Content-Type"]
+        if (body == null || body == "" && "Content-Type" in combined_headers) {
+            combined_headers["Content-Type"] = null;
+        }
 
-        log.debug(
-            "sending request - method={0}, url={1}, headers={2}\nbody:\n{3}"
-            .format(method, url, combined_headers, to_normal_String(body)))
-        auth = null
-        if (this.auth == null && this.username is not null) {
-            auth = requests.auth.HTTPDigestAuth(this.username, this.password)
+        console.log(`sending request - method=${method}, url=${url}, headers=${combined_headers}\nbody:\n${to_normal_String(body)}`)
+        var auth = null
+        if (this.auth == null && this.username != null) {
+            auth = Requests.auth.HTTPDigestAuth(this.username, this.password)
         } else {
             auth = this.auth
+        }
 
-        r = this.session.request(
+        var r = this.session.request(
             method, url, data=to_wire(body),
             headers=combined_headers, proxies=proxies, auth=auth,
             verify=this.ssl_verify_cert, cert=this.ssl_cert, stream=false) /// TODO: optimize with stream=true maybe
-        log.debug("server responded with %i %s" % (r.status_code, r.reason))
-        response = DavResponse(r)
+        console.log("server responded with %i %s" % (r.status_code, r.reason))
+        var response = DavResponse(r)
 
 
         // if (server supports BasicAuth and not DigestAuth, let's try again) {
-        if (response.status == 401 && this.auth == null && auth is not null) {
+        if (response.status == 401 && this.auth == null && auth != null) {
             auth = requests.auth.HTTPBasicAuth(this.username, this.password)
             r = this.session.request(method, url, data=to_wire(body),
                                  headers=combined_headers, proxies=proxies,
                                  auth=auth, verify=this.ssl_verify_cert, cert=this.ssl_cert)
-            response = DavResponse(r)
+            response = new DavResponse(r)
+        }
 
         this.auth = auth
 
         // this is an error condition the application wants to know
-        if (response.status == requests.codes.forbidden or \
-                response.status == requests.codes.unauthorized) {
-            ex = error.AuthorizationError()
+        if (response.status == Requests.codes.forbidden ||
+                response.status == Requests.codes.unauthorized) {
+            var ex = error.AuthorizationError()
             ex.url = url
             /// ref https://github.com/python-caldav/caldav/issues/81,
             /// incidents with a response without a reason has been
@@ -301,13 +322,16 @@ export class DavClient
                 ex.reason = response.reason
             } catch (AttributeError) {
                 ex.reason = "null given"
+            }
             raise ex
+        }
 
         // let's save the auth object and remove the user/pass information
         if (!this.auth && auth) {
             this.auth = auth
-            del this.username
-            del this.password
+            this.username = null
+            this.password = null
+        }
 
         return response
 

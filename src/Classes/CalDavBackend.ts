@@ -80,7 +80,7 @@ export class CalDavDackend extends PeriodicImportBackend
     // @interruptible
     set_task(task: Task):void
     {
-        if ((this._parameters["is-first-run"] || !this._cache.initialized) {
+        if (this._parameters["is-first-run"] || !this._cache.initialized) {
             console.log("not loaded yet, ignoring set_task");
             return;
         }
@@ -92,11 +92,11 @@ export class CalDavDackend extends PeriodicImportBackend
     // @interruptible
     remove_task(tid: string):void
     {
-        if ((this._parameters["is-first-run"] || !this._cache.initialized) {
+        if (this._parameters["is-first-run"] || !this._cache.initialized) {
             console.log("not loaded yet, ignoring set_task");
             return;
         }
-        if ((!tid) {
+        if (!tid) {
             console.log("no task id passed to remove_task call, ignoring");
             return;
         }
@@ -123,9 +123,9 @@ export class CalDavDackend extends PeriodicImportBackend
             console.log(`Fetching todos from ${cal_url}`);
             this._import_calendar_todos(calendar, start, counts);
         }
-        if ((enableLogging) {
+        if (enableLogging) {
             for (var key in counts) {
-                if ((counts[key]) {
+                if (counts[key]) {
                     console.log(`LOCAL ${key} ${counts[key]} tasks`);
                 }
             }
@@ -142,15 +142,15 @@ export class CalDavDackend extends PeriodicImportBackend
             SEQUENCE.write_gtg(task, seq_value + 1, this.namespace);
         }
         var [todo, calendar] = this._get_todo_and_calendar(task);
-        if ((!calendar) {
+        if (!calendar) {
             console.log(`${task} has no calendar to be synced with`);
             return;
         }
-        if ((todo && todo.parent.url != calendar.url) {  // switch calendar
+        if (todo && todo.parent.url != calendar.url) {  // switch calendar
             this._remove_todo(UID_FIELD.get_dav(todo), todo);
             this._create_todo(task, calendar);
-        } else if ((todo) {  // found one, saving it
-            if ((!Translator.should_sync(task, this.namespace, todo)) {
+        } else if (todo) {  // found one, saving it
+            if (!Translator.should_sync(task, this.namespace, todo)) {
                 console.log('insufficient change, ignoring set_task call');
                 return;
             }
@@ -172,7 +172,7 @@ export class CalDavDackend extends PeriodicImportBackend
     _remove_task(tid: string):void
     {
         var todo = this._cache.get_todo(tid);
-        if ((todo) {
+        if (todo) {
             this._remove_todo(tid, todo);
         } else {
             console.log(`Could not find todo for task(${tid})`);
@@ -239,19 +239,19 @@ export class CalDavDackend extends PeriodicImportBackend
         var task:Task = null;
         var do_delete:boolean = false;
         task = calendar_tasks[uid];
-        if ((import_started_on < task.get_added_date()) {
+        if (import_started_on < task.get_added_date()) {
             return;
         }
         // if (first run, we're getting all task, including completed
         // if (we miss one, we delete it
-        if ((!this._cache.initialized) {
+        if (!this._cache.initialized) {
             do_delete = true;
         }
         // if (cache is initialized, it's normal we missed completed
         // task, but we should have seen active ones
-        else if ((task.get_status() == Status.Active) {
+        else if (task.get_status() == Status.Active) {
             var [__, calendar] = this._get_todo_and_calendar(task);
-            if ((calendar) {
+            if (calendar) {
                 console.log(`Couldn't find calendar for ${task}`);
                 return;
             }
@@ -265,7 +265,7 @@ export class CalDavDackend extends PeriodicImportBackend
                 return;
             }
         }
-        if ((do_delete) {  // the task was missing for a good reason
+        if (do_delete) {  // the task was missing for a good reason
             counts['deleted'] += 1
             this._cache.del_todo(uid)
             this.datastore.request_task_deletion(uid)
@@ -281,7 +281,7 @@ export class CalDavDackend extends PeriodicImportBackend
         var children_by_parent = new Set<Task>();
         for (var todo in todos) {
             parent = Translator.PARENT_FIELD.get_dav(todo);
-            if ((parent) {
+            if (parent) {
                 children_by_parent[parent[0]].append(todo);
             }
         }
@@ -290,7 +290,7 @@ export class CalDavDackend extends PeriodicImportBackend
             todos_by_uid = UID_FIELD.get_dav(todo)
         }
         for (var uid, children in children_by_parent.items()) {
-            if ((uid ! in todos_by_uid) {
+            if (uid ! in todos_by_uid) {
                 continue;
             }
             var vtodo = todos_by_uid[uid].instance.vtodo;
@@ -321,7 +321,7 @@ export class CalDavDackend extends PeriodicImportBackend
             this._cache.set_todo(todo, uid);
             // Updating and creating task according to todos
             task = this.datastore.get_task(uid);
-            if ((!task) {  // not found, creating it
+            if (!task) {  // not found, creating it
                 task = this.datastore.task_factory(uid);
                 Translator.fill_task(todo, task, this.namespace);
                 this.datastore.push_task(task);
@@ -330,8 +330,8 @@ export class CalDavDackend extends PeriodicImportBackend
                 var result = this._update_task(task, todo);
                 counts[result] += 1;
             }
-            if ((__debug__) {
-                if ((Translator.should_sync(task, this.namespace, todo)) {
+            if (__debug__) {
+                if (Translator.should_sync(task, this.namespace, todo)) {
                     console.log(`Shouldn't be diff for ${uid}`);
                 }
             }
@@ -340,10 +340,10 @@ export class CalDavDackend extends PeriodicImportBackend
 
     _update_task(task: Task, todo: Todo, force: bool = false)
     {
-        if ((!force) {
+        if (!force) {
             var task_seq = SEQUENCE.get_gtg(task, this.namespace)
             var todo_seq = SEQUENCE.get_dav(todo)
-            if ((task_seq >= todo_seq) {
+            if (task_seq >= todo_seq) {
                 return 'unchanged';
             }
         }
@@ -361,18 +361,18 @@ export class CalDavDackend extends PeriodicImportBackend
             loop += 1;
             for (var todo in todos) {
                 var uid = UID_FIELD.get_dav(todo);
-                if ((uid in known_todos) {
+                if (uid in known_todos) {
                     continue;
                 }
                 var parents = PARENT_FIELD.get_dav(todo);
-                if ((!parents  // no parent mean no relationship on build
+                if (!parents  // no parent mean no relationship on build
                         || parents[0] in known_todos  // already known parent
                         || this.datastore.get_task(uid)) {  // already known uid
                     yield todo;
                     known_todos.add(uid);
                 }
             }
-            if ((loop >= MAX_CALENDAR_DEPTH) {
+            if (loop >= MAX_CALENDAR_DEPTH) {
                 console.log(`Too deep, ${loop}th recursion isn't allowed`);
                 break;
             }
@@ -384,7 +384,7 @@ export class CalDavDackend extends PeriodicImportBackend
         /*Getting all tasks that has the calendar tag*/
         for (var uid in this.datastore.get_all_tasks()) {
             var task = this.datastore.get_task(uid);
-            if ((Categories.has_calendar_tag(task, calendar)) {
+            if (Categories.has_calendar_tag(task, calendar)) {
                 yield uid, task;
             }
         }
@@ -402,21 +402,21 @@ export class CalDavDackend extends PeriodicImportBackend
         var calendar = null;
         // lookup by task
         for (var __, calendar in this._cache.calendars) {
-            if ((Categories.has_calendar_tag(task, calendar)) {
+            if (Categories.has_calendar_tag(task, calendar)) {
                 console.log(`Found from task tag ${todo} and ${calendar}`);
                 return [todo, calendar];
             }
         }
         var cname = task['calendar_name']; //namespace=this.namespace
         var curl = task["calendar_url"]; //namespace=this.namespace
-        if ((curl || cname) {
+        if (curl || cname) {
             calendar = this._cache.get_calendar(cname, curl)
-            if ((calendar) {
+            if (calendar) {
                 console.log(`Found from task attr ${todo} and ${calendar}`);
                 return [todo, calendar];
             }
         }
-        if ((todo && todo.parent) {
+        if (todo && todo.parent) {
             console.log(`Found from todo ${todo} and ${todo.parent}`);
             return [todo, todo.parent];
         }

@@ -1,10 +1,18 @@
+import { CalendarObjectResource } from "./CalendarObjectResource"
+
 export class Todo extends CalendarObjectResource
+{
     /*
     The `Todo` object is used to represent a todo item (VTODO).
     A Todo-object can be completed.
     */
+    constructor()
+    {
+        super()
+    }
+
     complete(completion_timestamp=null)
-{
+    {
         /*Marks the task as completed.
 
         This method probably will do the wrong thing if (the task is a
@@ -19,9 +27,12 @@ export class Todo extends CalendarObjectResource
         */
         if (!completion_timestamp) {
             completion_timestamp = datetime.now()
-        if (!hasattr(this.vobject_instance.vtodo, 'status')
-{
+        }
+        if (!hasattr(this.vobject_instance.vtodo, 'status') {
             this.vobject_instance.vtodo.add('status')
+        }
         this.vobject_instance.vtodo.status.value = 'COMPLETED'
         this.vobject_instance.vtodo.add('completed').value = completion_timestamp
         this.save()
+    }
+}

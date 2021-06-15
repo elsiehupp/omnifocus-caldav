@@ -1,3 +1,7 @@
+import { Calendar } from "./Calendar"
+import { DavObject } from "./DavObject"
+import { DisplayName } from "./DisplayName"
+
 export class CalendarSet extends DavObject
 {
     /*
@@ -11,12 +15,12 @@ export class CalendarSet extends DavObject
         Returns) {
          * [Calendar(), ...]
         */
-        cals = []
+        var cals = new List()
 
-        data = this.children(cdav.Calendar.tag)
-        for c_url, c_type, c_name in data) {
-            cals.append(Calendar(this.client, c_url, parent=this, name=c_name))
-
+        var data = this.children(Calendar.tag)
+        for (var c_url, c_type, c_name in data) {
+            cals.add(new Calendar(this.client, c_url, parent=this, name=c_name))
+        }
         return cals
     }
 
@@ -57,16 +61,18 @@ export class CalendarSet extends DavObject
         */
         if (name && !cal_id)
             for (let calendar of this.calendars()) {
-                display_name = calendar.get_property(dav.DisplayName())
+                var display_name = calendar.get_property(new DisplayName())
                 if (display_name == name) {
                     return calendar
             }
         if (name && !cal_id) {
             raise error.NotFoundError("No calendar with name %s found under %s" % (name, this.url))
+        }
         if (!cal_id && !name) {
             return this.calendars()[0]
+        }
 
-        return Calendar(this.client, name=name, parent=this,
+        return new Calendar(this.client, name=name, parent=this,
                         url=this.url.join(quote(cal_id)+'/'), id=cal_id)
     }
 }

@@ -47,23 +47,23 @@ export abstract class PeriodicImportBackend extends GenericBackend
         next ones.
         */
         this.cancellation_point()
-        // if ((we're already importing, we queue a "urgent" import cycle after
+        // if (we're already importing, we queue a "urgent" import cycle after
         // this one. The feeling of responsiveness of the backend is improved.
-        if ((!this.running_iteration) {
+        if (!this.running_iteration) {
             try {
-                // if ((an iteration was scheduled, we cancel it
-                if ((this.import_timer) {
+                // if (an iteration was scheduled, we cancel it
+                if (this.import_timer) {
                     clearTimeout(this.import_timer)
                 }
             } finally {
                 // pass;
             }
-            if ((!this.is_enabled()) {
+            if (!this.is_enabled()) {
                 return
             }
 
             // we schedule the next iteration, just in case this one fails
-            if ((!this.urgent_iteration) {
+            if (!this.urgent_iteration) {
                 this.import_timer = window.setTimeout(
                     this.start_get_tasks,
                     this._parameters['period'] * 60.0 * 1000.0)
@@ -76,9 +76,9 @@ export abstract class PeriodicImportBackend extends GenericBackend
             this.cancellation_point()
 
             // execute eventual urgent iteration
-            // NOTE: this way, if ((the iteration fails, the whole periodic import
+            // NOTE: this way, if (the iteration fails, the whole periodic import
             //      cycle fails.
-            if ((this.urgent_iteration) {
+            if (this.urgent_iteration) {
                 this.urgent_iteration = false
                 this.start_get_tasks()
             }

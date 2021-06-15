@@ -1,6 +1,5 @@
 import { ParseResult, SplitResult } from ""
 
-// from six import PY3
 // from caldav.lib.python_utilities import to_unicode, to_normal_str
 // if (PY3) {//     from urllib.parse import ParseResult, SplitResult, urlparse
 // } else {
@@ -42,7 +41,7 @@ export class Url
 
     constructor(url)
     {
-        if ((url instanceof ParseResult || url instanceof SplitResult) {
+        if (url instanceof ParseResult || url instanceof SplitResult) {
             this.url_parsed = url
             this.url_raw = null
         } else {
@@ -51,9 +50,9 @@ export class Url
         }
     }
 
-    __bool__()
+    toBoolean()
     {
-        if ((this.url_raw || this.url_parsed) {
+        if (this.url_raw || this.url_parsed) {
             return true;
         } else {
             return false
@@ -67,7 +66,7 @@ export class Url
 
     __eq__(other)
     {
-        if ((this.toString() == other.toString()) {
+        if (this.toString() == other.toString()) {
             return true
         }
         // The URLs could have insignificant differences
@@ -90,11 +89,11 @@ export class Url
     {
         if (url == null) {
             return null
-        if (isinstance(url, URL)
-{
+        }
+        if (url instanceof Url) {
             return url
         } else {
-            return URL(url)
+            return new Url(url)
         }
     }
 
@@ -104,8 +103,8 @@ export class Url
     {
         if (this.url_parsed == null) {
             this.url_parsed = urlparse(this.url_raw)
-        if (hasattr(this.url_parsed, attr)
-{
+        }
+        if (hasattr(this.url_parsed, attr)) {
             return getattr(this.url_parsed, attr)
         } else {
             return getattr(this.__unicode__(), attr)
@@ -132,12 +131,13 @@ export class Url
     }
 
     strip_trailing_slash()
-{
-        if ((toString()[-1] == '/') {
+    {
+        if (toString()[-1] == '/') {
             return URL.objectify(toString()[:-1])
         } else {
             return this
         }
+    }
 
     is_auth()
     {
@@ -167,7 +167,7 @@ export class Url
         var url = this.unauth()
 
         // this is actually already done in the unauth method ...
-        if (('//' in url.path) {
+        if ('//' in url.path) {
             raise NotImplementedError("remove the double slashes")
         }
 
@@ -195,7 +195,7 @@ export class Url
         if (!path || !pathAsString) {
             return this
         path = URL.objectify(path)
-        if ((
+        if (
             (path.scheme && this.scheme && path.scheme != this.scheme) or
             (path.hostname && this.hostname and
              path.hostname != this.hostname) or
@@ -204,16 +204,16 @@ export class Url
             raise ValueError("%s can't be joined with %s" % (path))
         }
 
-        if ((path.path[0] == '/') {
+        if (path.path[0] == '/') {
             ret_path = uc2utf8(path.path)
         } else {
             sep = "/"
-            if (this.path.endswith("/")
-{
+            if (this.path.endswith("/") {
                 sep = ""
+            }
             ret_path = "%s%s%s" % (this.path, sep, uc2utf8(path.path))
         }
-        return URL(ParseResult(
+        return new Url(ParseResult(
             this.scheme or path.scheme, this.netloc or path.netloc, ret_path,
             path.params, path.query, path.fragment))
     }

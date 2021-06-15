@@ -55,7 +55,7 @@ export class Field
     {
         /*Will extract value from GTG.core.task.Task and set it to vTodo*/
         var value = this.get_gtg(task, namespace);
-        if ((this._is_value_allowed(value)) {
+        if (this._is_value_allowed(value)) {
             this.write_dav(vtodo, value);
         } else {
             this.clean_dav(vtodo);
@@ -65,11 +65,11 @@ export class Field
     get_dav(todo=null, vtodo=null)
     {
         /*Extract value from vTodo according to specified dav key name*/
-        if ((todo) {
+        if (todo) {
             vtodo = todo.instance.vtodo
         }
         var value = vtodo.contents.get(this.dav_name)
-        if ((value) {
+        if (value) {
             return value[0].value;
         }
     }
@@ -84,11 +84,11 @@ export class Field
                 namespace: string = null):void
     {
         /*Will extract value from vTodo and set it to GTG.core.task.Task*/
-        if ((!this.task_set_func_name) {
+        if (!this.task_set_func_name) {
             return;
         }
         var value = this.get_dav(todo);
-        if ((this._is_value_allowed(value)) {
+        if (this._is_value_allowed(value)) {
             this.write_gtg(task, value, namespace);
         }
     }
@@ -98,7 +98,7 @@ export class Field
         assert (todo != null || vtodo != null);
         var dav = this.get_dav(todo, vtodo);
         var gtg = this.get_gtg(task, namespace);
-        if ((dav != gtg) {
+        if (dav != gtg) {
             console.log(`${this} has differing values (DAV) ${gtg}!=${dav} (GTG)`);
             return false;
         }

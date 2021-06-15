@@ -1,5 +1,8 @@
 import { CalendarSet } from "./CalendarSet"
+import { CalendarUserAddressSet } from "./CalendarUserAddressSet"
 import { DavObject } from "./DavObject"
+import { CalendarHomeSet } from "./CalendarHomeSet"
+import { Href } from "./Href"
 import { ScheduleInbox } from "./ScheduleInbox"
 import { ScheduleOutbox } from "./ScheduleOutbox"
 
@@ -19,7 +22,7 @@ export class Principal extends DavObject
     is not stored anywhere)
     */
     url:any;
-    _calendar_home_set:any;
+    _calendar_home_set:CalendarHomeSet;
     cup:any;
     client:any;
     dav:any;
@@ -37,12 +40,12 @@ export class Principal extends DavObject
         if (url is not given, deduct principal path as well as calendar home set
         path from doing propfinds.
         */
-        super(client=client, url=url)
+        super(client, url, null, null, null, null, null)
         this._calendar_home_set = null
 
         if (url == null) {
             this.url = this.client.url
-            this.cup = this.get_property(dav.CurrentUserPrincipal())
+            this.cup = this.get_property(CurrentUserPrincipal())
             this.url = this.client.url.join(
                 URL.objectify(this.cup))
         }
@@ -94,7 +97,7 @@ export class Principal extends DavObject
     }
 
     // @calendar_home_set.setter
-    calendar_home_set(url)
+    calendar_home_set_from_url(url)
     {
         if (url instanceof CalendarSet) {
             this._calendar_home_set = url
@@ -159,13 +162,21 @@ export class Principal extends DavObject
         /*
         defined in RFC6638
         */
-        var addresses = this.get_property(cdav.CalendarUserAddressSet(), parse_props=false)
-        assert (![x for x in addresses if (x.tag != dav.Href().tag])
+        var addresses = this.get_property(CalendarUserAddressSet(), parse_props=false)
+        for (let x of addresses) {
+            if (x.tag != Href.tag) {
+                assert (!x)
+            }
+        }
         addresses = new List(addresses)
         /// possibly the preferred attribute is iCloud-specific.
         /// TODO: do more research on that
         addresses.sort(key=lambda x: -int(x.get('preferred', 0)))
-        return [x.text for x in addresses]
+        var ret = new List();
+        for (let x of addresses) {
+            ret.add(x.text)
+        }
+        return ret
     }
 
     schedule_inbox()

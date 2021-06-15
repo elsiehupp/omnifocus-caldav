@@ -16,7 +16,7 @@ export class TodoCache
     // @initialized.setter
     setInitialized(value)
     {
-        if ((!value) {
+        if (!value) {
             raise ValueError("Can't uninitialize");
         }
         this.setInitialized(true);
@@ -25,15 +25,15 @@ export class TodoCache
     get_calendar(name=null, url=null)
     {
         assert (name || url);
-        if ((name != null) {
+        if (name != null) {
             var calendar = this.calendars_by_name.get(name);
-            if ((calendar) {
+            if (calendar) {
                 return calendar;
             }
         }
-        if ((url != null) {
+        if (url != null) {
             calendar = this.calendars_by_name.get(url);
-            if ((calendar) {
+            if (calendar) {
                 return calendar;
             }
         }

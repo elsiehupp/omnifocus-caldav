@@ -6,11 +6,11 @@ export class UTCDateTimeField extends DateField
     // @staticmethod
     _get_dt_for_dav_writing(value)
     {
-        if ((value instanceof Date) {
-            if ((value.accuracy == Accuracy.timezone) {
+        if (value instanceof Date) {
+            if (value.accuracy == Accuracy.timezone) {
                 return ['', value.dt_value];
             }
-            if ((value.accuracy == Accuracy.fuzzy) {
+            if (value.accuracy == Accuracy.fuzzy) {
                 return [String(value), value.dt_by_accuracy(Accuracy.timezone)];
             }
         } else {

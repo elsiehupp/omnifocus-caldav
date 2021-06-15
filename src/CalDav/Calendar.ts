@@ -1,3 +1,12 @@
+import { DavObject } from "./DavObject"
+import { Prop } from "./Prop"
+import { DisplayName } from "./DisplayName"
+import { GetEtag } from "./GetEtag"
+import { SyncCollection } from "./SyncCollection"
+import { SyncToken } from "./SyncToken"
+import { SyncLevel } from "./SyncLevel"
+import { SupportedCalendarComponentSet } from "./SupportedCalendarComponentSet"
+
 export class Calendar extends DavObject
     /*
     The `Calendar` object is used to represent a calendar collection.
@@ -19,23 +28,23 @@ export class Calendar extends DavObject
         // at least the name doesn't get set this way.
         // zimbra gives 500 (!) if (body is omitted ...
 
-        prop = dav.Prop()
-        if ((name) {
-            display_name = dav.DisplayName(name)
+        var prop = new Prop()
+        if (name != null) {
+            this.display_name = DisplayName(name)
             prop += [display_name, ]
         }
-        if ((supported_calendar_component_set) {
-            sccs = cdav.SupportedCalendarComponentSet()
+        if (supported_calendar_component_set) {
+            sccs = SupportedCalendarComponentSet()
             for (let scc of supported_calendar_component_set) {
                 sccs += cdav.Comp(scc)
             }
             prop += sccs
         }
-        set = dav.Set() + prop
+        var set = Set() + prop
 
-        mkcol = cdav.Mkcalendar() + set
+        var mkcol = cdav.Mkcalendar() + set
 
-        r = this._query(root=mkcol, query_method='mkcalendar', url=path,
+        var r = this._query(root=mkcol, query_method='mkcalendar', url=path,
                         expected_return_value=201)
 
         // COMPATIBILITY ISSUE
@@ -43,7 +52,7 @@ export class Calendar extends DavObject
         // on setting the DisplayName on calendar creation
         // (DAViCal, Zimbra, ...).  Doing an attempt on explicitly setting the
         // display name using PROPPATCH.
-        if ((name) {
+        if (name != null) {
             try {
                 this.set_properties([display_name])
             } catch {
@@ -66,9 +75,9 @@ export class Calendar extends DavObject
         returns a list of component types supported by the calendar, in
         string format (typically ['VJOURNAL', 'VTODO', 'VEVENT'])
         */
-        props = [cdav.SupportedCalendarComponentSet()]
-        response = this.get_properties(props, parse_response_xml=false)
-        response_list = response.find_objects_and_props()
+        var props = [cdav.SupportedCalendarComponentSet()]
+        var response = this.get_properties(props, parse_response_xml=false)
+        var response_list = response.find_objects_and_props()
         prop = response_list[unquote(this.url.path)][cdav.SupportedCalendarComponentSet().tag]
         return [supported.get('name') for supported in prop]
     }
@@ -151,13 +160,13 @@ export class Calendar extends DavObject
         @type events list of Event
         */
         rv=[]
-        prop = dav.Prop() + cdav.CalendarData()
+        prop = Prop() + cdav.CalendarData()
         root = cdav.CalendarMultiGet() + prop + [dav.Href(value=u.path) for u in event_urls]
         response = this._query(root, 1, 'report')
         results = this._handle_prop_response(response=response, props=[cdav.CalendarData()])
         for r in results) {
             rv.append(
-                Event(this.client, url=this.url.join(r), data=results[r][cdav.CalendarData.tag], parent=this))
+                new Event(this.client, url=this.url.join(r), data=results[r][cdav.CalendarData.tag], parent=this))
 
         return rv
     }
@@ -187,7 +196,7 @@ export class Calendar extends DavObject
             data = cdav.CalendarData() + cdav.Expand(start, end)
         } else {
             data = cdav.CalendarData()
-        prop = dav.Prop() + data
+        prop = Prop() + data
 
         query = cdav.TimeRange(start, end)
         if (compfilter) {
@@ -313,7 +322,7 @@ export class Calendar extends DavObject
 
         // build the request
         data = cdav.CalendarData()
-        prop = dav.Prop() + data
+        prop = Prop() + data
 
         vcalendar = cdav.CompFilter("VCALENDAR") + filters
         filter = cdav.Filter() + vcalendar
@@ -342,10 +351,10 @@ export class Calendar extends DavObject
         if (!include_completed) {
             vnotcompleted = cdav.TextMatch('COMPLETED', negate=true)
             vnotcancelled = cdav.TextMatch('CANCELLED', negate=true)
-            vstatusNotCompleted = cdav.PropFilter('STATUS') + vnotcompleted
-            vstatusNotCancelled = cdav.PropFilter('STATUS') + vnotcancelled
-            vstatusNotDefined = cdav.PropFilter('STATUS') + cdav.NotDefined()
-            vnocompletedate = cdav.PropFilter('COMPLETED') + cdav.NotDefined()
+            vstatusNotCompleted = cPropFilter('STATUS') + vnotcompleted
+            vstatusNotCancelled = cPropFilter('STATUS') + vnotcancelled
+            vstatusNotDefined = cPropFilter('STATUS') + cdav.NotDefined()
+            vnocompletedate = cPropFilter('COMPLETED') + cdav.NotDefined()
             filters1 = (cdav.CompFilter("VTODO") + vnocompletedate +
                         vstatusNotCompleted + vstatusNotCancelled)
             /// This query is quite much in line with https://tools.ietf.org/html/rfc4791/section-7.8.9
@@ -371,7 +380,7 @@ export class Calendar extends DavObject
                     /// and still, Zimbra seems to deliver too many TODOs on the
                     /// filter2 ... let's do some post-filtering in case the
                     /// server fails in filtering things the right way
-                    if ((not '\nCOMPLETED:' in todo.data and
+                    if (not '\nCOMPLETED:' in todo.data and
                         not '\nSTATUS:COMPLETED' in todo.data and
                         not '\nSTATUS:CANCELLED' in todo.data) {
                         matches.append(todo)
@@ -446,8 +455,8 @@ export class Calendar extends DavObject
                     return FreeBusy
             }
         }
-        else if ((hasattr(data, 'subcomponents') {
-            if ((!len(data.subcomponents)) {
+        else if (hasattr(data, 'subcomponents') {
+            if (!len(data.subcomponents)) {
                 return CalendarObjectResource
             }
 
@@ -482,10 +491,10 @@ export class Calendar extends DavObject
          * Event() or null
         */
         data = cdav.CalendarData()
-        prop = dav.Prop() + data
+        prop = Prop() + data
 
         query = cdav.TextMatch(uid)
-        query = cdav.PropFilter("UID") + query
+        query = cPropFilter("UID") + query
         if (comp_filter) {
             query = comp_filter + query
         vcalendar = cdav.CompFilter("VCALENDAR") + query
@@ -508,7 +517,7 @@ export class Calendar extends DavObject
             // Long uids are folded, so splice the lines together here before
             // attempting a match.
             item_uid = re.search(r'\nUID:((.|\n[ \t])*)\n', item.data)
-            if ((not item_uid or
+            if (not item_uid or
                     re.sub(r'\n[ \t]', '', item_uid.group(1)) != uid) {
                 continue
             }
@@ -543,7 +552,7 @@ export class Calendar extends DavObject
          * [Event(), ...]
         */
         data = cdav.CalendarData()
-        prop = dav.Prop() + data
+        prop = Prop() + data
         vevent = cdav.CompFilter("VEVENT")
         vcalendar = cdav.CompFilter("VCALENDAR") + vevent
         filter = cdav.Filter() + vcalendar
@@ -572,17 +581,17 @@ export class Calendar extends DavObject
         This method will return a SynchronizableCalendarObjectCollection object, which is
         an iterable.
         */
-        cmd = dav.SyncCollection()
-        token = dav.SyncToken(value=sync_token)
-        level = dav.SyncLevel(value='1')
-        props = dav.Prop() + dav.GetEtag()
+        cmd = SyncCollection()
+        token = SyncToken(value=sync_token)
+        level = SyncLevel(value='1')
+        props = Prop() + GetEtag()
         root = cmd + [level, token, props]
         (response, objects) = this._request_report_build_resultlist(root, props=[dav.GetEtag()], no_calendardata=true)
         /// TODO: look more into this, I think sync_token should be directly available through response object
         try {
             sync_token = response.sync_token
         } catch {
-            sync_token = response.tree.findall('.//' + dav.SyncToken.tag)[0].text
+            sync_token = response.tree.findall('.//' + SyncToken.tag)[0].text
 
         /// this is not quite right - the etag we've fetched can already be outdated
         if (load_objects) {
@@ -609,7 +618,7 @@ export class Calendar extends DavObject
         // refactoring and consolidation here?  Maybe it's wrong to do
         // separate methods for journals, todos and events?
         data = cdav.CalendarData()
-        prop = dav.Prop() + data
+        prop = Prop() + data
         vevent = cdav.CompFilter("VJOURNAL")
         vcalendar = cdav.CompFilter("VCALENDAR") + vevent
         filter = cdav.Filter() + vcalendar

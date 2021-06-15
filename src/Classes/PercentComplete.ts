@@ -9,14 +9,14 @@ export class PercentComplete extends Field
         var total_cnt = 0;
         var done_cnt = 0;
         for (var subtask in this._browse_subtasks(task)) {
-            if ((subtask.get_status() != Task.STA_DISMISSED) {
+            if (subtask.get_status() != Task.STA_DISMISSED) {
                 total_cnt += 1;
-                if ((subtask.get_status() == Task.STA_DONE) {
+                if (subtask.get_status() == Task.STA_DONE) {
                     done_cnt += 1;
                 }
             }
         }
-        if ((total_cnt) {
+        if (total_cnt) {
             return String(new Integer(100 * done_cnt / total_cnt));
         }
         return '0';

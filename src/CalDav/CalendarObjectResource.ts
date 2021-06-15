@@ -1,11 +1,17 @@
+import { DavObject } from "./DavObject"
+import { iCalendar, Principal, vCalAddress, vText } from "./iCalendar"
+
 export class CalendarObjectResource extends DavObject
+{
     /*
     Ref RFC 4791, section 4.1, a "Calendar Object Resource" can be an
     event, a todo-item, a journal entry, or a free/busy entry
     */
-    _vobject_instance = null
-    _icalendar_instance = null
-    _data = null
+    _vobject_instance:any = null
+    icalendar_instance:any = null
+    ievent:any = null;
+    attendee_obj:any = null
+    data:any = null
 
     constructor(client=null, url=null, data=null, parent=null, id=null, props=null)
     {
@@ -13,10 +19,11 @@ export class CalendarObjectResource extends DavObject
         CalendarObjectResource has an additional parameter for its constructor) {
          * data = "...", vCal data for the event
         */
-        super(CalendarObjectResource, this).constructor(
+        super(
             client=client, url=url, parent=parent, id=id, props=props)
-        if (data is not null) {
+        if (data != null) {
             this.data = data
+        }
     }
 
     add_organizer()
@@ -25,7 +32,7 @@ export class CalendarObjectResource extends DavObject
         goes via this.client, finds the principal, figures out the right attendee-format and adds an
         organizer line to the event
         */
-        principal = this.client.principal()
+        var principal = this.client.principal()
         /// TODO: remove Organizer-field, if (exists
         /// TODO: what if (walk returns more than one vevent?
         this._icalendar_object().add('organizer', principal.get_vcal_address())
@@ -33,17 +40,16 @@ export class CalendarObjectResource extends DavObject
 
     _icalendar_object()
     {
-        import icalendar
         for (let x of this.icalendar_instance.subcomponents) {
-            for (let cl of (icalendar.Event, icalendar.Journal, icalendar.Todo, icalendar.FreeBusy)) {
-                if ((isinstance(x, cl)) {
+            for (let cl of (iCalendar.Event, iCalendar.Journal, iCalendar.Todo, icalendar.FreeBusy)) {
+                if (x instanceof cl) {
                     return x
                 }
             }
         }
     }
 
-    add_attendee(attendee, no_default_parameters=false, **parameters)
+    add_attendee(attendee, no_default_parameters=false, parameters)
     {
         /*
         For the current (event/todo/journal), add an attendee.
@@ -63,57 +69,61 @@ export class CalendarObjectResource extends DavObject
         role=REQ-PARTICIPANT
         schedule-agent is not set
         */
-        from icalendar import vCalAddress, vText
 
-        if ((isinstance(attendee, Principal)) {
-            attendee_obj = attendee.get_vcal_address()
-        } else if ((isinstance(attendee, vCalAddress)) {
-            attendee_obj = attendee
-        } else if ((isinstance(attendee, tuple)) {
-            if ((attendee[1].startswith('mailto:')) {
-                attendee_obj = vCalAddress(attendee[1])
+        if (attendee instanceof Principal) {
+            this.attendee_obj = attendee.get_vcal_address()
+        } else if (attendee instanceof vCalAddress) {
+            this.attendee_obj = attendee
+        } else if (attendee instanceof List) {
+            if (attendee[1].startsWith('mailto:')) {
+                this.attendee_obj = vCalAddress(attendee[1])
             } else {
-                attendee_obj = vCalAddress('mailto:' + attendee[1])
+                this.attendee_obj = vCalAddress('mailto:' + attendee[1])
             }
-            attendee_obj.params['cn'] = vText(attendee[0])
-        } else if ((isinstance(attendee, str)) {
-            if ((attendee.startswith('ATTENDEE')) {
-                raise NotImplementedError("do we need to support this anyway?  Should be trivial, but can't figure out how to do it with the icalendar.Event/vCalAddress objects right now")
-            } else if ((attendee.startswith('mailto:')) {
-                attendee_obj = vCalAddress(attendee)
-            } else if (('@' in attendee && !':' in attendee && !';' in attendee) {
-                attendee_obj = vCalAddress('mailto:' + attendee)
+            this.attendee_obj.params['cn'] = vText(attendee[0])
+        } else if (attendee instanceof String) {
+            if (attendee.startsWith('ATTENDEE')) {
+                raise NotImplementedError("do we need to support this anyway?  Should be trivial, but can't figure out how to do it with the icalendar.Event/vCalAddress objects right now");
+            } else if (attendee.startsWith('mailto:')) {
+                this.attendee_obj = vCalAddress(attendee)
+            } else if ('@' in attendee && !':' in attendee && !';' in attendee) {
+                this.attendee_obj = vCalAddress('mailto:' + attendee)
             }
         } else {
             error.assert_(false)
-            attendee_obj = vCalAddress()
+            this.attendee_obj = vCalAddress()
         }
 
         /// TODO: if (possible, check that the attendee exists
         /// TODO: check that the attendee will not be duplicated in the event.
         if (!no_default_parameters) {
             /// Sensible defaults) {
-            attendee_obj.params['partstat']='NEEDS-ACTION'
-            if (!'cutype' in attendee_obj.params) {
-                attendee_obj.params['cutype']='UNKNOWN'
-            attendee_obj.params['rsvp']='TRUE'
-            attendee_obj.params['role']='REQ-PARTICIPANT'
-        params = {}
-        for key in parameters) {
-            new_key = key.replace('_', '-')
+            this.attendee_obj.params['partstat']='NEEDS-ACTION'
+            if (!('cutype' in this.attendee_obj.params)) {
+                this.attendee_obj.params['cutype']='UNKNOWN'
+            }
+            this.attendee_obj.params['rsvp']='TRUE'
+            this.attendee_obj.params['role']='REQ-PARTICIPANT'
+        }
+        var params = {}
+        for (var key in parameters) {
+            var new_key = key.replace('_', '-')
             if (parameters[key] == true) {
                 params[new_key] = 'TRUE'
             } else {
                 params[new_key] = parameters[key]
-        attendee_obj.params.update(params)
-        ievent = this._icalendar_object()
-        ievent.add('attendee', attendee_obj)
+            }
+        }
+        this.attendee_obj.params.update(params)
+        this.ievent = this._icalendar_object()
+        this.ievent.add('attendee', this.attendee_obj)
     }
 
     is_invite_request()
     {
         if (!this.data) {
             this.load()
+        }
         return this.icalendar_instance.get('method', null) == 'REQUEST'
     }
 
@@ -140,6 +150,7 @@ export class CalendarObjectResource extends DavObject
         error.assert_(this.is_invite_request())
         if (!calendar) {
             calendar = this.client.principal().calendars()[0]
+        }
         /// we need to modify the icalendar code, update our own participant status
         this.icalendar_instance.pop('METHOD')
         this.change_attendee_status(partstat=partstat)
@@ -155,7 +166,7 @@ export class CalendarObjectResource extends DavObject
             /// sent to a calendar.
             this.load()
             this.get_property(cdav.ScheduleTag(), use_cached=false)
-            outbox = this.client.principal().schedule_outbox()
+            var outbox = this.client.principal().schedule_outbox()
             if (calendar != outbox) {
                 this._reply_to_invite_request(partstat, calendar=outbox)
             } else {
@@ -171,7 +182,7 @@ export class CalendarObjectResource extends DavObject
         calendar or even to another caldav server
         */
         return this.__class__(
-            parent=new_parent or this.parent,
+            parent=new_parent !! this.parent,
             data=this.data,
             id=this.id if (keep_uid else String(uuid.uuid1()))
     }
@@ -181,14 +192,17 @@ export class CalendarObjectResource extends DavObject
         /*
         Load the object from the caldav server.
         */
-        r = this.client.request(this.url)
+        var r = this.client.request(this.url)
         if (r.status == 404) {
             raise error.NotFoundError(errmsg(r))
+        }
         this.data = vcal.fix(r.raw)
         if ('Etag' in r.headers) {
             this.props[dav.GetEtag.tag] = r.headers['Etag']
+        }
         if ('Schedule-Tag' in r.headers) {
             this.props[cdav.ScheduleTag.tag] = r.headers['Schedule-Tag']
+        }
         return this
     }
 
@@ -196,17 +210,17 @@ export class CalendarObjectResource extends DavObject
     /// some of the logic should be moved elsewhere
     _create(data, id=null, path=null)
     {
-        if ((id == null && path is not null and String(path).endswith('.ics') {
+        if (id == null && path != null && String(path).endswith('.ics')) {
             id = re.search('(/|^)([^/]*).ics', String(path)).group(2)
-        } else if ((id == null) {
+        } else if (id == null) {
             for (var obj_type in ('vevent', 'vtodo', 'vjournal', 'vfreebusy')) {
-                obj = null
-                if ((hasattr(this.vobject_instance, obj_type)) {
+                var obj = null
+                if (hasattr(this.vobject_instance, obj_type)) {
                     obj = getattr(this.vobject_instance, obj_type)
-                } else if ((this.vobject_instance.name.lower() == obj_type) {
+                } else if (this.vobject_instance.name.lower() == obj_type) {
                     obj = this.vobject_instance
                 }
-                if ((obj is not null) {
+                if (obj != null) {
                     try {
                         id = obj.uid.value
                     } catch (AttributeError) {
@@ -220,67 +234,70 @@ export class CalendarObjectResource extends DavObject
         } else {
             for (let obj_type of ('vevent', 'vtodo', 'vjournal', 'vfreebusy')) {
                 obj = null
-                if ((hasattr(this.vobject_instance, obj_type)) {
+                if (hasattr(this.vobject_instance, obj_type)) {
                     obj = getattr(this.vobject_instance, obj_type)
-                } else if ((this.vobject_instance.name.lower() == obj_type) {
+                } else if (this.vobject_instance.name.lower() == obj_type) {
                     obj = this.vobject_instance
                 }
-                if ((obj is not null) {
-                    if ((not hasattr(obj, 'uid')) {
+                if (obj != null) {
+                    if (not hasattr(obj, 'uid')) {
                         obj.add('uid')
                     }
                     obj.uid.value = id
                     break
                 }
             }
-        if ((path == null) {
+        if (path == null) {
             path = quote(id) + ".ics"
         }
         path = this.parent.url.join(path)
-        r = this.client.put(path, data,
+        var r = this.client.put(path, data,
                             {"Content-Type": 'text/calendar; charset="utf-8"'})
 
         if (r.status == 302) {
             path = [x[1] for x in r.headers if (x[0] == 'location'][0]
-        } else if ((not (r.status in (204, 201))) {
+        } else if (not (r.status in (204, 201))) {
             raise error.PutError(errmsg(r))
         }
 
         this.url = URL.objectify(path)
         this.id = id
+    }
 
     change_attendee_status(attendee=null, **kwargs)
     {
         if (!attendee) {
             attendee = this.client.principal()
+        }
 
         cnt=0
             
-        if ((isinstance(attendee, Principal)) {
+        if (attendee instanceof Principal) {
             for (let addr of attendee.calendar_user_address_set()) {
                 try {
                     this.change_attendee_status(addr, **kwargs)
                     /// TODO: can probably just return now
                     cnt += 1
                 } catch (error.NotFoundError) {
-                    pass
+                    // pass
                 }
             }
-            if ((not cnt) {
+            if (not cnt) {
                 raise error.NotFoundError("Principal %s is not invited to event" % String(attendee))
             }
             error.assert_(cnt == 1)
             return
         }
 
-        ical_obj = this._icalendar_object()
+        this.ical_obj = this._icalendar_object()
         /// TODO: can attendee be a single value?
-        for attendee_line in ical_obj['attendee']) {
-            if ((String(attendee_line).replace('mailto:','') == String(attendee).replace('mailto:','')) {
+        for (var attendee_line in this.ical_obj['attendee']) {
+            if (String(attendee_line).replace('mailto:','') == String(attendee).replace('mailto:','')) {
                 attendee_line.params.update(kwargs)
                 cnt += 1
             }
-        if ((not cnt) {
+        }
+        if (!cnt) {
             raise error.NotFoundError("Participant %s not found in attendee list")
         }
         error.assert_(cnt == 1)
@@ -302,22 +319,30 @@ export class CalendarObjectResource extends DavObject
          * this
 
         */
-        if ((this._vobject_instance == null and
-            this._data == null and
-            this._icalendar_instance == null) {
+        if (this._vobject_instance == null &&
+            this.data == null &&
+            this.icalendar_instance == null) {
             return this
         }
 
-        path = this.url.path if (this.url else null
+        if (this.url) {
+            path = this.url.path
+        } else {
+            path = null
+        }
 
-        if (no_overwrite or no_create) {
+
+        if (no_overwrite || no_create) {
             if (!this.id) {
                 try {
                     this.id = this.vobject_instance.vevent.uid.value
                 } catch (AttributeError) {
-                    pass
+                    // pass
+                }
+            }
             if (!this.id && no_create) {
                 raise error.ConsistencyError("no_create flag was set, but no ID given")
+            }
             existing = null
             /// some servers require one to explicitly search for the right kind of object.
             /// todo: would arguably be nicer to verify the type of the object and take it from there
@@ -325,6 +350,7 @@ export class CalendarObjectResource extends DavObject
                 methods = (getattr(this.parent, "%s_by_uid" % obj_type),)
             } else {
                 methods = (this.parent.object_by_uid, this.parent.event_by_uid, this.parent.todo_by_uid, this.parent.journal_by_uid)
+            }
             for method in methods) {
                 try {
                     existing = method(this.id)
@@ -332,10 +358,13 @@ export class CalendarObjectResource extends DavObject
                         raise error.ConsistencyError("no_overwrite flag was set, but object already exists")
                     break
                 } catch (error.NotFoundError) {
-                    pass
+                    // pass
+                }
+            }
 
             if (no_create && !existing) {
                 raise error.ConsistencyError("no_create flag was set, but object does not exists")
+            }
 
 
         /// ref https://github.com/python-caldav/caldav/issues/43
@@ -351,7 +380,7 @@ export class CalendarObjectResource extends DavObject
         return this
     }
 
-    __str__()
+    toString()
     {
         return "%s: %s" % (this.__class__.__name__, this.url)
     }
@@ -367,12 +396,12 @@ export class CalendarObjectResource extends DavObject
         /// set it to an vobject object or an icalendar object, hence we should
         /// do type checking on the data (TODO: but should probably use
         /// isinstance rather than this kind of logic
-        if ((type(data).__module__.startswith("vobject")) {
+        if (type(data).__module__.startsWith("vobject")) {
             this._set_vobject_instance(data)
             return this
         }
 
-        if ((type(data).__module__.startswith("icalendar")) {
+        if (type(data).__module__.startsWith("icalendar")) {
             this._set_icalendar_instance(data)
             return this
         }
@@ -385,11 +414,11 @@ export class CalendarObjectResource extends DavObject
 
     _get_data()
     {
-        if ((this._data) {
+        if (this._data) {
             return this._data
-        } else if ((this._vobject_instance) {
+        } else if (this._vobject_instance) {
             return this._vobject_instance.serialize()
-        } else if ((this._icalendar_instance) {
+        } else if (this._icalendar_instance) {
             return this._icalendar_instance.to_ical()
         }
         return null
@@ -445,3 +474,4 @@ export class CalendarObjectResource extends DavObject
     /// icalendar_instance in version 1.0
     instance = vobject_instance
 
+}

@@ -13,7 +13,7 @@ export class Status extends Field
     _translate(gtg_value=null, dav_value=null)
     {
         for (var gtg_status, dav_status in this._status_mapping) {
-            if ((gtg_value == gtg_status || dav_value == dav_status) {
+            if (gtg_value == gtg_status || dav_value == dav_status) {
                 return [gtg_status, dav_status];
             }
         }
@@ -30,19 +30,19 @@ export class Status extends Field
     {
         var active, done = [0, 0];
         for (var subtask in this._browse_subtasks(task)) {
-            if ((subtask.get_status() == Task.STA_ACTIVE) {
+            if (subtask.get_status() == Task.STA_ACTIVE) {
                 active += 1;
-            } else if ((subtask.get_status() == Task.STA_DONE) {
+            } else if (subtask.get_status() == Task.STA_DONE) {
                 done += 1;
             }
-            if ((active && done) {
+            if (active && done) {
                 return 'IN-PROCESS';
             }
         }
-        if ((active) {
+        if (active) {
             return 'NEEDS-ACTION';
         }
-        if ((done) {
+        if (done) {
             return 'COMPLETED';
         }
         return 'CANCELLED';

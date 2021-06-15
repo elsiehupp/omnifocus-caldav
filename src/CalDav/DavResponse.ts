@@ -1,4 +1,10 @@
-
+import { MultiStatus } from "./MultiStatus"
+import { Response } from "./Response"
+import { Status } from "./Status"
+import { Href } from "./Href"
+import { Prop } from "./Prop"
+import { PropStat } from "./PropStat"
+import { SyncToken } from "./SyncToken"
 
 // import logging
 // import re
@@ -30,29 +36,32 @@ export class DavResponse
     tree = null
     headers = {}
     status = 0
+    objects;
+    schedule_tag;
+    sync_token;
 
     constructor(response)
     {
         this.headers = response.headers
-        log.debug("response headers: " + String(this.headers))
-        log.debug("response status: " + String(this.status))
+        console.log("response headers: " + String(this.headers))
+        console.log("response status: " + String(this.status))
 
         /// OPTIMIZE TODO: if (content-type is text/xml, we could eventually do
         /// streaming into the etree library rather than first read the whole
         /// content into a string.  (the line below just needs to be moved to
         /// the relevant if-pronges below)
         this._raw = response.content
-        if ((this.headers.get('Content-Type', '').startswith('text/xml') or
-            this.headers.get('Content-Type', '').startswith('application/xml'))
-{
+        if (this.headers.get('Content-Type', '').startsWith('text/xml') ||
+            this.headers.get('Content-Type', '').startsWith('application/xml')) {
             try {
                 content_length = int(this.headers['Content-Length'])
             } catch {
                 content_length=-1
+            }
             if (content_length == 0) {
                 this._raw = ''
                 this.tree = null
-                log.debug("No content delivered")
+                console.log("No content delivered")
             } else {
                 /// With response.raw we could be streaming the content, but it does not work because
                 /// the stream often is compressed.  We could add uncompression on the fly, but not
@@ -60,32 +69,37 @@ export class DavResponse
                 /this.tree = etree.parse(response.raw, parser=etree.XMLParser(remove_blank_text=true))
                 this.tree = etree.XML(this._raw, parser=etree.XMLParser(remove_blank_text=true))
                 if (log.level <= logging.DEBUG) {
-                    log.debug(etree.tostring(this.tree, pretty_print=true))
-        } else if ((this.headers.get('Content-Type', '').startswith('text/calendar') or
-              this.headers.get('Content-Type', '').startswith('text/plain'))
-{
+                    console.log(etree.tostring(this.tree, pretty_print=true))
+                }
+            }
+        } else if (this.headers.get('Content-Type', '').startsWith('text/calendar') ||
+              this.headers.get('Content-Type', '').startsWith('text/plain')) {
               /// text/plain is typically for errors, we shouldn't see it on 200/207 responses.
               /// TODO: may want to log an error if (it's text/plain and 200/207.
             /// Logic here was moved when refactoring
-            pass
+            // pass
         } else {
             /// probably content-type was not given, i.e. iCloud does not seem to include those
             if ('Content-Type' in this.headers) {
-                log.error("unexpected content type from server: %s. %s" % (this.headers['Content-Type'], error.ERR_FRAGMENT))
+                console.log("unexpected content type from server: %s. %s" % (this.headers['Content-Type'], error.ERR_FRAGMENT))
+            }
             try {
                 this.tree = etree.XML(this._raw, parser=etree.XMLParser(remove_blank_text=true))
             } catch {
-                pass
+                // pass
+            }
+        }
 
         /// this if (will always be true as for now, see other comments on streaming.
-        if (hasattr('_raw')
-{
-            log.debug(this._raw)
+        if (hasattr('_raw')) {
+            console.log(this._raw)
             // ref https://github.com/python-caldav/caldav/issues/112 stray CRs may cause problems
             if (type(this._raw) == bytes) {
                 this._raw = this._raw.replace(b'\r\n', b'\n')
             } else if (type(this._raw) == str) {
                 this._raw = this._raw.replace('\r\n', '\n')
+            }
+        }
         this.status = response.status_code
         /// ref https://github.com/python-caldav/caldav/issues/81,
         /// incidents with a response without a reason has been
@@ -94,15 +108,16 @@ export class DavResponse
             this.reason = response.reason
         } catch (AttributeError) {
             this.reason = ''
+        }
     }
 
     // @property
     raw()
     {
         /// TODO: this should not really be needed?
-        if (!hasattr('_raw')
-{
+        if (!hasattr('_raw') {
             this._raw = etree.tostring(this.tree, pretty_print=true)
+        }
         return this._raw
     }
 
@@ -128,14 +143,14 @@ export class DavResponse
         (The equivalent of this method could probably be found with a
         simple XPath query, but I'm not much into XPath)
         */
-        tree = this.tree
-        if ((tree.tag == 'xml' and tree[0].tag == dav.MultiStatus.tag)
-{
+        var tree = this.tree
+        if (tree.tag == 'xml' && tree[0].tag == MultiStatus.tag) {
             return tree[0]
-        if ((tree.tag == dav.MultiStatus.tag)
-{
+        }
+        if (tree.tag == MultiStatus.tag) {
             return this.tree
-        return [ this.tree ]
+        }
+        return this.tree;
     }
 
     validate_status(status)
@@ -148,12 +163,12 @@ export class DavResponse
         makes sense to me, but I've only seen it from SOGo, and it's
         not in accordance with the examples in rfc6578.
         */
-        if ((' 200 ' not in status and
-            ' 201 ' not in status and
-            ' 207 ' not in status and
-            ' 404 ' not in status)
-{
+        if (!(' 200 ' in status) &&
+            !(' 201 ' in status) &&
+            !(' 207 ' in status) &&
+            !(' 404 ' in status)) {
             raise error.ResponseError(status)
+        }
     }
 
     _parse_response(response)
@@ -163,25 +178,28 @@ export class DavResponse
         href tag and zero or more propstats.  Find them, assert there
         isn't more in the response and return those three fields
         */
-        status = null
-        href = null
-        propstats = []
-        error.assert_(response.tag == dav.Response.tag)
-        for elem in response) {
-            if (elem.tag == dav.Status.tag) {
-                error.assert_(not status)
+        var status = null
+        var href = null
+        var propstats = []
+        error.assert_(response.tag == Response.tag)
+        for (let elem of response) {
+            if (elem.tag == Status.tag) {
+                error.assert_(!status)
                 status = elem.text
                 error.assert_(status)
                 this.validate_status(status)
-            } else if (elem.tag == dav.Href.tag) {
+            } else if (elem.tag == Href.tag) {
                 assert not href
                 href = unquote(elem.text)
-            } else if (elem.tag == dav.PropStat.tag) {
+            } else if (elem.tag == PropStat.tag) {
                 propstats.append(elem)
             } else {
                 error.assert_(false)
+            }
+        }
         error.assert_(href)
-        return (href, propstats, status)
+        return [href, propstats, status]
+    }
 
     find_objects_and_props()
     {
@@ -198,74 +216,88 @@ export class DavResponse
 
         if ('Schedule-Tag' in this.headers) {
             this.schedule_tag = this.headers['Schedule-Tag']
+        }
         
-        responses = this._strip_to_multistatus()
-        for r in responses) {
-            if (r.tag == dav.SyncToken.tag) {
+        var responses = this._strip_to_multistatus()
+        for (let r of responses) {
+            if (r.tag == SyncToken.tag) {
                 this.sync_token = r.text
                 continue
-            error.assert_(r.tag == dav.Response.tag)
+            }
+            error.assert_(r.tag == Response.tag)
 
             (href, propstats, status) = this._parse_response(r)
             /// I would like to do this assert here ...
-            /error.assert_(not href in this.objects)
+            // error.assert_(not href in this.objects)
             /// but then there was https://github.com/python-caldav/caldav/issues/136
-            if (!href in this.objects) {
+            if (!(href in this.objects)) {
                 this.objects[href] = {}
+            }
 
             /// The properties may be delivered either in one
             /// propstat with multiple props or in multiple
             /// propstat
-            for propstat in propstats) {
-                cnt = 0
-                status = propstat.find(dav.Status.tag)
-                error.assert_(status is not null)
-                if ((status is not null)
-{
+            for (let propstat of propstats) {
+                var cnt = 0
+                status = propstat.find(Status.tag)
+                error.assert_(status != null)
+                if (status != null) {
                     error.assert_(len(status) == 0)
                     cnt += 1
                     this.validate_status(status.text)
                     /// if (a prop was not found, ignore it
                     if (' 404 ' in status.text) {
                         continue
-                for prop in propstat.iterfind(dav.Prop.tag)
-{
+                    }
+                }
+                for (let prop of propstat.iterfind(Prop.tag) {
                     cnt += 1
-                    for theprop in prop) {
+                    for (let theprop of prop) {
                         this.objects[href][theprop.tag] = theprop
+                    }
+                }
 
                 /// there shouldn't be any more elements } catch (for status and prop
-                error.assert_(cnt == len(propstat))
+                error.assert_(cnt == propstat.length)
+            }
+        }
 
         return this.objects
     }
 
     _expand_simple_prop(proptag, props_found, multi_value_allowed=false, xpath=null)
     {
-        values = []
+        var values = []
         if (proptag in props_found) {
-            prop_xml = props_found[proptag]
-            error.assert_(not prop_xml.items())
-            if (!xpath && len(prop_xml)==0) {
+            var prop_xml = props_found[proptag]
+            error.assert_(!prop_xml.items())
+            if (!xpath && prop_xml.length==0) {
                 if (prop_xml.text) {
                     values.append(prop_xml.text)
+                }
             } else {
-                _xpath = xpath if (xpath else ".//*"
-                leafs = prop_xml.findall(_xpath)
+                var _xpath = xpath if (xpath else ".//*"
+                var leafs = prop_xml.findall(_xpath)
                 values = []
-                for leaf in leafs) {
+                for (let leaf of leafs) {
                     error.assert_(not leaf.items())
                     if (leaf.text) {
                         values.append(leaf.text)
                     } else {
                         values.append(leaf.tag)
+                    }
+                }
+            }
+        }
         if (multi_value_allowed) {
             return values
         } else {
             if (!values) {
                 return null
+            }
             error.assert_(len(values)==1)
             return values[0]
+        }
     }
 
     /// TODO: "expand" does not feel quite right.
@@ -279,15 +311,18 @@ export class DavResponse
         Executes find_objects_and_props if (!run already, then
         modifies and returns this.objects.
         */
-        if (!hasattr('objects')
-{
+        if (!hasattr('objects') {
             this.find_objects_and_props()
-        for href in this.objects) {
-            props_found = this.objects[href]
-            for prop in props) {
+        }
+        for (let href of this.objects) {
+            var props_found = this.objects[href]
+            for (let prop of props) {
                 props_found[prop.tag] = this._expand_simple_prop(prop.tag, props_found, xpath=xpath)
-            for prop in multi_value_props) {
-                props_found[prop.tag] = this._expand_simple_prop(prop.tag, props_found, xpath=xpath, multi_value_allowed=true)
+            }
+            for (let prop of multi_value_props) {
+                props_found[prop.tag] = this._expand_simple_prop(prop.tag, props_found, xpath=xpath, true)
+            }
+        }
         return this.objects
     }
 }

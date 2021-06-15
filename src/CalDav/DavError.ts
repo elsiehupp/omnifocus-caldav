@@ -13,7 +13,7 @@ import { Exception } from ""
 //     debugmode = 'DEVELOPMENT'
 
 // log = logging.getLogger('caldav')
-// if ((debugmode.startswith('DEBUG')) {
+// if (debugmode.startsWith('DEBUG')) {
 //     log.setLevel(logging.DEBUG)
 // } else {
 //     log.setLevel(logging.WARNING)
@@ -24,9 +24,9 @@ import { Exception } from ""
 //     try {
 //         assert(condition)
 //     } catch (AssertionError) {
-//         if ((debugmode == 'PRODUCTION') {
-//             log.error("Deviation from expectations found.  %s" % ERR_FRAGMENT, exc_info=true)
-//         } else if (debugmode == 'DEBUG_PDB') {//             log.error("Deviation from expectations found.  Dropping into debugger")
+//         if (debugmode == 'PRODUCTION') {
+//             console.log("Deviation from expectations found.  %s" % ERR_FRAGMENT, exc_info=true)
+//         } else if (debugmode == 'DEBUG_PDB') {//             console.log("Deviation from expectations found.  Dropping into debugger")
 //             import pdb; pdb.set_trace()
 //         } else {
 //             raise
@@ -121,7 +121,7 @@ export class ReponseError extends DavError
     pass
 }
 
-const exception_by_method = Dictionary(lambda: DavError)
+const exception_by_method = new Dictionary(lambda: DavError)
 for (var method in ['delete', 'put', 'mkcalendar', 'mkcol', 'report', 'propset',
                'propfind', 'proppatch']) {
     exception_by_method[method] =

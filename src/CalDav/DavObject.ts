@@ -1,4 +1,11 @@
-
+import { DisplayName } from "./DisplayName"
+import { ResourceType } from "./ResourceType"
+import { Prop } from "./Prop"
+import { PropertyUpdate } from "./PropertyUpdate"
+import { Propfind } from "./Propfind"
+import { Set } from "./Set"
+import { Status } from "./Status"
+import { Url } from "./Url"
 
 /*
 A "DAV object" is anything we get from the caldav server or push into the
@@ -40,7 +47,7 @@ export class hierarchy into a separate file)
 //     return "%s %s\n\n%s" % (r.status, r.reason, r.raw)
 // }
 
-export class DavObject extends Object
+export class DavObject
 {
 
     /*
@@ -52,8 +59,10 @@ export class DavObject extends Object
     client = null
     parent = null
     name = null
+    props;
+    extra_init_options;
 
-    constructor(client=null, url=null, parent=null, name=null, id=null, props=null, **extra)
+    constructor(client=null, url=null, parent=null, name=null, id=null, props=null, extra)
     {
         /*
         Default constructor.
@@ -67,8 +76,9 @@ export class DavObject extends Object
          * id: The resource id (UID for an Event)
         */
 
-        if (client == null && parent is not null) {
+        if (client == null && parent != null) {
             client = parent.client
+        }
         this.client = client
         this.parent = parent
         this.name = name
@@ -77,6 +87,7 @@ export class DavObject extends Object
             this.props = {}
         } else {
             this.props = props
+        }
         this.extra_init_options = extra
         // url may be a path relative to the caldav root
         if (client && url) {
@@ -98,36 +109,38 @@ export class DavObject extends Object
         List children, using a propfind (resourcetype) on the parent object,
         at depth = 1.
         */
-        c = []
+        var c = []
 
-        depth = 1
-        properties = {}
+        var depth = 1
+        var properties = {}
 
-        props = [ dav.DisplayName()]
-        multiprops = [ dav.ResourceType() ]
-        response = this._query_properties(props+multiprops, depth)
+        var props = [ new DisplayName()]
+        var multiprops = [ new ResourceType() ]
+        var response = this._query_properties(props+multiprops, depth)
         properties = response.expand_simple_props(props=props, multi_value_props=multiprops)
 
-        for (var path in list(properties.keys())) {
-            resource_types = properties[path][dav.ResourceType.tag]
-            resource_name = properties[path][dav.DisplayName.tag]
+        for (var path in List(properties.keys())) {
+            var resource_types = properties[path][ResourceType.tag]
+            var resource_name = properties[path][DisplayName.tag]
 
-            if (type == null or type in resource_types) {
-                url = URL(path)
+            if (type == null || type in resource_types) {
+                var url = new Url(path)
                 if (url.hostname == null) {
                     // Quote when path is not a full URL
                     path = quote(path)
+                }
                 // TODO: investigate the RFCs thoroughly - why does a "get
                 // members of this collection"-request also return the
                 // collection URL itthis?
                 // And why is the strip_trailing_slash-method needed?
                 // The collection URL should always end with a slash according
                 // to RFC 2518, section 5.2.
-                if ((this.url.strip_trailing_slash() !=
+                if (this.url.strip_trailing_slash() !=
                         this.url.join(path).strip_trailing_slash()) {
                     c.append((this.url.join(path), resource_types,
                               resource_name))
                 }
+            }
         }
                     
         /// TODO: return objects rather than just URLs, and include
@@ -142,11 +155,12 @@ export class DavObject extends Object
         result of code-refactoring work, attempting to consolidate
         similar-looking code into a common method.
         */
-        root = null
+        var root = null
         // build the propfind request
-        if (props is not null && len(props) > 0) {
-            prop = dav.Prop() + props
-            root = dav.Propfind() + prop
+        if (props != null && props.length > 0) {
+            var prop = Prop() + props
+            root = Propfind() + prop
+        }
 
         return this._query(root, depth)
     }
@@ -159,21 +173,24 @@ export class DavObject extends Object
         result of code-refactoring work, attempting to consolidate
         similar-looking code into a common method.
         */
-        body = ""
+        var body = ""
         if (root) {
-            if ((hasattr(root, 'xmlelement')) {
+            if (hasattr(root, 'xmlelement')) {
                 body = etree.tostring(root.xmlelement(), encoding="utf-8",
                                       xml_declaration=true)
             } else {
                 body = root
             }
+        }
         if (url == null) {
             url = this.url
-        ret = getattr(this.client, query_method)(
+        }
+        var ret = getattr(this.client, query_method)(
             url, body, depth)
         if (ret.status == 404) {
             raise error.NotFoundError(errmsg(ret))
-        if (((expected_return_value is not null and
+        }
+        if ((expected_return_value != null and
              ret.status != expected_return_value) or
             ret.status >= 400) {
             raise error.exception_by_method[query_method](errmsg(ret))
@@ -181,13 +198,15 @@ export class DavObject extends Object
         return ret
     }
 
-    get_property(prop, use_cached=false, **passthrough)
+    get_property(prop, use_cached=false, passthrough=null)
     {
         /// TODO: use_cached should probably be true
         if (use_cached) {
             if (prop.tag in this.props) {
                 return this.props[prop.tag]
-        foo = this.get_properties([prop], **passthrough)
+            }
+        }
+        var foo = this.get_properties([prop], passthrough)
         return foo.get(prop.tag, null)
     }
 
@@ -205,26 +224,28 @@ export class DavObject extends Object
         rather than values.
         
         Parameters) {
-         * props = [dav.ResourceType(), dav.DisplayName(), ...]
+         * props = [ResourceType(), DisplayName(), ...]
 
         Returns) {
          * {proptag: value, ...}
 
         */
-        rc = null
-        response = this._query_properties(props, depth)
+        var rc = null
+        var response = this._query_properties(props, depth)
         if (!parse_response_xml) {
             return response
-
+        }
+        var properties
         if (!parse_props) {
             properties = response.find_objects_and_props()
         } else {
             properties = response.expand_simple_props(props)
+        }
             
         error.assert_(properties)
 
-        path = unquote(this.url.path)
-        if ((path.endswith('/')) {
+        var path = unquote(this.url.path)
+        if (path.endswith('/')) {
             exchange_path = path[:-1]
         } else {
             exchange_path = path + '/'
@@ -233,7 +254,7 @@ export class DavObject extends Object
         if (path in properties) {
             rc = properties[path]
         } else if (exchange_path in properties) {
-            if ((not isinstance(Principal)) {
+            if (not isinstance(Principal)) {
                 /// Some caldav servers reports the URL for the current
                 /// principal to end with / when doing a propfind for
                 /// current-user-principal - I believe that's a bug,
@@ -242,23 +263,24 @@ export class DavObject extends Object
                 /// ... but it gets worse ... when doing a propfind on the
                 /// principal, the href returned may be without the slash.
                 /// Such inconsistency is clearly a bug.
-                log.error("potential path handling problem with ending slashes.  Path given: %s, path found: %s.  %s" % (path, exchange_path, error.ERR_FRAGMENT))
+                console.log("potential path handling problem with ending slashes.  Path given: %s, path found: %s.  %s" % (path, exchange_path, error.ERR_FRAGMENT))
                 error._assert(false)
             }
             rc = properties[exchange_path]
         } else if (this.url in properties) {
             rc = properties[this.url]
-        } else if (('/principal/' in properties && path.endswith('/principal/')) {
-            log.error("Bypassing a known iCloud bug - path expected in response: %s, path found: /principal/ ... %s" % (path, error.ERR_FRAGMENT))
+        } else if ('/principal/' in properties && path.endswith('/principal/')) {
+            console.log("Bypassing a known iCloud bug - path expected in response: %s, path found: /principal/ ... %s" % (path, error.ERR_FRAGMENT))
             /// The strange thing is that we apparently didn't encounter this problem in bc589093a34f0ed0ef489ad5e9cba048750c9837 or 3ee4e42e2fa8f78b71e5ffd1ef322e4007df7a60 - TODO: check this up
             rc = properties['/principal/']
         } else {
-            log.error("Possibly the server has a path handling problem.  Path expected: %s, path found: %s %s" % (path, String(list(properties.keys())), error.ERR_FRAGMENT))
+            console.log("Possibly the server has a path handling problem.  Path expected: %s, path found: %s %s" % (path, String(list(properties.keys())), error.ERR_FRAGMENT))
             error.assert_(false)
         }
 
         if (parse_props) {
             this.props.update(rc)
+        }
         return rc
     }
 
@@ -267,22 +289,26 @@ export class DavObject extends Object
         /*
         Set properties (PROPPATCH) for this object.
 
-         * props = [dav.DisplayName('name'), ...]
+         * props = [DisplayName('name'), ...]
 
         Returns) {
          * this
         */
-        props = [] if (props == null else props
-        prop = dav.Prop() + props
-        set = dav.Set() + prop
-        root = dav.PropertyUpdate() + set
+        if (props == null) {
+            props = []
+        }
+        var prop = new Prop() + props
+        var set = new Set() + prop
+        var root = new PropertyUpdate() + set
 
-        r = this._query(root, query_method='proppatch')
+        var r = this._query(root, query_method='proppatch')
 
-        statuses = r.tree.findall(".//" + dav.Status.tag)
-        for s in statuses) {
-            if (' 200 ' not in s.text) {
+        var statuses = r.tree.findall(".//" + Status.tag)
+        for (let s of statuses) {
+            if (!(' 200 ' in s.text)) {
                 raise error.PropsetError(s.text)
+            }
+        }
 
         return this
     }
@@ -304,28 +330,29 @@ export class DavObject extends Object
         /*
         Delete the object.
         */
-        if (this.url is not null) {
-            r = this.client.delete(this.url)
+        if (this.url != null) {
+            var r = this.client.delete(this.url)
 
             // TODO: find out why we get 404
-            if ((r.status not in (200, 204, 404) {
+            if (!(r.status in [200, 204, 404])) {
                 raise error.DeleteError(errmsg(r))
             }
+        }
     }
 
     __str__()
     {
-        if (dav.DisplayName.tag in this.props) {
-            return this.props[dav.DisplayName.tag]
+        if (DisplayName.tag in this.props) {
+            return this.props[DisplayName.tag]
         } else {
             return String(this.url)
         }
     }
 
-    __repr__()
-    {
-        return "%s(%s)" % (this.__class__.__name__, String())
-    }
+    // __repr__()
+    // {
+    //     return "%s(%s)" % (this.__class__.__name__, String())
+    // }
 
 
 }

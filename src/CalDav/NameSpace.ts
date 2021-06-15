@@ -1,9 +1,10 @@
+import { Dictionary } from "typescript-collections"
 
 
-const nsmap = {
+const nsmap = new Dictionary(
     "D": "DAV:",
     "C": "urn:ietf:params:xml:ns:caldav",
-}
+)
 
 /// silly thing with this one ... but quite many caldav libraries,
 /// caldav clients and caldav servers supports this namespace and the
@@ -18,7 +19,7 @@ export class NameSpace
     constructor (prefix, tag=null)
     {
         var name = `{${nsmap2[prefix]}}`;
-        if ((tag != null) {
+        if (tag != null) {
             name = `${name}${tag}`;
         }
         return name

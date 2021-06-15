@@ -9,7 +9,7 @@ export class OrderField extends Field
     get_gtg(task: Task, namespace: string = null)
     {
         var parents = task.get_parents();
-        if ((!parents || !parents[0]) {
+        if (!parents || !parents[0]) {
             return;
         }
         parent = task.req.get_task(parents[0]);
@@ -20,7 +20,7 @@ export class OrderField extends Field
     set_dav(task: Task, vtodo: Todo, namespace: string):null
     {
         var parent_index = this.get_gtg(task, namespace);
-        if ((parent_index != null) {
+        if (parent_index != null) {
             return this.write_dav(vtodo, String(parent_index));
         }
     }

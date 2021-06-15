@@ -1,6 +1,3 @@
-
-
-
 // import re
 // from caldav.lib.python_utilities import to_local
 
@@ -18,7 +15,7 @@
 /// TODO: would be nice with proper documentation on what systems are
 /// generating broken data.  Compatibility issues should also be collected
 /// in the documentation. somewhere.
-function fix(event)
+export function fix(event)
 {
     /*This function receives some ical as it's given from the server, checks for
     breakages with the standard, and attempts to fix up known issues) {
@@ -54,11 +51,11 @@ function fix(event)
     /// OPTIMIZATION TODO: use list and join rather than concatination
     /// remove duplication of DTSTAMP
     for (var line in fixed.strip().split('\n')) {
-        if ((line.startswith('BEGIN:V')) {
+        if (line.startsWith('BEGIN:V')) {
             var cnt = 0
         }
-        if ((line.startswith('DTSTAMP:')) {
-            if ((!cnt) {
+        if (line.startsWith('DTSTAMP:')) {
+            if (!cnt) {
                 fixed2 += line + "\n"
             }
             cnt += 1

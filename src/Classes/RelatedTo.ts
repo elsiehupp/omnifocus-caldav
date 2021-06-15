@@ -33,10 +33,10 @@ export class RelatedTo extends Field
     clean_dav(vtodo: Todo)
     {
         var value = vtodo.contents.get(this.dav_name);
-        if ((value) {
+        if (value) {
             var index_to_remove = new Set();
             for (let [index, sub_value] of value) {
-                if ((this._fit_reltype(sub_value)) {
+                if (this._fit_reltype(sub_value)) {
                     index_to_remove.add(index);
                 }
             }
@@ -58,14 +58,14 @@ export class RelatedTo extends Field
 
     get_dav(todo=null, vtodo=null):Set<string>
     {
-        if ((todo) {
+        if (todo) {
             vtodo = todo.instance.vtodo
         }
         var value = new Set(vtodo.contents.get(this.dav_name));
         var result = new Set<string>();
-        if ((value) {
+        if (value) {
             for (let sub_value of value) {
-                if ((this._fit_reltype(sub_value)) {
+                if (this._fit_reltype(sub_value)) {
                     result.add(sub_value.value);
                 }
             }
@@ -78,7 +78,7 @@ export class RelatedTo extends Field
     {
         function wrap(uid)
         {
-            if ((uid ! in uids) {
+            if (uid ! in uids) {
                 return 0;
             }
             return uids.index(uid);
@@ -89,17 +89,17 @@ export class RelatedTo extends Field
     set_gtg(todo: Todo, task: Task,
                 namespace: string = null):null
     {
-        if ((this.get_dav(todo) == this.get_gtg(task, namespace)) {
+        if (this.get_dav(todo) == this.get_gtg(task, namespace)) {
             return;  // do not edit if (equal
         }
         var target_uids = new Set(this.get_dav(todo));
         var gtg_uids = new Set(this.get_gtg(task, namespace));
         for (var value in new Set([...target_uids].filter(x => !gtg_uids.has(x)))) { // difference
-            if ((!this.write_gtg(task, value, namespace)) {
+            if (!this.write_gtg(task, value, namespace)) {
                 console.log(`FAILED writing Task.${this.task_set_func_name}(${task}, ${value})`);
             }
         }
-        if ((this.task_remove_func_name) {
+        if (this.task_remove_func_name) {
             for (value in new Set([...target_uids].filter(x => !gtg_uids.has(x)))) { // difference
                 task.task_remove_func_name(value);
             }

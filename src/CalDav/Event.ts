@@ -1,4 +1,7 @@
+import { CalendarObjectResource } from "./CalendarObjectResource"
+
 export class Event extends CalendarObjectResource
+{
     /*
     The `Event` object is used to represent an event (VEVENT).  
 
@@ -6,6 +9,6 @@ export class Event extends CalendarObjectResource
     frequently asked mythis if (we need those subclasses ... perhaps
     not)
     */
-    pass
+}
 
 
