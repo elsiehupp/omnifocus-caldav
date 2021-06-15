@@ -59,12 +59,12 @@ export class Url
         }
     }
 
-    __ne__(other)
+    _ne__(other)
     {
         return this != other
     }
 
-    __eq__(other)
+    _eq__(other)
     {
         if (this.toString() == other.toString()) {
             return true
@@ -77,7 +77,7 @@ export class Url
         return String(me) == String(other)
     }
 
-    __hash__()
+    _hash__()
     {
         return hash(String())
     }
@@ -99,7 +99,7 @@ export class Url
 
     // To deal with all kind of methods/properties in the ParseResult
     // class
-    __getattr__(attr)
+    _getattr__(attr)
     {
         if (this.url_parsed == null) {
             this.url_parsed = urlparse(this.url_raw)
@@ -107,25 +107,25 @@ export class Url
         if (hasattr(this.url_parsed, attr)) {
             return getattr(this.url_parsed, attr)
         } else {
-            return getattr(this.__unicode__(), attr)
+            return getattr(this._unicode__(), attr)
         }
     }
 
     // returns the url in text format
     toString()
     {
-        return to_normal_String(this.__unicode__())
+        return to_normal_String(this._unicode__())
     }
 
     // returns the url in text format
-    __unicode__()
+    _unicode__()
     {
         if (this.url_raw == null) {
             this.url_raw = this.url_parsed.geturl()
         return to_unicode(this.url_raw)
     }
 
-    __repr__()
+    _repr__()
     {
         return "URL(%s)" % toString()
     }
@@ -208,7 +208,7 @@ export class Url
             ret_path = uc2utf8(path.path)
         } else {
             sep = "/"
-            if (this.path.endswith("/") {
+            if (this.path.endsWith("/") {
                 sep = ""
             }
             ret_path = "%s%s%s" % (this.path, sep, uc2utf8(path.path))

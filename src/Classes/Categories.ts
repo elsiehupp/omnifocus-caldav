@@ -31,7 +31,7 @@ export class Categories extends Field
         var categories = [];
         for (var sub_value in vtodo.contents.get(this.dav_name, [])) {
             for (var category in sub_value.value) {
-                if (this._is_value_allowed(category)) {
+                if (this.is_value_allowed(category)) {
                     categories.append(category);
                 }
             }

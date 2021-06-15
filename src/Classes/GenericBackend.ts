@@ -36,10 +36,10 @@ export class GenericBackend
     ///////////////////////////////////////////////////////////////////////////
 
     // The complete list of constants and their meaning is given below.
-    _static_parameters: any[];
+    static_parameters: any[];
     // // KEY_ENABLED: string;
-    _parameters: any[];
-    _is_initialized: boolean;
+    parameters: any[];
+    is_initialized: boolean;
     // _signal_manager: any;
 
 ///////////////////////////////////////////////////////////////////////////
@@ -76,7 +76,7 @@ export class GenericBackend
     KEY_PID: string = "pid";
 
     // Handy dictionary used in type conversion (from string to type)
-    _type_converter = {TYPE_STRING: String,
+    type_converter = {TYPE_STRING: String,
                        TYPE_INT: Number,
                        };
 
@@ -102,14 +102,14 @@ export class GenericBackend
         // default backends should get all the tasks
         if (parameters[this.KEY_DEFAULT_BACKEND] ||
                 (this.KEY_ATTACHED_TAGS !in parameters
-                    // && this._general_description[this.BACKEND_TYPE] ==
+                    // && this.general_description[this.BACKEND_TYPE] ==
                     // this.TYPE_READWRITE
                 )) {
             parameters[this.KEY_ATTACHED_TAGS] = [this.ALLTASKS_TAG]
                     }
-        this._parameters = parameters
-        // this._signal_manager = BackendSignals()
-        this._is_initialized = false
+        this.parameters = parameters
+        // this.signal_manager = BackendSignals()
+        this.is_initialized = false
         // if (debugging mode == enabled, tasks should be saved as soon as
         // they're marked as modified. if (in normal mode, we prefer speed over
         // easier debugging.
@@ -139,10 +139,10 @@ export class GenericBackend
         Optional.
         NOTE: make sure to call super().initialize()
         */
-        this._parameters[this.KEY_ENABLED] = true;
-        this._is_initialized = true;
+        this.parameters[this.KEY_ENABLED] = true;
+        this.is_initialized = true;
         // we signal that the backend has been enabled
-        // this._signal_manager.backend_state_changed(this.get_id())
+        // this.signal_manager.backend_state_changed(this.get_id())
 
     }
 
@@ -212,13 +212,13 @@ export class GenericBackend
         @param disable: if (disable == true, the backend won't
                         be automatically loaded when GTG starts
         */
-        if (this._parameters[this.KEY_ENABLED]) {
-            this._is_initialized =false
+        if (this.parameters[this.KEY_ENABLED]) {
+            this.is_initialized =false
             if (disable) {
-                this._parameters[this.KEY_ENABLED] = false
+                this.parameters[this.KEY_ENABLED] = false
                 // // we signal that we have been disabled
-                // this._signal_manager.backend_state_changed(this.get_id())
-                // this._signal_manager.backend_sync_ended(this.get_id())
+                // this.signal_manager.backend_state_changed(this.get_id())
+                // this.signal_manager.backend_sync_ended(this.get_id())
             threading.Thread(target=this.sync).run()
             }
         }
@@ -250,15 +250,15 @@ export class GenericBackend
         /*
         Returns the list of tags which are handled by this backend
         */
-        if (hasattr(this._parameters, this.KEY_DEFAULT_BACKEND) &&
-                this._parameters[this.KEY_DEFAULT_BACKEND]) {
+        if (hasattr(this.parameters, this.KEY_DEFAULT_BACKEND) &&
+                this.parameters[this.KEY_DEFAULT_BACKEND]) {
             // default backends should get all the tasks
             // NOTE: this shouldn't be needed, but it doesn't cost anything and
             //      it could anull potential tasks losses.
             return [this.ALLTASKS_TAG]
                 }
         try {
-            return this._parameters[this.KEY_ATTACHED_TAGS]
+            return this.parameters[this.KEY_ATTACHED_TAGS]
         } finally {
             return []
         }
@@ -273,7 +273,7 @@ export class GenericBackend
 
         @param tags: the new attached_tags set
         */
-        this._parameters[this.KEY_ATTACHED_TAGS] = tags
+        this.parameters[this.KEY_ATTACHED_TAGS] = tags
     }
 
     // @classmethod
@@ -282,7 +282,7 @@ export class GenericBackend
         /*
         Returns a dictionary of the current parameters.
         */
-        return this._parameters
+        return this.parameters
     }
 
     // @classmethod
@@ -294,7 +294,7 @@ export class GenericBackend
         @param parameter: the parameter name
         @param value: the new value
         */
-        this._parameters[parameter] = value
+        this.parameters[parameter] = value
 
     }
 
@@ -311,8 +311,8 @@ export class GenericBackend
         @returns something: the casted param_value
         */
         var the_list: any;
-        if (param_type in this._type_converter) {
-            return this._type_converter[param_type](param_value)
+        if (param_type in this.type_converter) {
+            return this.type_converter[param_type](param_value)
         } else if (param_type == this.TYPE_BOOL) {
             if (param_value == "true") {
                 return true
@@ -393,7 +393,7 @@ export class GenericBackend
 
         @returns: is_initialized
         */
-        return this._is_initialized
+        return this.is_initialized
 
     }
 
@@ -433,7 +433,7 @@ export class GenericBackend
 
     timer_timestep: any;
 
-    __try_launch_setting_thread()
+    _try_launch_setting_thread()
     {
         /*
         Helper function to launch the setting thread, if (it's not running.
@@ -499,7 +499,7 @@ export class GenericBackend
         var tid = task.get_id()
         if (task !in this.to_set && tid !in this.to_remove) {
             this.to_set.appendleft(task)
-            this.__try_launch_setting_thread()
+            this._try_launch_setting_thread()
         }
 
     }
@@ -515,7 +515,7 @@ export class GenericBackend
         */
         if (tid !in this.to_remove) {
             this.to_remove.appendleft(tid)
-            this.__try_launch_setting_thread()
+            this._try_launch_setting_thread()
             return null
         }
     }

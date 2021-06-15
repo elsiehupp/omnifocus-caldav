@@ -46,7 +46,7 @@ export class AuthorizationError extends Exception
     url = null
     reason = "PHP at work[tm]"
 
-    __str__()
+    _str__()
     {
         return `AuthorizationError at '${this.url}', reason '${this.reason}'`;
     }

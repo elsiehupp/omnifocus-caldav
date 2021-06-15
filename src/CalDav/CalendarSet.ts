@@ -1,6 +1,6 @@
 import { Calendar } from "./Calendar"
 import { DavObject } from "./DavObject"
-import { DisplayName } from "./DisplayName"
+import { DisplayName } from "./Elements/DisplayName"
 
 export class CalendarSet extends DavObject
 {
@@ -61,8 +61,8 @@ export class CalendarSet extends DavObject
         */
         if (name && !cal_id)
             for (let calendar of this.calendars()) {
-                var display_name = calendar.get_property(new DisplayName())
-                if (display_name == name) {
+                var displayName = calendar.getProperty(new DisplayName())
+                if (displayName == name) {
                     return calendar
             }
         if (name && !cal_id) {

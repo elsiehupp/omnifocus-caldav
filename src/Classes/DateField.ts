@@ -20,7 +20,7 @@ export class DateField extends Field
     }
 
     // @staticmethod
-    _normalize(value)
+    normalize(value)
     {
         try {
             if (value.year == 9999) {
@@ -37,7 +37,7 @@ export class DateField extends Field
     }
 
     // @staticmethod
-    _get_dt_for_dav_writing(value)
+    get_dt_for_dav_writing(value)
     {
         if (value instanceof Date)) {
             if (value.accuracy == Accuracy.fuzzy) {
@@ -54,9 +54,9 @@ export class DateField extends Field
     write_dav(vtodo: Todo, value)
     {
         /*Writing datetime as UTC naive*/
-        var fuzzy_value, value = this._get_dt_for_dav_writing(value)
+        var fuzzy_value, value = this.get_dt_for_dav_writing(value)
         if (value instanceof datetime)) {
-            value = this._normalize(value)
+            value = this.normalize(value)
             if (!value.tzinfo) {  // considering naive is local tz
                 value = value.replace(tzinfo=LOCAL_TIMEZONE);
             }
@@ -87,7 +87,7 @@ export class DateField extends Field
             return Date(todo_value[0].params[this.FUZZY_MARK][0]);
         }
         if (value instanceof Date || value instanceof DateTime) {
-            value = this._normalize(value);
+            value = this.normalize(value);
         }
         try {
             return Date(value);
@@ -103,10 +103,10 @@ export class DateField extends Field
         if (gtg_date instanceof Date) {
             if (gtg_date.accuracy in {Accuracy.date, Accuracy.timezone,
                                      Accuracy.datetime}) {
-                return Date(this._normalize(gtg_date.dt_value));
+                return Date(this.normalize(gtg_date.dt_value));
             }
             return gtg_date;
         }
-        return Date(this._normalize(gtg_date));
+        return Date(this.normalize(gtg_date));
     }
 }

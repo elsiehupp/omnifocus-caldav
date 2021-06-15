@@ -14,7 +14,7 @@ export class Description extends Field
     // }
 
     // @staticmethod
-    _get_content_hash(content: string):string
+    get_content_hash(content: string):string
     {
         return new Md5(content.encode('utf8')).hexdigest();
     }
@@ -39,8 +39,8 @@ export class Description extends Field
 
     get_gtg(task: Task, namespace: string = undefined):[any,any]
     {
-        var description = this._extract_plain_text(task);
-        return [this._get_content_hash(description), description];
+        var description = this.extract_plain_text(task);
+        return [this.get_content_hash(description), description];
     }
 
     is_equal(task: Task, namespace: string, todo=undefined, vtodo=undefined)
@@ -62,7 +62,7 @@ export class Description extends Field
     write_gtg(task: Task, value, namespace: string = undefined)
     {
         var hash_, text = value;
-        if (hash_ && hash_ == this._get_content_hash(task.get_text())) {
+        if (hash_ && hash_ == this.get_content_hash(task.get_text())) {
             console.log(`not writing ${task} from vtodo, hash matches`);
             return;
         }
@@ -70,7 +70,7 @@ export class Description extends Field
     }
 
     // @classmethod
-    __clean_first_line(line:string)
+    _clean_first_line(line:string)
     {
         /*Removing tags and commas after them from first line of content*/
         var new_line = '';
@@ -91,7 +91,7 @@ export class Description extends Field
         return new_line;
     }
 
-    _extract_plain_text(task: Task):string
+    extract_plain_text(task: Task):string
     {
         /*Will extract plain text from task content, replacing subtask
         referenced in the text by their proper titles*/
@@ -104,7 +104,7 @@ export class Description extends Field
             }
 
             if (Number(line_no) == 0) {  // is first line, stringiping all tags on first line
-                var new_line = this.__clean_first_line(line);
+                var new_line = this._clean_first_line(line);
                 if (new_line) {
                     result += new_line + '\n';
                 }

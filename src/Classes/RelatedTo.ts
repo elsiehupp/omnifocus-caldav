@@ -24,7 +24,7 @@ export class RelatedTo extends Field
         }
     }
 
-    _fit_reltype(sub_value)
+    fit_reltype(sub_value)
     {
         var reltype:string = sub_value.params.get('RELTYPE') || [this.DEFAULT_RELTYPE];
         return (reltype.length == 1 && reltype[0] == this.reltype);
@@ -36,7 +36,7 @@ export class RelatedTo extends Field
         if (value) {
             var index_to_remove = new Set();
             for (let [index, sub_value] of value) {
-                if (this._fit_reltype(sub_value)) {
+                if (this.fit_reltype(sub_value)) {
                     index_to_remove.add(index);
                 }
             }
@@ -65,7 +65,7 @@ export class RelatedTo extends Field
         var result = new Set<string>();
         if (value) {
             for (let sub_value of value) {
-                if (this._fit_reltype(sub_value)) {
+                if (this.fit_reltype(sub_value)) {
                     result.add(sub_value.value);
                 }
             }
@@ -74,7 +74,7 @@ export class RelatedTo extends Field
     }
 
     // @staticmethod
-    __sort_key(uids)
+    _sortKey(uids)
     {
         function wrap(uid)
         {
@@ -104,10 +104,10 @@ export class RelatedTo extends Field
                 task.task_remove_func_name(value);
             }
         }
-        task.children.sort(key=this.__sort_key(target_uids));
+        task.children.sort(key=this._sortKey(target_uids));
     }
 
-    __repr__()
+    _repr__()
     {
         return `<${typeof this}(${this.reltype}, ${this.dav_name})>`;
     }

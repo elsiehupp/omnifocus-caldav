@@ -1,5 +1,5 @@
 import { DisplayName } from "./Elements/DisplayName"
-import { ResourceType } from "./ResourceType"
+import { ResourceType } from "./Elements/ResourceType"
 import { Prop } from "./Elements/Prop"
 import { PropertyUpdate } from "./Elements/PropertyUpdate"
 import { Propfind } from "./Elements/Propfind"
@@ -33,14 +33,6 @@ export class hierarchy into a separate file)
 // } catch {
 //     pass
 
-// from caldav.lib import error, vcal
-// from caldav.lib.url import URL
-// from caldav.elements import dav, cdav, ical
-// from caldav.lib.python_utilities import to_unicode
-
-// import logging
-// log = logging.getLogger('caldav')
-
 // errmsg(r)
 // {
 //     /*Utility for formatting a response xml tree to an error string*/
@@ -60,7 +52,7 @@ export class DavObject
     parent = null
     name = null
     props;
-    extra_init_options;
+    extraInitializationOptions;
 
     constructor(client=null, url=null, parent=null, name=null, id=null, props=null, extra)
     {
@@ -72,7 +64,7 @@ export class DavObject
          * url: The url for this object.  May be a full URL or a relative URL.
          * parent: The parent object - used when creating objects
          * name: A displayname - to be removed in 1.0, see https://github.com/python-caldav/caldav/issues/128 for details
-         * props: a dict with known properties for this object (as of 2020-12, only used for etags, && only when fetching CalendarObjectResource using the .objects or .objects_by_sync_token methods).
+         * props: a dict with known properties for this object (as of 2020-12, only used for etags, && only when fetching CalendarObjectResource using the .objects or .getObjectsBySyncToken methods).
          * id: The resource id (UID for an Event)
         */
 
@@ -88,7 +80,7 @@ export class DavObject
         } else {
             this.props = props
         }
-        this.extra_init_options = extra
+        this.extraInitializationOptions = extra
         // url may be a path relative to the caldav root
         if (client && url) {
             this.url = client.url.join(url)
@@ -116,8 +108,8 @@ export class DavObject
 
         var props = [ new DisplayName()]
         var multiprops = [ new ResourceType() ]
-        var response = this._query_properties(props+multiprops, depth)
-        properties = response.expand_simple_props(props=props, multi_value_props=multiprops)
+        var response = this.query_properties(props+multiprops, depth)
+        properties = response.expandSimpleProperties(props=props, multi_value_props=multiprops)
 
         for (var path in List(properties.keys())) {
             var resource_types = properties[path][ResourceType.tag]
@@ -148,7 +140,7 @@ export class DavObject
         return c
     }
 
-    _query_properties(props=null, depth=0)
+    query_properties(props=null, depth=0)
     {
         /*
         This is an internal method for doing a propfind query.  It's a
@@ -162,10 +154,10 @@ export class DavObject
             root = Propfind() + prop
         }
 
-        return this._query(root, depth)
+        return this.query(root, depth)
     }
 
-    _query(root=null, depth=0, query_method='propfind', url=null,
+    query(root=null, depth=0, query_method='propfind', url=null,
                expected_return_value=null)
     {
         /*
@@ -198,7 +190,7 @@ export class DavObject
         return ret
     }
 
-    get_property(prop, use_cached=false, passthrough=null)
+    getProperty(prop, use_cached=false, passthrough=null)
     {
         /// TODO: use_cached should probably be true
         if (use_cached) {
@@ -206,21 +198,21 @@ export class DavObject
                 return this.props[prop.tag]
             }
         }
-        var foo = this.get_properties([prop], passthrough)
+        var foo = this.getProperties([prop], passthrough)
         return foo.get(prop.tag, null)
     }
 
-    get_properties(props=null, depth=0, parse_response_xml=true, parse_props=true)
+    getProperties(props=null, depth=0, parseResponseXml=true, parse_props=true)
     {
         /*Get properties (PROPFIND) for this object.
 
-        With parse_response_xml and parse_props set to true a
+        With parseResponseXml and parse_props set to true a
         best-attempt will be done on decoding the XML we get from the
         server - but this works only for properties that don't have
-        complex types.  With parse_response_xml set to false, a
+        complex types.  With parseResponseXml set to false, a
         DavResponse object will be returned, and it's up to the caller
         to decode.  With parse_props set to false but
-        parse_response_xml set to true, xml elements will be returned
+        parseResponseXml set to true, xml elements will be returned
         rather than values.
         
         Parameters) {
@@ -231,22 +223,22 @@ export class DavObject
 
         */
         var rc = null
-        var response = this._query_properties(props, depth)
-        if (!parse_response_xml) {
+        var response = this.query_properties(props, depth)
+        if (!parseResponseXml) {
             return response
         }
         var properties
         if (!parse_props) {
-            properties = response.find_objects_and_props()
+            properties = response.getObjectsAndProperties()
         } else {
-            properties = response.expand_simple_props(props)
+            properties = response.expandSimpleProperties(props)
         }
             
         error.assert_(properties)
 
         var path = unquote(this.url.path)
         var exchange_path;
-        if (path.endswith('/')) {
+        if (path.endsWith('/')) {
             exchange_path = path[:-1]
         } else {
             exchange_path = path + '/'
@@ -270,7 +262,7 @@ export class DavObject
             rc = properties[exchange_path]
         } else if (this.url in properties) {
             rc = properties[this.url]
-        } else if ('/principal/' in properties && path.endswith('/principal/')) {
+        } else if ('/principal/' in properties && path.endsWith('/principal/')) {
             console.log("Bypassing a known iCloud bug - path expected in response: %s, path found: /principal/ ... %s" % (path, error.ERR_FRAGMENT))
             /// The strange thing is that we apparently didn't encounter this problem in bc589093a34f0ed0ef489ad5e9cba048750c9837 or 3ee4e42e2fa8f78b71e5ffd1ef322e4007df7a60 - TODO: check this up
             rc = properties['/principal/']
@@ -285,7 +277,7 @@ export class DavObject
         return rc
     }
 
-    set_properties(props=null)
+    setProperties(props=null)
     {
         /*
         Set properties (PROPPATCH) for this object.
@@ -302,7 +294,7 @@ export class DavObject
         var set = new Set() + prop
         var root = new PropertyUpdate() + set
 
-        var r = this._query(root, query_method='proppatch')
+        var r = this.query(root, query_method='proppatch')
 
         var statuses = r.tree.findall(".//" + Status.tag)
         for (let s of statuses) {
@@ -341,7 +333,7 @@ export class DavObject
         }
     }
 
-    __str__()
+    _str__()
     {
         if (DisplayName.tag in this.props) {
             return this.props[DisplayName.tag]
@@ -352,7 +344,7 @@ export class DavObject
 
     // __repr__()
     // {
-    //     return "%s(%s)" % (this.__class__.__name__, String())
+    //     return "%s(%s)" % (this._class__.__name__, String())
     // }
 
 

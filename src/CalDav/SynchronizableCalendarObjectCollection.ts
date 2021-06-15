@@ -1,4 +1,4 @@
-import { GetEtag } from "./GetEtag"
+import { GetEtag } from "./Elements/GetEtag"
 
 export class SynchronizableCalendarObjectCollection
 {
@@ -7,22 +7,22 @@ export class SynchronizableCalendarObjectCollection
     in the calendar can easily be copied over through the sync method.
 
     To create a SynchronizableCalendarObjectCollection object, use
-    calendar.objects(load_objects=true)
+    calendar.objects(loadObjects=true)
     */
     calendar:any;
-    sync_token:any;
+    syncToken:any;
     objects:any;
-    _objects_by_url:any;
+    objects_by_url:any;
 
-    constructor(calendar, objects, sync_token)
+    constructor(calendar, objects, syncToken)
     {
         this.calendar = calendar
-        this.sync_token = sync_token
+        this.syncToken = syncToken
         this.objects = objects
-        this._objects_by_url = null
+        this.objects_by_url = null
     }
 
-    __iter__()
+    _iter__()
     {
         return this.objects.__iter__()
     }
@@ -32,13 +32,13 @@ export class SynchronizableCalendarObjectCollection
         /*
         returns a dict of the contents of the SynchronizableCalendarObjectCollection, URLs -> objects.
         */
-        if (this._objects_by_url == null) {
-            this._objects_by_url = {}
+        if (this.objects_by_url == null) {
+            this.objects_by_url = {}
             for (let obj of this) {
-                this._objects_by_url[obj.url] = obj
+                this.objects_by_url[obj.url] = obj
             }
         }
-        return this._objects_by_url
+        return this.objects_by_url
     }
 
     sync()
@@ -49,7 +49,7 @@ export class SynchronizableCalendarObjectCollection
         */
         var updated_objs = []
         var deleted_objs = []
-        var updates = this.calendar.objects_by_sync_token(this.sync_token, load_objects=false)
+        var updates = this.calendar.getObjectsBySyncToken(this.syncToken, loadObjects=false)
         var obu = this.objects_by_url()
         for (let obj of updates) {
             if (obj.url in obu && GetEtag.tag in obu[obj.url].props && GetEtag.tag in obj.props) {
@@ -68,7 +68,7 @@ export class SynchronizableCalendarObjectCollection
         }
 
         this.objects = obu.values()
-        this.sync_token = updates.sync_token
+        this.syncToken = updates.syncToken
         return [updated_objs, deleted_objs]
     }
 

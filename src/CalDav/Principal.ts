@@ -1,8 +1,8 @@
 import { CalendarSet } from "./CalendarSet"
-import { CalendarUserAddressSet } from "./CalendarUserAddressSet"
+import { CalendarUserAddressSet } from "./Elements/CalendarUserAddressSet"
 import { DavObject } from "./DavObject"
-import { CalendarHomeSet } from "./CalendarHomeSet"
-import { Href } from "./Href"
+import { CalendarHomeSet } from "./Elements/CalendarHomeSet"
+import { Href } from "./Elements/Href"
 import { ScheduleInbox } from "./ScheduleInbox"
 import { ScheduleOutbox } from "./ScheduleOutbox"
 
@@ -22,7 +22,7 @@ export class Principal extends DavObject
     is not stored anywhere)
     */
     url:any;
-    _calendar_home_set:CalendarHomeSet;
+    calendar_home_set:CalendarHomeSet;
     cup:any;
     client:any;
     dav:any;
@@ -41,11 +41,11 @@ export class Principal extends DavObject
         path from doing propfinds.
         */
         super(client, url, null, null, null, null, null)
-        this._calendar_home_set = null
+        this.calendar_home_set = null
 
         if (url == null) {
             this.url = this.client.url
-            this.cup = this.get_property(CurrentUserPrincipal())
+            this.cup = this.getProperty(CurrentUserPrincipal())
             this.url = this.client.url.join(
                 URL.objectify(this.cup))
         }
@@ -57,7 +57,7 @@ export class Principal extends DavObject
         Convenience method, bypasses the this.calendar_home_set object.
         See CalendarSet.make_calendar for details.
         */
-        return this._calendar_home_set.make_calendar(
+        return this.calendar_home_set.make_calendar(
             name, cal_id,
             supported_calendar_component_set=supported_calendar_component_set)
     }
@@ -68,7 +68,7 @@ export class Principal extends DavObject
         The calendar method will return a calendar object.
         It will not initiate any communication with the server.
         */
-        return this._calendar_home_set.calendar(name, cal_id)
+        return this.calendar_home_set.calendar(name, cal_id)
     }
 
     get_vcal_address()
@@ -78,9 +78,9 @@ export class Principal extends DavObject
         */
         /// Late import.  Prior to 1.0, icalendar is only an optional dependency.
         import { vCalAddress, vText } from "./icalendar";
-        var cn = this.get_property(this.dav.DisplayName())
+        var cn = this.getProperty(this.dav.DisplayName())
         var ids = this.calendar_user_address_set()
-        var cutype = this.get_property(this.cdav.CalendarUserType())
+        var cutype = this.getProperty(this.cdav.CalendarUserType())
         var ret = vCalAddress(ids[0])
         ret.params['cn'] = vText(cn)
         ret.params['cutype'] = vText(cutype)
@@ -90,17 +90,17 @@ export class Principal extends DavObject
     // @property
     calendar_home_set()
     {
-        if (!this._calendar_home_set) {
-            this._calendar_home_set = this.get_property(this.cdav.CalendarHomeSet())
+        if (!this.calendar_home_set) {
+            this.calendar_home_set = this.getProperty(this.cdav.CalendarHomeSet())
         }
-        return this._calendar_home_set
+        return this.calendar_home_set
     }
 
     // @calendar_home_set.setter
     calendar_home_set_from_url(url)
     {
         if (url instanceof CalendarSet) {
-            this._calendar_home_set = url
+            this.calendar_home_set = url
             return
         }
         var sanitized_url = URL.objectify(url)
@@ -121,7 +121,7 @@ export class Principal extends DavObject
                 this.client.url = sanitized_url
             }
         }
-        this._calendar_home_set = new CalendarSet(this.client, this.client.url.join(sanitized_url))
+        this.calendar_home_set = new CalendarSet(this.client, this.client.url.join(sanitized_url))
     }
 
     calendars()
@@ -132,7 +132,7 @@ export class Principal extends DavObject
         return this.calendar_home_set.calendars()
     }
 
-    freebusy_request(dtstart, dtend, attendees)
+    getFreeBusy(dtstart, dtend, attendees)
     {
         import { icalendar } from "./icalendar";
         var freebusy_ical = icalendar.Calendar()
@@ -148,13 +148,13 @@ export class Principal extends DavObject
         freebusy_ical.add_component(freebusy_comp)
         var outbox = this.schedule_outbox()
         var caldavobj = FreeBusy(data=freebusy_ical, parent=outbox)
-        caldavobj.add_organizer()
+        caldavobj.addOrganizer()
         for (let attendee of attendees) {
-            caldavobj.add_attendee(attendee, true)
+            caldavobj.addAttendee(attendee, true)
         }
 
         var response = this.client.post(outbox.url, caldavobj.data, headers={'Content-Type': 'text/calendar; charset=utf-8'})
-        return response.find_objects_and_props()
+        return response.getObjectsAndProperties()
     }
 
     calendar_user_address_set()
@@ -162,7 +162,7 @@ export class Principal extends DavObject
         /*
         defined in RFC6638
         */
-        var addresses = this.get_property(CalendarUserAddressSet(), parse_props=false)
+        var addresses = this.getProperty(CalendarUserAddressSet(), parse_props=false)
         for (let x of addresses) {
             if (x.tag != Href.tag) {
                 assert (!x)

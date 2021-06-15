@@ -1,5 +1,5 @@
 import { ScheduleMailbox } from "./ScheduleMailbox"
-import { ScheduleOutboxURL } from "./ScheduleOutboxURL"
+import { ScheduleOutboxURL } from "./Elements/ScheduleOutboxURL"
 
 export class ScheduleOutbox extends ScheduleMailbox
 {

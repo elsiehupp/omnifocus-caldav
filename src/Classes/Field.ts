@@ -25,7 +25,7 @@ export class Field
         this.ignored_values = ignored_values || ['', 'null', null];
     }
 
-    _is_value_allowed(value: string)
+    is_value_allowed(value: string)
     {
         return value ! in this.ignored_values;
     }
@@ -55,7 +55,7 @@ export class Field
     {
         /*Will extract value from GTG.core.task.Task and set it to vTodo*/
         var value = this.get_gtg(task, namespace);
-        if (this._is_value_allowed(value)) {
+        if (this.is_value_allowed(value)) {
             this.write_dav(vtodo, value);
         } else {
             this.clean_dav(vtodo);
@@ -88,7 +88,7 @@ export class Field
             return;
         }
         var value = this.get_dav(todo);
-        if (this._is_value_allowed(value)) {
+        if (this.is_value_allowed(value)) {
             this.write_gtg(task, value, namespace);
         }
     }
@@ -105,17 +105,17 @@ export class Field
         return true
     }
 
-    __repr__()
+    _repr__()
     {
         return `<${typeof this}(${this.dav_name})>`;
     }
 
     // @classmethod
-    _browse_subtasks(task: Task)
+    browse_subtasks(task: Task)
     {
         yield task
         for (var child:Task in task.children) {
-            yield from this._browse_subtasks(child);
+            yield from this.browse_subtasks(child);
         }
     }
 }

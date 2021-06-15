@@ -8,7 +8,7 @@ export class PercentComplete extends Field
     {
         var total_cnt = 0;
         var done_cnt = 0;
-        for (var subtask in this._browse_subtasks(task)) {
+        for (var subtask in this.browse_subtasks(task)) {
             if (subtask.get_status() != Task.STA_DISMISSED) {
                 total_cnt += 1;
                 if (subtask.get_status() == Task.STA_DONE) {

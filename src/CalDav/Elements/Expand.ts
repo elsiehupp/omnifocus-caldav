@@ -1,4 +1,5 @@
 import { BaseElement } from "./BaseElement"
+import { toUtcDateString } from "../toUtcDateString"
 import { NameSpace } from "../NameSpace"
 
 export class Expand extends BaseElement

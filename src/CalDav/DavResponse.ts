@@ -1,10 +1,10 @@
-import { MultiStatus } from "./MultiStatus"
-import { Response } from "./Response"
-import { Status } from "./Status"
-import { Href } from "./Href"
-import { Prop } from "./Prop"
-import { PropStat } from "./PropStat"
-import { SyncToken } from "./SyncToken"
+import { MultiStatus } from "./Elements/MultiStatus"
+import { Response } from "./Elements/Response"
+import { Status } from "./Elements/Status"
+import { Href } from "./Elements/Href"
+import { Prop } from "./Elements/Prop"
+import { PropStat } from "./Elements/PropStat"
+import { SyncToken } from "./Elements/SyncToken"
 
 // import logging
 // import re
@@ -38,7 +38,7 @@ export class DavResponse
     status = 0
     objects;
     schedule_tag;
-    sync_token;
+    syncToken;
 
     constructor(response)
     {
@@ -50,7 +50,7 @@ export class DavResponse
         /// streaming into the etree library rather than first read the whole
         /// content into a string.  (the line below just needs to be moved to
         /// the relevant if-pronges below)
-        this._raw = response.content
+        this.raw = response.content
         if (this.headers.get('Content-Type', '').startsWith('text/xml') ||
             this.headers.get('Content-Type', '').startsWith('application/xml')) {
             try {
@@ -59,7 +59,7 @@ export class DavResponse
                 content_length=-1
             }
             if (content_length == 0) {
-                this._raw = ''
+                this.raw = ''
                 this.tree = null
                 console.log("No content delivered")
             } else {
@@ -67,7 +67,7 @@ export class DavResponse
                 /// the stream often is compressed.  We could add uncompression on the fly, but not
                 /// considered worth the effort as for now.
                 /this.tree = etree.parse(response.raw, parser=etree.XMLParser(remove_blank_text=true))
-                this.tree = etree.XML(this._raw, parser=etree.XMLParser(remove_blank_text=true))
+                this.tree = etree.XML(this.raw, parser=etree.XMLParser(remove_blank_text=true))
                 if (log.level <= logging.DEBUG) {
                     console.log(etree.tostring(this.tree, pretty_print=true))
                 }
@@ -84,7 +84,7 @@ export class DavResponse
                 console.log("unexpected content type from server: %s. %s" % (this.headers['Content-Type'], error.ERR_FRAGMENT))
             }
             try {
-                this.tree = etree.XML(this._raw, parser=etree.XMLParser(remove_blank_text=true))
+                this.tree = etree.XML(this.raw, parser=etree.XMLParser(remove_blank_text=true))
             } catch {
                 // pass
             }
@@ -92,12 +92,12 @@ export class DavResponse
 
         /// this if (will always be true as for now, see other comments on streaming.
         if (hasattr('_raw')) {
-            console.log(this._raw)
+            console.log(this.raw)
             // ref https://github.com/python-caldav/caldav/issues/112 stray CRs may cause problems
-            if (type(this._raw) == bytes) {
-                this._raw = this._raw.replace(b'\r\n', b'\n')
-            } else if (type(this._raw) == str) {
-                this._raw = this._raw.replace('\r\n', '\n')
+            if (type(this.raw) == bytes) {
+                this.raw = this.raw.replace(b'\r\n', b'\n')
+            } else if (type(this.raw) == str) {
+                this.raw = this.raw.replace('\r\n', '\n')
             }
         }
         this.status = response.status_code
@@ -116,12 +116,12 @@ export class DavResponse
     {
         /// TODO: this should not really be needed?
         if (!hasattr('_raw') {
-            this._raw = etree.tostring(this.tree, pretty_print=true)
+            this.raw = etree.tostring(this.tree, pretty_print=true)
         }
-        return this._raw
+        return this.raw
     }
 
-    _strip_to_multistatus()
+    strip_to_multistatus()
     {
         /*
         The general format of inbound data is something like this) {
@@ -171,7 +171,7 @@ export class DavResponse
         }
     }
 
-    _parse_response(response)
+    parse_response(response)
     {
         /*
         One response should contain one or zero status children, one
@@ -201,7 +201,7 @@ export class DavResponse
         return [href, propstats, status]
     }
 
-    find_objects_and_props()
+    getObjectsAndProperties()
     {
         /*Check the response from the server, check that it is on an expected format,
         find hrefs and props from it and check statuses delivered.
@@ -210,23 +210,23 @@ export class DavResponse
         {proptag: prop_element}}.  Further parsing of the prop_element
         has to be done by the caller.
 
-        this.sync_token will be populated if (found, this.objects will be populated.
+        this.syncToken will be populated if (found, this.objects will be populated.
         */
         this.objects = {}
 
         if ('Schedule-Tag' in this.headers) {
             this.schedule_tag = this.headers['Schedule-Tag']
         }
-        
-        var responses = this._strip_to_multistatus()
+
+        var responses = this.strip_to_multistatus()
         for (let r of responses) {
             if (r.tag == SyncToken.tag) {
-                this.sync_token = r.text
+                this.syncToken = r.text
                 continue
             }
             error.assert_(r.tag == Response.tag)
 
-            (href, propstats, status) = this._parse_response(r)
+            (href, propstats, status) = this.parse_response(r)
             /// I would like to do this assert here ...
             // error.assert_(not href in this.objects)
             /// but then there was https://github.com/python-caldav/caldav/issues/136
@@ -265,7 +265,7 @@ export class DavResponse
         return this.objects
     }
 
-    _expand_simple_prop(proptag, props_found, multi_value_allowed=false, xpath=null)
+    expand_simple_prop(proptag, props_found, multi_value_allowed=false, xpath=null)
     {
         var values = []
         if (proptag in props_found) {
@@ -301,26 +301,26 @@ export class DavResponse
     }
 
     /// TODO: "expand" does not feel quite right.
-    expand_simple_props(props=[], multi_value_props=[], xpath=null)
+    expandSimpleProperties(props=[], multi_value_props=[], xpath=null)
     {
         /*
-        The find_objects_and_props() will stop at the xml element
+        The getObjectsAndProperties() will stop at the xml element
         below the prop tag.  This method will expand those props into
         text.
 
-        Executes find_objects_and_props if (!run already, then
+        Executes getObjectsAndProperties if (!run already, then
         modifies and returns this.objects.
         */
         if (!hasattr('objects') {
-            this.find_objects_and_props()
+            this.getObjectsAndProperties()
         }
         for (let href of this.objects) {
             var props_found = this.objects[href]
             for (let prop of props) {
-                props_found[prop.tag] = this._expand_simple_prop(prop.tag, props_found, xpath=xpath)
+                props_found[prop.tag] = this.expand_simple_prop(prop.tag, props_found, xpath=xpath)
             }
             for (let prop of multi_value_props) {
-                props_found[prop.tag] = this._expand_simple_prop(prop.tag, props_found, xpath=xpath, true)
+                props_found[prop.tag] = this.expand_simple_prop(prop.tag, props_found, xpath=xpath, true)
             }
         }
         return this.objects

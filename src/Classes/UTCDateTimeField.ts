@@ -4,7 +4,7 @@ import { Accuracy } from "./Accuracy"
 export class UTCDateTimeField extends DateField
 {
     // @staticmethod
-    _get_dt_for_dav_writing(value)
+    get_dt_for_dav_writing(value)
     {
         if (value instanceof Date) {
             if (value.accuracy == Accuracy.timezone) {

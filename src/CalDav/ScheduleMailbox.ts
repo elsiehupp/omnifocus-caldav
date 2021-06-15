@@ -11,7 +11,7 @@ export class ScheduleMailbox extends Calendar
     should create a common base class for ScheduleMailbox and Calendar
     eventually.
     */
-    _items;
+    items;
 
     constructor(client=null, principal=null, url=null)
     {
@@ -19,7 +19,7 @@ export class ScheduleMailbox extends Calendar
         Will locate the mbox if (no url is given
         */
         super(client, url)
-        this._items = null
+        this.items = null
         if (!client && principal) {
             this.client = principal.client
         }
@@ -31,7 +31,7 @@ export class ScheduleMailbox extends Calendar
         } else {
             this.url = principal.url
             try {
-                this.url = this.client.url.join(URL(this.get_property(this.findprop())))
+                this.url = this.client.url.join(URL(this.getProperty(this.findprop())))
             } catch {
                 console.log("something bad happened", exc_info=true)
                 error.assert_(this.client.checkSchedulingSupport())
@@ -47,22 +47,22 @@ export class ScheduleMailbox extends Calendar
         TODO: work in progress
         TODO: perhaps this belongs to the super class?
         */
-        if (!this._items) {
+        if (!this.items) {
             try {
-                this._items = this.objects(load_objects=true)
+                this.items = this.objects(loadObjects=true)
             } catch {
                 console.log("caldav server does not seem to support a sync-token REPORT query on a scheduling mailbox")
                 error.assert_('google' in String(this.url))
-                this._items = this.children()
+                this.items = this.children()
             }
         } else {
             try {
-                this._items.sync()
+                this.items.sync()
             } catch {
-                this._items = this.children()
+                this.items = this.children()
             }
         }
-        return this._items
+        return this.items
     }
 }
 

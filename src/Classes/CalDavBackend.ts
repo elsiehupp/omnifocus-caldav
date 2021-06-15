@@ -4,9 +4,8 @@ Backend for storing/loading tasks in CalDAV Tasks
 
 import { DavClient } from "../CalDav/DavClient"
 import { Calendar } from "../CalDav/Calendar"
-import { DavError } from "../CalDav/DavError"
 import { Categories } from "./Categories"
-import { Todo } from "../CalDav/Todo"
+import { Todo } from "../CalDav/Resources/Todo"
 import { PeriodicImportBackend } from "./PeriodicImportBackend";
 import { Task } from "../OmniFocusAPI/Task";
 import { PARENT_FIELD, Translator, UID_FIELD } from "./Translator"
@@ -14,18 +13,12 @@ import { TodoCache } from "./TodoCache";
 import { Status } from "./Status";
 
 /*
-from collections import defaultdict
-from datetime import date, datetime
 
 import caldav
 from dateutil.tz import UTC
-from GTG.backends.backend_signals import BackendSignals
-from GTG.backends.generic_backend import GenericBackend
-from GTG.backends.periodic_import_backend import PeriodicImportBackend
 from GTG.core.dates import LOCAL_TIMEZONE, Accuracy, Date
 from GTG.core.interruptible import interruptible
 from GTG.core.task import DisabledSyncCtx, Task
-from vobject import iCalendar
 */
 
 const enableLogging: boolean = true;
@@ -43,8 +36,8 @@ export const DAV_IGNORE = ['last-modified',  // often updated alone by GTG
 
 export class CalDavDackend extends PeriodicImportBackend
 {
-    _dav_client:DavClient;
-    _cache: TodoCache;
+    dav_client:DavClient;
+    cache: TodoCache;
 
     constructor(parameters)
     {
@@ -56,43 +49,43 @@ export class CalDavDackend extends PeriodicImportBackend
         for (var param in parameters) {
             this[param] = param;
         }
-        this._dav_client = null;
-        this._cache = new TodoCache();
+        this.dav_client = null;
+        this.cache = new TodoCache();
     }
 
     initialize():void
     {
         this.initialize();
-        this._dav_client = new DavClient(
-            this._parameters['service-url'],
-            this._parameters['username'],
-            this._parameters['password']);
+        this.dav_client = new DavClient(
+            this.parameters['service-url'],
+            this.parameters['username'],
+            this.parameters['password']);
         }
 
     // @interruptible
     do_periodic_import():void
     {
         with (this.datastore.get_backend_mutex()) {
-            this._do_periodic_import();
+            this.do_periodic_import();
         }
     }
 
     // @interruptible
     set_task(task: Task):void
     {
-        if (this._parameters["is-first-run"] || !this._cache.initialized) {
+        if (this.parameters["is-first-run"] || !this.cache.initialized) {
             console.log("not loaded yet, ignoring set_task");
             return;
         }
         with (this.datastore.get_backend_mutex()) {
-            return this._set_task(task);
+            return this.set_task(task);
         }
     }
 
     // @interruptible
     remove_task(tid: string):void
     {
-        if (this._parameters["is-first-run"] || !this._cache.initialized) {
+        if (this.parameters["is-first-run"] || !this.cache.initialized) {
             console.log("not loaded yet, ignoring set_task");
             return;
         }
@@ -101,7 +94,7 @@ export class CalDavDackend extends PeriodicImportBackend
             return;
         }
         with (this.datastore.get_backend_mutex()) {
-            return this._remove_task(tid);
+            return this.remove_task(tid);
         }
     }
 
@@ -111,17 +104,17 @@ export class CalDavDackend extends PeriodicImportBackend
 
     datetime: Date;
 
-    _do_periodic_import():void
+    do_periodic_import():void
     {
         console.log("Running periodic import");
         var start = this.datetime.now();
-        this._refresh_calendar_list();
+        this.refresh_calendar_list();
         // browsing calendars
         var counts = {'created': 0, 'updated': 0, 'unchanged': 0, 'deleted': 0};
-        for (var cal_url, calendar in this._cache.calendars) {
+        for (let cal_url, calendar of this.cache.calendars) {
             // retrieving todos and updating various cache
             console.log(`Fetching todos from ${cal_url}`);
-            this._import_calendar_todos(calendar, start, counts);
+            this.import_calendar_todos(calendar, start, counts);
         }
         if (enableLogging) {
             for (var key in counts) {
@@ -130,25 +123,25 @@ export class CalDavDackend extends PeriodicImportBackend
                 }
             }
         }
-        this._parameters["is-first-run"] = false;
-        this._cache.setInitialized(true);
+        this.parameters["is-first-run"] = false;
+        this.cache.setInitialized(true);
     }
 
-    _set_task(task: Task):void
+    set_task(task: Task):void
     {
         console.log(`set_task todo for ${task.get_uuid()}`);
-        with (DisabledSyncCtx(task, sync_on_exit=false)) {
+        // with (GTG.core.task.DisabledSyncCtx(task, sync_on_exit=false)) {
             var seq_value = SEQUENCE.get_gtg(task, this.namespace);
             SEQUENCE.write_gtg(task, seq_value + 1, this.namespace);
-        }
-        var [todo, calendar] = this._get_todo_and_calendar(task);
+        // }
+        var [todo, calendar] = this.get_todo_and_calendar(task);
         if (!calendar) {
             console.log(`${task} has no calendar to be synced with`);
             return;
         }
         if (todo && todo.parent.url != calendar.url) {  // switch calendar
-            this._remove_todo(UID_FIELD.get_dav(todo), todo);
-            this._create_todo(task, calendar);
+            this.remove_todo(UID_FIELD.get_dav(todo), todo);
+            this.create_todo(task, calendar);
         } else if (todo) {  // found one, saving it
             if (!Translator.should_sync(task, this.namespace, todo)) {
                 console.log('insufficient change, ignoring set_task call');
@@ -165,15 +158,15 @@ export class CalDavDackend extends PeriodicImportBackend
                 console.log(`Something went wrong while updating ${task} => ${todo}`);
             }
         } else {  // creating from task
-            this._create_todo(task, calendar);
+            this.create_todo(task, calendar);
         }
     }
 
-    _remove_task(tid: string):void
+    remove_task(tid: string):void
     {
-        var todo = this._cache.get_todo(tid);
+        var todo = this.cache.get_todo(tid);
         if (todo) {
-            this._remove_todo(tid, todo);
+            this.remove_todo(tid, todo);
         } else {
             console.log(`Could not find todo for task(${tid})`);
         }
@@ -183,7 +176,7 @@ export class CalDavDackend extends PeriodicImportBackend
     // Dav functions
     //
 
-    _create_todo(task: Task, calendar: Calendar)
+    create_todo(task: Task, calendar: Calendar)
     {
         console.log(`SYNCING creating todo for ${task}`);
         var new_todo = null;
@@ -196,13 +189,13 @@ export class CalDavDackend extends PeriodicImportBackend
             return;
         }
         var uid = UID_FIELD.get_dav(new_todo);
-        this._cache.set_todo(new_todo, uid);
+        this.cache.set_todo(new_todo, uid);
     }
 
-    _remove_todo(uid: string, todo: Task):void
+    remove_todo(uid: string, todo: Task):void
     {
         console.log(`SYNCING removing todo for Task(${uid})`);
-        this._cache.del_todo(uid);  // cleaning cache
+        this.cache.del_todo(uid);  // cleaning cache
         try {  // deleting through caldav
             todo.delete();
         } catch (DavError) {
@@ -210,27 +203,21 @@ export class CalDavDackend extends PeriodicImportBackend
         }
     }
 
-    _refresh_calendar_list()
+    refresh_calendar_list()
     {
         /*Will browse calendar list available after principal call and cache
         them*/
         try {
-            var principal = this._dav_client.principal();
-        } catch (caldav.lib.error.AuthorizationError as error) {
-            var message = _(
-                "You need a correct login to CalDAV\n Configure CalDAV with login information. Error:"
-            );
-            BackendSignals().interaction_requested(
-                this.get_id(), `${message} ${error}`,
-                BackendSignals().INTERACTION_INFORM, "on_continue_clicked");
-            raise error;
+            var principal = this.dav_client.principal();
+        } catch {
+            console.log("You need a correct login to CalDAV\n Configure CalDAV with login information. Error:");
         }
         for (var calendar in principal.calendars()) {
-            this._cache.set_calendar(calendar);
+            this.cache.set_calendar(calendar);
         }
     }
 
-    _clean_task_missing_from_backend(uid: string,
+    clean_task_missing_from_backend(uid: string,
                                          calendar_tasks: Set<Task>, counts: dict,
                                          import_started_on: datetime)
     {
@@ -244,36 +231,36 @@ export class CalDavDackend extends PeriodicImportBackend
         }
         // if (first run, we're getting all task, including completed
         // if (we miss one, we delete it
-        if (!this._cache.initialized) {
+        if (!this.cache.initialized) {
             do_delete = true;
         }
         // if (cache is initialized, it's normal we missed completed
         // task, but we should have seen active ones
         else if (task.get_status() == Status.Active) {
-            var [__, calendar] = this._get_todo_and_calendar(task);
+            var [__, calendar] = this.get_todo_and_calendar(task);
             if (calendar) {
                 console.log(`Couldn't find calendar for ${task}`);
                 return;
             }
             try {  // fetching missing todo from server
-                var todo = calendar.todo_by_uid(uid);
+                var todo = calendar.getTodoByUid(uid);
             } catch (caldav.lib.error.NotFoundError) {
                 do_delete = true;
             } finally {
-                var result = this._update_task(task, todo, force=true);
+                var result = this.update_task(task, todo, force=true);
                 counts[result] += 1;
                 return;
             }
         }
         if (do_delete) {  // the task was missing for a good reason
             counts['deleted'] += 1
-            this._cache.del_todo(uid)
+            this.cache.del_todo(uid)
             this.datastore.request_task_deletion(uid)
         }
     }
 
     // @staticmethod
-    _denorm_children_on_vtodos(todos: Set<Task>)
+    denorm_children_on_vtodos(todos: Set<Task>)
     {
         // NOTE: GTG.core.task.Task.set_parent seems buggy so we can't use it
         // default caldav specs usually only specifies parent, here we use it
@@ -300,25 +287,25 @@ export class CalDavDackend extends PeriodicImportBackend
         }
     }
 
-    _import_calendar_todos(calendar: Calendar,
+    import_calendar_todos(calendar: Calendar,
                                import_started_on: datetime, counts: dict)
     {
-        var todos = calendar.todos(include_completed=not this._cache.initialized);
+        var todos = calendar.todos(includeCompleted=not this.cache.initialized);
         var todo_uids = {UID_FIELD.get_dav(todo) for todo in todos};
 
         // browsing all task linked to current calendar,
         // removing missed ones we don't see in fetched todos
-        var calendar_tasks = dict(this._get_calendar_tasks(calendar))
+        var calendar_tasks = dict(this.get_calendar_tasks(calendar))
         for (var uid in set(calendar_tasks).difference(todo_uids)) {
-            this._clean_task_missing_from_backend(uid, calendar_tasks, counts,
+            this.clean_task_missing_from_backend(uid, calendar_tasks, counts,
                                                   import_started_on)
         }
 
-        this._denorm_children_on_vtodos(todos)
+        this.denorm_children_on_vtodos(todos)
 
-        for (var todo in this.__sort_todos(todos)) {
+        for (var todo in this._sort_todos(todos)) {
             uid = UID_FIELD.get_dav(todo);
-            this._cache.set_todo(todo, uid);
+            this.cache.set_todo(todo, uid);
             // Updating and creating task according to todos
             task = this.datastore.get_task(uid);
             if (!task) {  // not found, creating it
@@ -327,7 +314,7 @@ export class CalDavDackend extends PeriodicImportBackend
                 this.datastore.push_task(task);
                 counts['created'] += 1;
             } else {
-                var result = this._update_task(task, todo);
+                var result = this.update_task(task, todo);
                 counts[result] += 1;
             }
             if (__debug__) {
@@ -338,7 +325,7 @@ export class CalDavDackend extends PeriodicImportBackend
         }
     }
 
-    _update_task(task: Task, todo: Todo, force: bool = false)
+    update_task(task: Task, todo: Todo, force: bool = false)
     {
         if (!force) {
             var task_seq = SEQUENCE.get_gtg(task, this.namespace)
@@ -351,7 +338,7 @@ export class CalDavDackend extends PeriodicImportBackend
         return 'updated';
     }
 
-    __sort_todos(todos: Set<Task>, max_depth: int = 500)
+    _sort_todos(todos: Set<Task>, max_depth: int = 500)
     {
         /*For a given list of todos, will return first the one without parent
         and then go deeper in the tree by browsing the tree.*/
@@ -379,7 +366,7 @@ export class CalDavDackend extends PeriodicImportBackend
         }
     }
 
-    _get_calendar_tasks(calendar: Calendar)
+    get_calendar_tasks(calendar: Calendar)
     {
         /*Getting all tasks that has the calendar tag*/
         for (var uid in this.datastore.get_all_tasks()) {
@@ -394,14 +381,14 @@ export class CalDavDackend extends PeriodicImportBackend
     // Utility methods
     //
 
-    _get_todo_and_calendar(task: Task):[Task, Calendar]
+    get_todo_and_calendar(task: Task):[Task, Calendar]
     {
         /*For a given task, try to get the todo out of the cache and figures
         out its calendar if (one is linked to it*/
-        var todo = this._cache.get_todo(UID_FIELD.get_gtg(task));
+        var todo = this.cache.get_todo(UID_FIELD.get_gtg(task));
         var calendar = null;
         // lookup by task
-        for (var __, calendar in this._cache.calendars) {
+        for (var __, calendar in this.cache.calendars) {
             if (Categories.has_calendar_tag(task, calendar)) {
                 console.log(`Found from task tag ${todo} and ${calendar}`);
                 return [todo, calendar];
@@ -410,7 +397,7 @@ export class CalDavDackend extends PeriodicImportBackend
         var cname = task['calendar_name']; //namespace=this.namespace
         var curl = task["calendar_url"]; //namespace=this.namespace
         if (curl || cname) {
-            calendar = this._cache.get_calendar(cname, curl)
+            calendar = this.cache.get_calendar(cname, curl)
             if (calendar) {
                 console.log(`Found from task attr ${todo} and ${calendar}`);
                 return [todo, calendar];
@@ -426,6 +413,6 @@ export class CalDavDackend extends PeriodicImportBackend
     // @property
     namespace()
     {
-        return `caldav:${this._parameters['service-url']}`
+        return `caldav:${this.parameters['service-url']}`
     }
 }

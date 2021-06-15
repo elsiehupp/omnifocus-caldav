@@ -27,12 +27,12 @@ export class BaseElement
         }
     }
 
-    __add__(other)
+    _add__(other)
     {
         return this.append(other)
     }
 
-    __str__()
+    _str__()
     {
         var utf8 = etree.tostring(this.xmlelement(), encoding="utf-8",
                               xml_declaration=true, pretty_print=true)

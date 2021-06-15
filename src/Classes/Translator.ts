@@ -62,7 +62,7 @@ export class Translator
 
 
     // @classmethod
-    _get_new_vcal(): Todo
+    get_new_vcal(): Todo
     {
         var vcal = new Todo();
         vcal.add('PRODID').value = this.GTG_PRODID;
@@ -76,7 +76,7 @@ export class Translator
     {
         var vcal = null;
         if (vtodo == null) {
-            vcal = this._get_new_vcal();
+            vcal = this.get_new_vcal();
             vtodo = vcal.vtodo;
         }
         // always write a DTSTAMP field to the `now`

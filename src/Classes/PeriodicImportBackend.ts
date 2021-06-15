@@ -66,12 +66,12 @@ export abstract class PeriodicImportBackend extends GenericBackend
             if (!this.urgent_iteration) {
                 this.import_timer = window.setTimeout(
                     this.start_get_tasks,
-                    this._parameters['period'] * 60.0 * 1000.0)
+                    this.parameters['period'] * 60.0 * 1000.0)
             }
 
             // execute the iteration
             this.running_iteration = true
-            this._start_get_tasks()
+            this.start_get_tasks()
             this.running_iteration = false
             this.cancellation_point()
 
@@ -89,7 +89,7 @@ export abstract class PeriodicImportBackend extends GenericBackend
 
     abstract do_periodic_import():void;
 
-    _start_get_tasks()
+    start_get_tasks()
     {
         /*
         This function executes an imports and schedules the next
