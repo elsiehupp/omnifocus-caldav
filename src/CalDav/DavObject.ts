@@ -1,10 +1,10 @@
-import { DisplayName } from "./DisplayName"
+import { DisplayName } from "./Elements/DisplayName"
 import { ResourceType } from "./ResourceType"
-import { Prop } from "./Prop"
-import { PropertyUpdate } from "./PropertyUpdate"
-import { Propfind } from "./Propfind"
-import { Set } from "./Set"
-import { Status } from "./Status"
+import { Prop } from "./Elements/Prop"
+import { PropertyUpdate } from "./Elements/PropertyUpdate"
+import { Propfind } from "./Elements/Propfind"
+import { Set } from "./Elements/Set"
+import { Status } from "./Elements/Status"
 import { Url } from "./Url"
 
 /*
@@ -245,6 +245,7 @@ export class DavObject
         error.assert_(properties)
 
         var path = unquote(this.url.path)
+        var exchange_path;
         if (path.endswith('/')) {
             exchange_path = path[:-1]
         } else {
@@ -254,7 +255,7 @@ export class DavObject
         if (path in properties) {
             rc = properties[path]
         } else if (exchange_path in properties) {
-            if (not isinstance(Principal)) {
+            if (!(isinstance(Principal))) {
                 /// Some caldav servers reports the URL for the current
                 /// principal to end with / when doing a propfind for
                 /// current-user-principal - I believe that's a bug,

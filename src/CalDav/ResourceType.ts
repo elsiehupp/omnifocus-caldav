@@ -1,5 +1,5 @@
 import { BaseElement } from "./BaseElement"
-import { NameSpace } from "./NameSpace"
+import { NameSpace } from "../NameSpace"
 
 export class ResourceType extends BaseElement
 {

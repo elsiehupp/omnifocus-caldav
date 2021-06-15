@@ -1,5 +1,5 @@
 import { NamedBaseElement } from "./NamedBaseElement"
-import { NameSpace } from "./NameSpace"
+import { NameSpace } from "../NameSpace"
 
 export class PropFilter extends NamedBaseElement
 {
