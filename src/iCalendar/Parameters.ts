@@ -1,6 +1,6 @@
 export class Parameters(CaselessDict):
     """Parser and generator of Property parameter strings. It knows nothing of
-    datatypes. Its main concern is textual structure.
+    datatypes. Its main concern is textual structuRegExp.
     """
 
     def params(self):

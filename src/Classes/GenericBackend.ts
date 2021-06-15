@@ -120,8 +120,8 @@ export class GenericBackend
         }
         this.to_set_timer = null
         this.please_quit = false
-        this.cancellation_point = lambda: _cancellation_point(
-            lambda: this.please_quit)
+        // this.cancellation_point = lambda: _cancellation_point(
+        //     lambda: this.please_quit)
         this.to_set = deque()
         this.to_remove = deque()
 
@@ -161,7 +161,7 @@ export class GenericBackend
     }
 
     // @classmethod
-    set_task(task: Task)
+    setTask(task: Task)
     {
         /*
         This function is called from GTG core whenever a task should be
@@ -176,10 +176,10 @@ export class GenericBackend
     }
 
     // @classmethod
-    remove_task(tid)
+    removeTodoFromCalDav2(tid)
     {
         /* This function is called from GTG core whenever a task must be
-        removed from the backend. Note that the task could be !present here.
+        removed from the backend. Note that the task could be !present heRegExp.
 
         @param tid: the id of the task to delete
         */
@@ -386,7 +386,7 @@ export class GenericBackend
 
     }
 
-    is_initialized()
+    getIsInitialized()
     {
         /*
         Returns if (the backend is up and running
@@ -412,20 +412,6 @@ export class GenericBackend
     //         return null
     //     }
     // }
-
-
-    datastore: any;
-
-    register_datastore(datastore)
-    {
-        /*
-        Setter function to inform the backend about the datastore that's
-        loading it.
-
-        @param datastore: a Datastore
-        */
-        this.datastore = datastore
-    }
 
 ///////////////////////////////////////////////////////////////////////////////
 // THREADING ///////////////////////////////////////////////////////////////////
@@ -471,7 +457,7 @@ export class GenericBackend
             }
             var tid = task.get_id()
             if (tid !in this.to_remove) {
-                this.set_task(task)
+                this.setTask(task)
             }
         }
 
@@ -481,14 +467,14 @@ export class GenericBackend
             } catch (IndexError) {
                 break
             }
-            this.remove_task(tid)
+            this.removeTodoFromCalDav2(tid)
         }
         // we release the weak lock
         this.to_set_timer = null
 
     }
 
-    queue_set_task(task: Task)
+    queue_setTask(task: Task)
     {
         /* Save the task in the backend. In particular, it just enqueues the
         task in the this.to_set queue. A thread will shortly run to apply the
@@ -504,7 +490,7 @@ export class GenericBackend
 
     }
 
-    queue_remove_task(tid)
+    queue_removeTodoFromCalDav2(tid)
     {
         /*
         Queues task to be removed. In particular, it just enqueues the

@@ -18,7 +18,7 @@ export class Event extends CalendarObjectResource
     /// TODO) {
     /// 1) this should only be done if (needed.  Use try-} catch (around the
     /// fragments where icalendar/vobject is parsing ical data, and do the
-    /// fixups there.
+    /// fixups theRegExp.
 
     /// 2) arguably, this is outside the scope of the caldav library.
     /// check if (this can be done in vobject or icalendar libraries instead
@@ -26,7 +26,7 @@ export class Event extends CalendarObjectResource
 
     /// TODO: would be nice with proper documentation on what systems are
     /// generating broken data.  Compatibility issues should also be collected
-    /// in the documentation. somewhere.
+    /// in the documentation. somewheRegExp.
     export fixEvent(event)
     {
         /*This function receives some ical as it's given from the server, checks for
@@ -49,14 +49,14 @@ export class Event extends CalendarObjectResource
         */
         /// TODO: add ^ before COMPLETED and CREATED?
         /// 1) Add a random time if (completed is given as date
-        var fixed = re.sub('COMPLETED:(\d+)\s', 'COMPLETED:\g<1>T120000Z',
+        var fixed = RegExp.sub('COMPLETED:(\d+)\s', 'COMPLETED:\g<1>T120000Z',
                     to_local(event))
 
         /// 2) CREATED timestamps prior to epoch does not make sense,
         /// change from year 0001 to epoch.
-        fixed = re.sub('CREATED:00001231T000000Z',
+        fixed = RegExp.sub('CREATED:00001231T000000Z',
                     'CREATED:19700101T000000Z', fixed)
-        fixed = re.sub(r"\\+('\")", r"\1", fixed)
+        fixed = RegExp.sub(r"\\+('\")", r"\1", fixed)
 
         var fixed2 = ""
 

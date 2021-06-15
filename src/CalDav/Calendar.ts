@@ -114,7 +114,7 @@ export class Calendar extends DavObject
     saveWithInvites(ical, attendees, attendeeOptions)
     {
         /*
-        sends a schedule request to the server.  Equivalent with saveEvent, saveTodo, etc,
+        sends a schedule request to the server.  Equivalent with saveEvent, addTodo, etc,
         but the attendees will be added to the ical object before sending it to the server.
         */
         /// TODO: method supports raw strings, probably not icalendar nor vobject.
@@ -141,7 +141,7 @@ export class Calendar extends DavObject
         return e
     }
 
-    saveTodo(ical, noOverwrite=false, noCreate=false)
+    addTodo(ical, noOverwrite=false, noCreate=false)
     {
         /*
         Add a new task to the calendar, with the given ical.
@@ -583,9 +583,9 @@ export class Calendar extends DavObject
         for (let item of itemsFound) {
             // Long uids are folded, so splice the lines together here before
             // attempting a match.
-            var itemUid = re.search(r'\nUID:((.|\n[ \t])*)\n', item.data)
+            var itemUid = RegExp.search(r'\nUID:((.|\n[ \t])*)\n', item.data)
             if (!itemUid ||
-                    re.sub(r'\n[ \t]', '', itemUid.group(1)) != uid) {
+                    RegExp.sub(r'\n[ \t]', '', itemUid.group(1)) != uid) {
                 continue
             }
             return item

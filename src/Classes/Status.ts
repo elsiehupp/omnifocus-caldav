@@ -4,7 +4,7 @@ import { Task } from "../OmniFocusAPI/Task"
 
 export class Status extends Field
 {
-    DEFAULT_STATUS = (Task.STA_ACTIVE, 'NEEDS-ACTION');
+    DEFAULT_STATUS = [Task.STA_ACTIVE, 'NEEDS-ACTION'];
     status_mapping = [(Task.STA_ACTIVE, 'NEEDS-ACTION'),
                        (Task.STA_ACTIVE, 'IN-PROCESS'),
                        (Task.STA_DISMISSED, 'CANCELLED'),

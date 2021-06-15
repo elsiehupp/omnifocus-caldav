@@ -105,13 +105,13 @@ export function param_value(value):
 
 // [\w-] because of the iCalendar RFC
 // . because of the vCard RFC
-const NAME = re.compile(r'[\w.-]+')
+const NAME = RegExp.compile(r'[\w.-]+')
 
-const UNSAFE_CHAR = re.compile('[\x00-\x08\x0a-\x1f\x7F",:;]')
-const QUNSAFE_CHAR = re.compile('[\x00-\x08\x0a-\x1f\x7F"]')
-const FOLD = re.compile(b'(\r?\n)+[ \t]')
-const uFOLD = re.compile('(\r?\n)+[ \t]')
-const NEWLINE = re.compile(r'\r?\n')
+const UNSAFE_CHAR = RegExp.compile('[\x00-\x08\x0a-\x1f\x7F",:;]')
+const QUNSAFE_CHAR = RegExp.compile('[\x00-\x08\x0a-\x1f\x7F"]')
+const FOLD = RegExp.compile(b'(\r?\n)+[ \t]')
+const uFOLD = RegExp.compile('(\r?\n)+[ \t]')
+const NEWLINE = RegExp.compile(r'\r?\n')
 
 
 export function validate_token(name):
@@ -129,7 +129,7 @@ export function validate_param_value(value, quoted=True):
 
 // chars presence of which in parameter value will be cause the value
 // to be enclosed in double-quotes
-const QUOTABLE = re.compile("[,;: ’']")
+const QUOTABLE = RegExp.compile("[,;: ’']")
 
 
 export function dquote(val):

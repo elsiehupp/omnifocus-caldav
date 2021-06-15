@@ -46,7 +46,7 @@ export class DavClient
         if (proxy != null) {
             this.proxy = proxy
             // requests library expects the proxy url to have a scheme
-            if (re.match('^.*://', proxy) == null) {
+            if (RegExp.match('^.*://', proxy) == null) {
                 this.proxy = this.url.scheme + '://' + proxy
             }
 

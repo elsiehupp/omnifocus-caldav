@@ -68,7 +68,7 @@ export class Categories extends Field
         return this.to_tag(calendar.name, DAV_TAG_PREFIX);
     }
 
-    has_calendar_tag(task: Task, calendar)
+    hasCalendarTag(task: Task, calendar)
     {
         return this.get_calendar_tag(calendar) in task.get_tags_name();
     }

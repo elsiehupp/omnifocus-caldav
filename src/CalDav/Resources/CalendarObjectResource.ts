@@ -219,7 +219,7 @@ export class CalendarObjectResource extends DavObject
     create(data, id=null, path=null)
     {
         if (id == null && path != null && String(path).endsWith('.ics')) {
-            id = re.search('(/|^)([^/]*).ics', String(path)).group(2)
+            id = RegExp.search('(/|^)([^/]*).ics', String(path)).group(2)
         } else if (id == null) {
             for (var objectType in ['vevent', 'vtodo', 'vjournal', 'vfreebusy']) {
                 var obj = null
@@ -388,7 +388,7 @@ export class CalendarObjectResource extends DavObject
         /// we don't want to use vobject unless needed, but
         /// sometimes the caldav server may balk on slightly
         /// non-conforming icalendar data.  We'll just throw in a
-        /// try-send-data-except-wash-through-vobject-logic here.
+        /// try-send-data-except-wash-through-vobject-logic heRegExp.
         try {
             this.create(this.data, this.id, path)
         } catch (error.PutError) {

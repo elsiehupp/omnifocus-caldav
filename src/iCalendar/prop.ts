@@ -68,9 +68,9 @@ DATE_PART = r'(\d+)D'
 TIME_PART = r'T(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?'
 DATETIME_PART = '(?:%s)?(?:%s)?' % (DATE_PART, TIME_PART)
 WEEKS_PART = r'(\d+)W'
-DURATION_REGEX = re.compile(r'([-+]?)P(?:%s|%s)$'
+DURATION_REGEX = RegExp.compile(r'([-+]?)P(?:%s|%s)$'
                             % (WEEKS_PART, DATETIME_PART))
-WEEKDAY_RULE = re.compile(r'(?P<signal>[+-]?)(?P<relative>[\d]?)'
+WEEKDAY_RULE = RegExp.compile(r'(?P<signal>[+-]?)(?P<relative>[\d]?)'
                           r'(?P<weekday>[\w]{2})$')
 
 

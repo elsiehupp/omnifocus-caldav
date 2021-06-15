@@ -32,7 +32,7 @@ export class BaseElement
         return this.append(other)
     }
 
-    _str__()
+    toString()
     {
         var utf8 = etree.tostring(this.xmlelement(), encoding="utf-8",
                               xml_declaration=true, pretty_print=true)

@@ -1,4 +1,4 @@
-export interface Status {
+export enum Status {
 
     // When planning and subsequently reviewing a project,
     // it can be useful to give it a status to indicate whether
@@ -9,7 +9,7 @@ export interface Status {
     // to determine what progress you’ve made, and whether
     // they are still things you want to do.
     // const
-    Active:Status;
+    Active,
 
     // Eventually you’ll reach the successful end of a project.
     // Select the project and then choose Completed in the
@@ -19,7 +19,7 @@ export interface Status {
     // your View options to All or search for the project with
     // the Everything filter.
     // const
-    Done:Status;
+    Done,
 
     // if (you’ve decided not to work on a project any further,
     // you can Drop it completely. It disappears from the Projects
@@ -32,7 +32,7 @@ export interface Status {
     // choose All in View options or search for it with the
     // Everything filter.
     // const
-    Dropped:Status;
+    Dropped,
 
     // if (you’re not sure whether you want to continue a project,
     // you can change the project’s status from Active to On Hold.
@@ -40,14 +40,14 @@ export interface Status {
     // the project and its actions are removed from the project
     // list in the sidebar and outline. Projects placed on hold are
     // still available for review and reconsideration if (you decide
-    // to prioritize them again in the future.
+    // to prioritize them again in the futuRegExp.
     // const
-    OnHold:Status;
+    OnHold,
 
     // An array of all items of this enumeration. Often used when
     // creating a Form menu element.
     // const
-    all:Status[];
+    all
 
 }
 

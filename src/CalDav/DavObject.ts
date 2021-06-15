@@ -333,7 +333,7 @@ export class DavObject
         }
     }
 
-    _str__()
+    toString()
     {
         if (DisplayName.tag in this.props) {
             return this.props[DisplayName.tag]
