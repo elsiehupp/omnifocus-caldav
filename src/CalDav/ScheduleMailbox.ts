@@ -32,11 +32,12 @@ export class ScheduleMailbox extends Calendar
             this.url = principal.url
             try {
                 this.url = this.client.url.join(URL(this.getProperty(this.findprop())))
-            } catch {
+            } catch (error) {
                 console.log("something bad happened", exc_info=true)
-                error.assert_(this.client.checkSchedulingSupport())
+                Assert(this.client.checkSchedulingSupport())
                 this.url = null
-                raise error.NotFoundError("principal has no %s.  %s" % (String(this.findprop()), error.ERR_FRAGMENT))
+                console.error(`principal has no ${String(this.findprop())}.  ${error}`)
+                throw error;
             }
         }
     }
@@ -50,15 +51,17 @@ export class ScheduleMailbox extends Calendar
         if (!this.items) {
             try {
                 this.items = this.objects(loadObjects=true)
-            } catch {
-                console.log("caldav server does not seem to support a sync-token REPORT query on a scheduling mailbox")
-                error.assert_('google' in String(this.url))
+            } catch (error) {
+                console.error("caldav server does not seem to support a sync-token REPORT query on a scheduling mailbox")
+                console.error(error)
+                Assert('google' in String(this.url))
                 this.items = this.children()
             }
         } else {
             try {
                 this.items.sync()
-            } catch {
+            } catch (error) {
+                console.error(error)
                 this.items = this.children()
             }
         }

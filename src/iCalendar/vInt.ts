@@ -14,4 +14,4 @@ export class vInt(int):
         try:
             return cls(ical)
         except:
-            raise ValueError('Expected int, got: %s' % ical)
+            console.error('ValueError: Expected int, got: %s' % ical)

@@ -66,7 +66,7 @@ export class CalendarSet extends DavObject
                     return calendar
             }
         if (name && !cal_id) {
-            raise error.NotFoundError("No calendar with name %s found under %s" % (name, this.url))
+            console.error(`No calendar with name ${name} found under ${this.url}`)
         }
         if (!cal_id && !name) {
             return this.calendars()[0]

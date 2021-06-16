@@ -40,7 +40,7 @@ export class BaseElement
     xmlelement()
     {
         if (this instanceof NamedBaseElement && this.attributes.get('name') == null) {
-            raise Exception("name attribute must be defined")
+            console.error("name attribute must be defined")
         }
         var root = etree.Element(this.tag, nsmap)
         if (this.value != null) {

@@ -14,4 +14,4 @@ export class vFloat(float):
         try:
             return cls(ical)
         except:
-            raise ValueError('Expected float value, got: %s' % ical)
+            console.error('ValueError: Expected float value, got: %s' % ical)

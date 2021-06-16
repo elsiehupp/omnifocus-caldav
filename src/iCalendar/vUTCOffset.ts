@@ -9,7 +9,7 @@ export class vUTCOffset(object):
 
     def __init__(self, td):
         if not isinstance(td, timedelta):
-            raise ValueError('Offset value MUST be a timedelta instance')
+            console.error('ValueError: Offset value MUST be a timedelta instance')
         self.td = td
         self.params = Parameters()
 
@@ -45,7 +45,7 @@ export class vUTCOffset(object):
                                              int(ical[5:7] or 0))
             offset = timedelta(hours=hours, minutes=minutes, seconds=seconds)
         except:
-            raise ValueError('Expected utc offset, got: %s' % ical)
+            console.error('ValueError: Expected utc offset, got: %s' % ical)
         if not cls.ignore_exceptions and offset >= timedelta(hours=24):
             raise ValueError(
                 'Offset must be less than 24 hours, was %s' % ical)

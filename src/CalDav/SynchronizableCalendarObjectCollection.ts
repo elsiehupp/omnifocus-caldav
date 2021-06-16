@@ -61,7 +61,8 @@ export class SynchronizableCalendarObjectCollection
             try {
                 obj.load()
                 updated_objs.append(obj)
-            } catch (error.NotFoundError) {
+            } catch (error) {
+                console.error(error)
                 deleted_objs.append(obj)
                 obu.pop(obj.url)
             }

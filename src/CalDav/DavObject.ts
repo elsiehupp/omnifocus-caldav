@@ -5,7 +5,6 @@ import { PropertyUpdate } from "./Elements/PropertyUpdate"
 import { Propfind } from "./Elements/Propfind"
 import { Set } from "./Elements/Set"
 import { Status } from "./Elements/Status"
-import { Url } from "./Url"
 
 /*
 A "DAV object" is anything we get from the caldav server or push into the
@@ -30,7 +29,7 @@ export class hierarchy into a separate file)
 // try {
 //     from typing import Union, Optional
 //     TimeStamp = Optional[Union[date,datetime]]
-// } catch {
+// } catch (error) {
 //     pass
 
 // errmsg(r)
@@ -116,7 +115,7 @@ export class DavObject
             var resource_name = properties[path][DisplayName.tag]
 
             if (type == null || type in resource_types) {
-                var url = new Url(path)
+                var url = new URL(path)
                 if (url.hostname == null) {
                     // Quote when path is not a full URL
                     path = quote(path)
@@ -180,12 +179,12 @@ export class DavObject
         var ret = this.client.getOwnProperty(query_method)(
             url, body, depth)
         if (ret.status == 404) {
-            raise error.NotFoundError(errmsg(ret))
+            console.error(ret)
         }
-        if ((expected_return_value != null and
-             ret.status != expected_return_value) or
+        if ((expected_return_value != null &&
+             ret.status != expected_return_value) ||
             ret.status >= 400) {
-            raise error.exception_by_method[query_method](errmsg(ret))
+            console.error(ret)
         }
         return ret
     }
@@ -234,7 +233,7 @@ export class DavObject
             properties = response.expandSimpleProperties(props)
         }
             
-        error.assert_(properties)
+        Assert(properties)
 
         var path = unquote(this.url.path)
         var exchange_path;
@@ -268,7 +267,7 @@ export class DavObject
             rc = properties['/principal/']
         } else {
             console.log("Possibly the server has a path handling problem.  Path expected: %s, path found: %s %s" % (path, String(list(properties.keys())), error.ERR_FRAGMENT))
-            error.assert_(false)
+            Assert(false)
         }
 
         if (parse_props) {
@@ -299,7 +298,7 @@ export class DavObject
         var statuses = r.tree.findall(".//" + Status.tag)
         for (let s of statuses) {
             if (!(' 200 ' in s.text)) {
-                raise error.PropsetError(s.text)
+                console.error(s.text)
             }
         }
 
@@ -315,7 +314,7 @@ export class DavObject
         Returns) {
          * this
         */
-        raise NotImplementedError()
+        console.error("Error: save() Not Implemented")
     }
 
     delete()
@@ -328,7 +327,7 @@ export class DavObject
 
             // TODO: find out why we get 404
             if (!(r.status in [200, 204, 404])) {
-                raise error.DeleteError(errmsg(r))
+                console.error(r)
             }
         }
     }

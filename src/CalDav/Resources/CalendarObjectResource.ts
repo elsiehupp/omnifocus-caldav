@@ -91,14 +91,14 @@ export class CalendarObjectResource extends DavObject
             this.attendee_obj.params['cn'] = vText(attendee[0])
         } else if (attendee instanceof String) {
             if (attendee.startsWith('ATTENDEE')) {
-                raise NotImplementedError("do we need to support this anyway?  Should be trivial, but can't figure out how to do it with the icalendar.Event/vCalAddress objects right now");
+                console.error("NotImplementedError: do we need to support this anyway?  Should be trivial, but can't figure out how to do it with the icalendar.Event/vCalAddress objects right now");
             } else if (attendee.startsWith('mailto:')) {
                 this.attendee_obj = vCalAddress(attendee)
             } else if ('@' in attendee && !':' in attendee && !';' in attendee) {
                 this.attendee_obj = vCalAddress('mailto:' + attendee)
             }
         } else {
-            error.assert_(false)
+            Assert(false)
             this.attendee_obj = vCalAddress()
         }
 
@@ -155,7 +155,7 @@ export class CalendarObjectResource extends DavObject
 
     reply_to_invite_request(partstat, calendar)
     {
-        error.assert_(this.is_invite_request())
+        Assert(this.is_invite_request())
         if (!calendar) {
             calendar = this.client.principal().calendars()[0]
         }
@@ -202,7 +202,7 @@ export class CalendarObjectResource extends DavObject
         */
         var r = this.client.request(this.url)
         if (r.status == 404) {
-            raise error.NotFoundError(errmsg(r))
+            console.error(r)
         }
         this.data = Event.fixEvent(r.raw)
         if ('Etag' in r.headers) {
@@ -270,7 +270,7 @@ export class CalendarObjectResource extends DavObject
                 }
             }
         } else if (!(r.status in [204, 201])) {
-            raise error.PutError(errmsg(r))
+            console.error(r)
         }
 
         this.url = URL.objectify(path)
@@ -291,14 +291,14 @@ export class CalendarObjectResource extends DavObject
                     this.change_attendee_status(addr, **kwargs)
                     /// TODO: can probably just return now
                     cnt += 1
-                } catch (error.NotFoundError) {
-                    // pass
+                } catch (error) {
+                    console.error(error)
                 }
             }
             if (!cnt) {
-                raise error.NotFoundError("Principal %s is not invited to event" % String(attendee))
+                console.error(`NotFoundError: Principal ${String(attendee)} is not invited to event`)
             }
-            error.assert_(cnt == 1)
+            Assert(cnt == 1)
             return
         }
 
@@ -311,9 +311,9 @@ export class CalendarObjectResource extends DavObject
             }
         }
         if (!cnt) {
-            raise error.NotFoundError("Participant %s not found in attendee list")
+            console.error("NotFoundError: Participant %s not found in attendee list")
         }
-        error.assert_(cnt == 1)
+        Assert(cnt == 1)
     }
 
     save(noOverwrite=false, noCreate=false, objectType=null, if_schedule_tag_match=false)
@@ -355,7 +355,7 @@ export class CalendarObjectResource extends DavObject
                 }
             }
             if (!this.id && noCreate) {
-                raise error.ConsistencyError("noCreate flag was set, but no ID given")
+                console.error("ConsistencyError: noCreate flag was set, but no ID given")
             }
             var existing = null
             var methods;
@@ -370,16 +370,16 @@ export class CalendarObjectResource extends DavObject
                 try {
                     existing = method(this.id)
                     if (noOverwrite) {
-                        raise error.ConsistencyError("noOverwrite flag was set, but object already exists")
+                        console.error("ConsistencyError: noOverwrite flag was set, but object already exists")
                     }
                     break
-                } catch (error.NotFoundError) {
-                    // pass
+                } catch (error) {
+                    console.error(error)
                 }
             }
 
             if (noCreate && !existing) {
-                raise error.ConsistencyError("noCreate flag was set, but object does not exists")
+                console.error("ConsistencyError: noCreate flag was set, but object does not exists")
             }
         }
 
@@ -391,7 +391,8 @@ export class CalendarObjectResource extends DavObject
         /// try-send-data-except-wash-through-vobject-logic heRegExp.
         try {
             this.create(this.data, this.id, path)
-        } catch (error.PutError) {
+        } catch (error) {
+            console.error(error)
             this.create(this.vobject_instance.serialize(), this.id, path)
         }
         return this
@@ -454,9 +455,9 @@ export class CalendarObjectResource extends DavObject
         if (!this.vobject_instance) {
             try {
                 this.set_vobject_instance(vobject.readOne(to_unicode(this.get_data())))
-            } catch {
-                console.log("Something went wrong while loading icalendar data into the vobject class.  ical url: " + String(this.url))
-                raise
+            } catch (error) {
+                console.error("Something went wrong while loading icalendar data into the vobject class.  ical url: " + String(this.url))
+                throw error;
             }
         }
         return this.vobject_instance

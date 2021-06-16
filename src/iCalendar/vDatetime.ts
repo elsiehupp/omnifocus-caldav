@@ -61,4 +61,4 @@ export class vDatetime(object):
             else:
                 raise ValueError(ical)
         except:
-            raise ValueError('Wrong datetime format: %s' % ical)
+            console.error('ValueError: Wrong datetime format: %s' % ical)

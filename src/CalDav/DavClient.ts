@@ -1,7 +1,6 @@
 import { Requests } from "./Requests"
 import { Calendar } from "./Calendar"
 import { Principal } from "./Principal"
-import { Url, objectify } from "./Url"
 
 export class DavClient
 {
@@ -121,9 +120,10 @@ export class DavClient
             /// root URL, and that's OK according to the RFC ... so apparently
             /// we need to do an extra step here to fetch the URL of some
             /// element that should come with caldav extras.
-            /// Anyway, packing this into a try-} catch (in case it fails.
+            /// Anyway, packing this into a try-catch in case it fails.
             response = this.optioNameSpace(this.principal().url)
-        } catch {
+        } catch (error) {
+            console.error(error)
             response = this.optioNameSpace(this.url)
         }
         return response.headers.get('DAV', null)
@@ -313,17 +313,16 @@ export class DavClient
         // this is an error condition the application wants to know
         if (response.status == Requests.codes.forbidden ||
                 response.status == Requests.codes.unauthorized) {
-            var ex = error.AuthorizationError()
-            ex.url = url
+            console.error(url)
             /// ref https://github.com/python-caldav/caldav/issues/81,
             /// incidents with a response without a reason has been
             /// observed
             try {
-                ex.reason = response.reason
-            } catch (AttributeError) {
-                ex.reason = "null given"
+                console.error(response.reason)
+            } catch (error) {
+                console.error("null given")
+                throw error
             }
-            raise ex
         }
 
         // let's save the auth object and remove the user/pass information

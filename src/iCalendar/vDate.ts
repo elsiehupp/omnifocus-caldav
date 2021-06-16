@@ -3,7 +3,7 @@ export class vDate(object):
     """
     def __init__(self, dt):
         if not isinstance(dt, date):
-            raise ValueError('Value MUST be a date instance')
+            console.error('ValueError: Value MUST be a date instance')
         self.dt = dt
         self.params = Parameters({'value': 'DATE'})
 
@@ -21,4 +21,4 @@ export class vDate(object):
             )
             return date(*timetuple)
         except:
-            raise ValueError('Wrong date format %s' % ical)
+            console.error('ValueError: Wrong date format %s' % ical)

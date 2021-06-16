@@ -17,7 +17,7 @@ export class TodoCache
     setInitialized(value)
     {
         if (!value) {
-            raise ValueError("Can't uninitialize");
+            console.error("ValueError: Can't uninitialize");
         }
         this.setInitialized(true);
     }

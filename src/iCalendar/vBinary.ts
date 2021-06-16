@@ -18,5 +18,5 @@ export class vBinary
         try:
             return base64.b64decode(ical)
         except UnicodeError:
-            raise ValueError('Not valid base 64 encoding.')
+            console.error('ValueError: Not valid base 64 encoding.')
 }

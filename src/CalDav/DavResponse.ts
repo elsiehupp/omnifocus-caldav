@@ -51,11 +51,13 @@ export class DavResponse
         /// content into a string.  (the line below just needs to be moved to
         /// the relevant if-pronges below)
         this.raw = response.content
+        var content_length;
         if (this.headers.get('Content-Type', '').startsWith('text/xml') ||
             this.headers.get('Content-Type', '').startsWith('application/xml')) {
             try {
                 content_length = int(this.headers['Content-Length'])
-            } catch {
+            } catch (error) {
+                console.error(error)
                 content_length=-1
             }
             if (content_length == 0) {
@@ -66,7 +68,7 @@ export class DavResponse
                 /// With response.raw we could be streaming the content, but it does not work because
                 /// the stream often is compressed.  We could add uncompression on the fly, but not
                 /// considered worth the effort as for now.
-                /this.tree = etree.parse(response.raw, parser=etree.XMLParser(remove_blank_text=true))
+                this.tree = etree.parse(response.raw, parser=etree.XMLParser(remove_blank_text=true))
                 this.tree = etree.XML(this.raw, parser=etree.XMLParser(remove_blank_text=true))
                 if (log.level <= logging.DEBUG) {
                     console.log(etree.tostring(this.tree, pretty_print=true))
@@ -85,7 +87,8 @@ export class DavResponse
             }
             try {
                 this.tree = etree.XML(this.raw, parser=etree.XMLParser(remove_blank_text=true))
-            } catch {
+            } catch (error) {
+                console.error(error)
                 // pass
             }
         }
@@ -167,7 +170,7 @@ export class DavResponse
             !(' 201 ' in status) &&
             !(' 207 ' in status) &&
             !(' 404 ' in status)) {
-            raise error.ResponseError(status)
+            console.error(status)
         }
     }
 
@@ -181,12 +184,12 @@ export class DavResponse
         var status = null
         var href = null
         var propstats = []
-        error.assert_(response.tag == Response.tag)
+        Assert(response.tag == Response.tag)
         for (let elem of response) {
             if (elem.tag == Status.tag) {
-                error.assert_(!status)
+                Assert(!status)
                 status = elem.text
-                error.assert_(status)
+                Assert(status)
                 this.validate_status(status)
             } else if (elem.tag == Href.tag) {
                 assert not href
@@ -194,10 +197,10 @@ export class DavResponse
             } else if (elem.tag == PropStat.tag) {
                 propstats.append(elem)
             } else {
-                error.assert_(false)
+                Assert(false)
             }
         }
-        error.assert_(href)
+        Assert(href)
         return [href, propstats, status]
     }
 
@@ -224,11 +227,11 @@ export class DavResponse
                 this.syncToken = r.text
                 continue
             }
-            error.assert_(r.tag == Response.tag)
+            Assert(r.tag == Response.tag)
 
             [href, propstats, status] = this.parse_response(r)
             /// I would like to do this assert here ...
-            // error.assert_(not href in this.objects)
+            // Assert(not href in this.objects)
             /// but then there was https://github.com/python-caldav/caldav/issues/136
             if (!(href in this.objects)) {
                 this.objects[href] = {}
@@ -240,9 +243,9 @@ export class DavResponse
             for (let propstat of propstats) {
                 var cnt = 0
                 status = propstat.find(Status.tag)
-                error.assert_(status != null)
+                Assert(status != null)
                 if (status != null) {
-                    error.assert_(len(status) == 0)
+                    Assert(len(status) == 0)
                     cnt += 1
                     this.validate_status(status.text)
                     /// if (a prop was not found, ignore it
@@ -258,7 +261,7 @@ export class DavResponse
                 }
 
                 /// there shouldn't be any more elements } catch (for status and prop
-                error.assert_(cnt == propstat.length)
+                Assert(cnt == propstat.length)
             }
         }
 
@@ -270,7 +273,7 @@ export class DavResponse
         var values = []
         if (proptag in props_found) {
             var prop_xml = props_found[proptag]
-            error.assert_(!prop_xml.items())
+            Assert(!prop_xml.items())
             if (!xpath && prop_xml.length==0) {
                 if (prop_xml.text) {
                     values.append(prop_xml.text)
@@ -280,7 +283,7 @@ export class DavResponse
                 var leafs = prop_xml.findall(_xpath)
                 values = []
                 for (let leaf of leafs) {
-                    error.assert_(not leaf.items())
+                    Assert(not leaf.items())
                     if (leaf.text) {
                         values.append(leaf.text)
                     } else {
@@ -295,7 +298,7 @@ export class DavResponse
             if (!values) {
                 return null
             }
-            error.assert_(len(values)==1)
+            Assert(len(values)==1)
             return values[0]
         }
     }

@@ -181,7 +181,7 @@ export class Component extends CaselessDict
             return self._decode(name, value)
         else:
             if default is _marker:
-                raise KeyError(name)
+                console.error(`KeyError: ${name}`)
             else:
                 return default
 
@@ -278,7 +278,7 @@ export class Component extends CaselessDict
                 // as broken and skip the line. otherwise raise.
                 component = stack[-1] if stack else None
                 if not component or not component.ignore_exceptions:
-                    raise
+                    throw
                 component.errors.append((None, unicode_type(e)))
                 continue
 
@@ -315,9 +315,8 @@ export class Component extends CaselessDict
             else:
                 factory = types_factory.for_property(name)
                 component = stack[-1] if stack else None
-                if not component:
-                    raise ValueError('Property "{prop}" does not have '
-                                     'a parent component.'.format(prop=name))
+                if (!component):
+                    console.error(`Property "${name}" does not have a parent component.`)
                 datetime_names = ('DTSTART', 'DTEND', 'RECURRENCE-ID', 'DUE',
                                   'FREEBUSY', 'RDATE', 'EXDATE')
                 try:
@@ -327,7 +326,7 @@ export class Component extends CaselessDict
                         vals = factory(factory.from_ical(vals))
                 except ValueError as e:
                     if not component.ignore_exceptions:
-                        raise
+                        throw
                     component.errors.append((uname, unicode_type(e)))
                     component.add(name, None, encode=0)
                 else:
@@ -336,13 +335,10 @@ export class Component extends CaselessDict
 
         if multiple:
             return comps
-        if len(comps) > 1:
-            raise ValueError('Found multiple components where '
-                             'only one is allowed: {st!r}'.format(**locals()))
-        if len(comps) < 1:
-            raise ValueError('Found no components where '
-                             'exactly one is required: '
-                             '{st!r}'.format(**locals()))
+        if comps.length > 1:
+            console.error(`ValueError: Found multiple components where only one is allowed: ${locals()}`)
+        if comps.length < 1:
+            console.error(`ValueError: Found no components where exactly one is required: ${locals()}`)
         return comps[0]
 
     def content_line(self, name, value, sorted=True):

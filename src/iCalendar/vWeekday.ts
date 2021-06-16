@@ -10,13 +10,13 @@ export class vWeekday(compat.unicode_type):
         self = super(vWeekday, cls).__new__(cls, value)
         match = WEEKDAY_RULE.match(self)
         if match is None:
-            raise ValueError('Expected weekday abbrevation, got: %s' % self)
+            console.error('ValueError: Expected weekday abbrevation, got: %s' % self)
         match = match.groupdict()
         sign = match['signal']
         weekday = match['weekday']
         relative = match['relative']
         if weekday not in vWeekday.week_days or sign not in '+-':
-            raise ValueError('Expected weekday abbrevation, got: %s' % self)
+            console.error('ValueError: Expected weekday abbrevation, got: %s' % self)
         self.relative = relative and int(relative) or None
         self.params = Parameters()
         return self
@@ -29,4 +29,4 @@ export class vWeekday(compat.unicode_type):
         try:
             return cls(ical.upper())
         except:
-            raise ValueError('Expected weekday abbrevation, got: %s' % ical)
+            console.error('ValueError: Expected weekday abbrevation, got: %s' % ical)

@@ -8,7 +8,7 @@ import { Exception } from ""
 //     import os
 //     /// one of DEBUG_PDB, DEBUG, DEVELOPMENT, PRODUCTION
 //     debugmode = os.environ['PYTHON_CALDAV_DEBUGMODE']
-// } catch {
+// } catch (error) {
 //     /// TODO: the default value here should be set to PRODUCTION prior to release
 //     debugmode = 'DEVELOPMENT'
 
@@ -29,7 +29,7 @@ import { Exception } from ""
 //         } else if (debugmode == 'DEBUG_PDB') {//             console.log("Deviation from expectations found.  Dropping into debugger")
 //             import pdb; pdb.set_trace()
 //         } else {
-//             raise
+//             throw
 //         }
 //     }
 // }

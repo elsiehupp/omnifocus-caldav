@@ -5,7 +5,7 @@ export class vDuration(object):
 
     def __init__(self, td):
         if not isinstance(td, timedelta):
-            raise ValueError('Value MUST be a timedelta instance')
+            console.error('ValueError: Value MUST be a timedelta instance')
         self.td = td
         self.params = Parameters()
 
@@ -50,4 +50,4 @@ export class vDuration(object):
                 value = -value
             return value
         except:
-            raise ValueError('Invalid iCalendar duration: %s' % ical)
+            console.error('ValueError: Invalid iCalendar duration: %s' % ical)

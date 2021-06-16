@@ -5,7 +5,7 @@ export class vDDDTypes(object):
     """
     def __init__(self, dt):
         if not isinstance(dt, (datetime, date, timedelta, time, tuple)):
-            raise ValueError('You must use datetime, date, timedelta, '
+            console.error('ValueError: You must use datetime, date, timedelta, '
                              'time or tuple (for periods)')
         if isinstance(dt, datetime):
             self.params = Parameters({'value': 'DATE-TIME'})
@@ -40,7 +40,7 @@ export class vDDDTypes(object):
         elif isinstance(dt, tuple) and len(dt) == 2:
             return vPeriod(dt).to_ical()
         else:
-            raise ValueError('Unknown date type: {}'.format(type(dt)))
+            console.error('ValueError: Unknown date type: {}'.format(type(dt)))
 
     @classmethod
     def from_ical(cls, ical, timezone=None):

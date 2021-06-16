@@ -16,7 +16,7 @@ export class vFrequency(compat.unicode_type):
         value = to_unicode(value, encoding=encoding)
         self = super(vFrequency, cls).__new__(cls, value)
         if self not in vFrequency.frequencies:
-            raise ValueError('Expected frequency, got: %s' % self)
+            console.error('ValueError: Expected frequency, got: %s' % self)
         self.params = Parameters()
         return self
 
@@ -28,4 +28,4 @@ export class vFrequency(compat.unicode_type):
         try:
             return cls(ical.upper())
         except:
-            raise ValueError('Expected frequency, got: %s' % ical)
+            console.error('ValueError: Expected frequency, got: %s' % ical)

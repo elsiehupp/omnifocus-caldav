@@ -4,11 +4,11 @@ export class vPeriod(object):
     def __init__(self, per):
         start, end_or_duration = per
         if not (isinstance(start, datetime) or isinstance(start, date)):
-            raise ValueError('Start value MUST be a datetime or date instance')
+            console.error('ValueError: Start value MUST be a datetime or date instance')
         if not (isinstance(end_or_duration, datetime) or
                 isinstance(end_or_duration, date) or
                 isinstance(end_or_duration, timedelta)):
-            raise ValueError('end_or_duration MUST be a datetime, '
+            console.error('ValueError: end_or_duration MUST be a datetime, '
                              'date or timedelta instance')
         by_duration = 0
         if isinstance(end_or_duration, timedelta):
@@ -60,7 +60,7 @@ export class vPeriod(object):
             end_or_duration = vDDDTypes.from_ical(end_or_duration)
             return (start, end_or_duration)
         except:
-            raise ValueError('Expected period format, got: %s' % ical)
+            console.error('ValueError: Expected period format, got: %s' % ical)
 
     def __repr__(self):
         if self.by_duration:

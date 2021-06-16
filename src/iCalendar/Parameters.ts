@@ -75,6 +75,6 @@ export class Parameters(CaselessDict):
                     else:
                         result[key] = vals
             except ValueError as exc:
-                raise ValueError('%r is not a valid parameter string: %s'
+                console.error('ValueError: %r is not a valid parameter string: %s'
                                  % (param, exc))
         return result

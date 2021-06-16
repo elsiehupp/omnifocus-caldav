@@ -1,5 +1,5 @@
 import { Field } from "./Field"
-import { Todo } from "../CalDav/Todo"
+import { Todo } from "../CalDav/Resources/Todo"
 import { Task } from "../OmniFocusAPI/Task"
 
 export class AttributeField extends Field

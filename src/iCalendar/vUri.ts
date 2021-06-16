@@ -16,4 +16,4 @@ export class vUri(compat.unicode_type):
         try:
             return cls(ical)
         except:
-            raise ValueError('Expected , got: %s' % ical)
+            console.error('ValueError: Expected , got: %s' % ical)

@@ -84,15 +84,15 @@ export class Calendar extends DavObject
         if (name != null) {
             try {
                 this.setProperties([this.displayName])
-            } catch {
+            } catch (error1) {
                 /// TODO: investigate.  Those asserts break.
-                error.assert(false)
+                console.error(error1)
                 try {
                     var currentDisplayName = this.getProperty(new DisplayName())
-                    error.assert(currentDisplayName == name)
-                } catch {
-                    log.warning("calendar server does not support display name on calendar?  Ignoring", excInfo=true)
-                    error.assert(false)
+                    Assert(currentDisplayName == name)
+                } catch (error2) {
+                    console.warning("calendar server does not support display name on calendar?  Ignoring", excInfo=true)
+                    throw error2;
                 }
             }
         }
@@ -192,7 +192,7 @@ export class Calendar extends DavObject
         var response = this.query(root, 1, 'report')
         var results = this.handlePropertyResponse(response=response, props=[new CalendarData()])
         for (let r of results) {
-            rv.append( new Event(this.client, url=this.url.join(r), data=results[r][new CalendarData.tag], parent=this))
+            rv.append( new Event(this.client, this.url.join(r), data=results[r][new CalendarData.tag], parent=this))
         }
 
         return rv
@@ -220,7 +220,7 @@ export class Calendar extends DavObject
         // in this case.
         var data
         if (!end && expand) {
-            raise error.ReportError("an open-ended date search cannot be expanded")
+            console.error("an open-ended date search cannot be expanded")
         } else if (expand) {
             data = new CalendarData() + new Expand(start, end)
         } else {
@@ -570,10 +570,9 @@ export class Calendar extends DavObject
         var itemsFound
         try {
             itemsFound = this.search(root)
-        } catch (error.NotFoundError) {
-            raise
-        } catch (Exception as err) {
-            raise NotImplementedError("The getObjectByUid is not compatible with some server implementations.  work in progress.")
+        } catch (error) {
+            console.error("The getObjectByUid is not compatible with some server implementations.  work in progress.");
+            throw error;
         }
 
         // Ref Lucas Verney, we've actually done a substring search, if (the
@@ -590,7 +589,7 @@ export class Calendar extends DavObject
             }
             return item
         }
-        raise error.NotFoundError("%s not found on server" % uid)
+        console.error.(`${uid} not found on server`)
     }
 
     getTodoByUid(uid)
@@ -655,7 +654,8 @@ export class Calendar extends DavObject
         /// TODO: look more into this, I think syncToken should be directly available through response object
         try {
             syncToken = response.syncToken
-        } catch {
+        } catch (error) {
+            console.error(error)
             syncToken = response.tree.findall('.\/\/' + SyncToken.tag)[0].text
         }
 
@@ -664,9 +664,9 @@ export class Calendar extends DavObject
             for (let obj of objects) {
                 try {
                     obj.load()
-                } catch (error.NotFoundError) {
+                } catch (error) {
                     /// The object was deleted
-                    // pass
+                    console.error(error);
                 }
             }
         }

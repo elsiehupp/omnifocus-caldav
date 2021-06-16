@@ -49,10 +49,10 @@ class Contentline(compat.unicode_type):
                     in_quotes = not in_quotes
             name = unescape_string(st[:name_split])
             if not name:
-                raise ValueError('Key name is required')
+                console.error("ValueError: Key name is required")
             validate_token(name)
             if not name_split or name_split + 1 == value_split:
-                raise ValueError('Invalid content line')
+                console.error("ValueError: Invalid content line")
             params = Parameters.from_ical(st[name_split + 1: value_split],
                                           strict=self.strict)
             params = Parameters(
@@ -61,11 +61,9 @@ class Contentline(compat.unicode_type):
             )
             values = unescape_string(st[value_split + 1:])
             return (name, params, values)
-        except ValueError as exc:
-            raise ValueError(
-                "Content line could not be parsed into parts: '%s': %s"
-                % (self, exc)
-            )
+        catch (exc) {
+            console.error(`ValueError: Content line could not be parsed into parts: '${self}': ${exc}`)
+        }
 
     @classmethod
     def from_ical(cls, ical, strict=False):

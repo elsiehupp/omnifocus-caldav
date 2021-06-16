@@ -8,7 +8,7 @@ export class vGeo(object):
             latitude = float(latitude)
             longitude = float(longitude)
         except:
-            raise ValueError('Input must be (float, float) for '
+            console.error('ValueError: Input must be (float, float) for '
                              'latitude and longitude')
         self.latitude = latitude
         self.longitude = longitude

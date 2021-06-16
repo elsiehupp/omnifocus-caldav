@@ -69,4 +69,4 @@ export class vRecur(CaselessDict):
                 recur[key] = cls.parse_type(key, vals)
             return dict(recur)
         except:
-            raise ValueError('Error in recurrence rule: %s' % ical)
+            console.error('ValueError: Error in recurrence rule: %s' % ical)

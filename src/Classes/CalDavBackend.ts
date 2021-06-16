@@ -119,9 +119,9 @@ export class CalDavDackend extends PeriodicImportBackend
             console.log(`SYNCING updating todo ${todo}`);
             try {
                 todo.save();
-            }
-            catch (DavError) {
-                console.log(`Something went wrong while updating ${task} => ${todo}`);
+            } catch (error) {
+                console.error(`Something went wrong while updating ${task} => ${todo})`);
+                throw error;
             }
         } else {  // creating from task
             this.createTodoOnCalDav(task, calendar);
@@ -135,14 +135,14 @@ export class CalDavDackend extends PeriodicImportBackend
             return;
         }
         if (!tid) {
-            console.log("no task id passed to removeTodoFromCalDav2 call, ignoring");
+            console.error("no task id passed to removeTodoFromCalDav2 call, ignoring");
             return;
         }
         var todo = this.cache.get_todo(tid);
         if (todo) {
             this.removeTodoFromCalDav(tid, todo);
         } else {
-            console.log(`Could not find todo for task(${tid})`);
+            console.error(`Could not find todo for task(${tid})`);
         }
     }
 
@@ -158,9 +158,9 @@ export class CalDavDackend extends PeriodicImportBackend
             task, calendar.name, this.namespace);
         try {
             newTodo = calendar.addTodo(newVTodo.serialize());
-        } catch (DavError) {
-            console.log(`Something went wrong while creating ${task} => ${newTodo}`);
-            return;
+        } catch (error) {
+            console.error(`Something went wrong while creating ${task} => ${newTodo}`);
+            throw error;
         }
         var uid = UID_FIELD.get_dav(newTodo);
         this.cache.set_todo(newTodo, uid);
@@ -172,8 +172,9 @@ export class CalDavDackend extends PeriodicImportBackend
         this.cache.del_todo(uid);  // cleaning cache
         try {  // deleting through caldav
             todo.delete();
-        } catch (DavError) {
+        } catch (error) {
             console.log(`Something went wrong while deleting ${uid} => ${todo}`);
+            throw error;
         }
     }
 
@@ -183,8 +184,9 @@ export class CalDavDackend extends PeriodicImportBackend
         them*/
         try {
             var principal = this.dav_client.principal();
-        } catch {
-            console.log("You need a correct login to CalDAV\n Configure CalDAV with login information. Error:");
+        } catch (error) {
+            console.error("You need a correct login to CalDAV\n Configure CalDAV with login information.");
+            throw error;
         }
         for (var calendar in principal.calendars()) {
             this.cache.set_calendar(calendar);
@@ -218,7 +220,8 @@ export class CalDavDackend extends PeriodicImportBackend
             }
             try {  // fetching missing todo from server
                 var todo = calendar.getTodoByUid(uid);
-            } catch {
+            } catch (error) {
+                console.error(error);
                 do_delete = true;
             } finally {
                 var result = this.update_task(task, todo, true);

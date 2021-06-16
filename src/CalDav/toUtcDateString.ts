@@ -9,11 +9,11 @@ export function toUtcDateString(ts)
             /// in python 3.6 and higher, ts.asTimeZone() will assume a
             /// naive timestamp is localtime (and so do we)
             ts = ts.asTimeZone(TimeZone.utc_tz)
-        } catch {
+        } catch (error) {
             /// in python 2.7 and 3.5, ts.asTimeZone() will fail on
             /// naive timestamps, but we'd like to assume they are
             /// localtime
-            import
+            console.error(error)
             ts = TimeZoneLocal.get_localzone().localize(ts).asTimeZone(TimeZone.utc_tz)
         }
     }

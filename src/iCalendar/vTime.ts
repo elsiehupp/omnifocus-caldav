@@ -5,7 +5,7 @@ export class vTime(object):
     def __init__(self, *args):
         if len(args) == 1:
             if not isinstance(args[0], (time, datetime)):
-                raise ValueError('Expected a datetime.time, got: %s' % args[0])
+                console.error('ValueError: Expected a datetime.time, got: %s' % args[0])
             self.dt = args[0]
         else:
             self.dt = time(*args)
@@ -21,4 +21,4 @@ export class vTime(object):
             timetuple = (int(ical[:2]), int(ical[2:4]), int(ical[4:6]))
             return time(*timetuple)
         except:
-            raise ValueError('Expected time, got: %s' % ical)
+            console.error('ValueError: Expected time, got: %s' % ical)

@@ -21,4 +21,4 @@ class Contentlines(list):
             lines.append('')  // '\r\n' at the end of every content line
             return lines
         except:
-            raise ValueError('Expected StringType with content lines')
+            console.error('ValueError: Expected StringType with content lines')
