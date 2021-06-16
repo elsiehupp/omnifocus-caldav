@@ -3,5 +3,5 @@ import { NameSpace } from "../NameSpace"
 
 export class FreeBusyQuery extends BaseElement
 {
-    tag:NameSpace = new NameSpace("C", "free-busy-query")
+    static tag:NameSpace = new NameSpace("C", "free-busy-query")
 }

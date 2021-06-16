@@ -167,7 +167,7 @@ export class DavObject
         */
         var body = ""
         if (root) {
-            if (hasattr(root, 'xmlelement')) {
+            if (root.hasOwnProperty('xmlelement')) {
                 body = etree.tostring(root.xmlelement(), encoding="utf-8",
                                       xml_declaration=true)
             } else {
@@ -177,7 +177,7 @@ export class DavObject
         if (url == null) {
             url = this.url
         }
-        var ret = getattr(this.client, query_method)(
+        var ret = this.client.getOwnProperty(query_method)(
             url, body, depth)
         if (ret.status == 404) {
             raise error.NotFoundError(errmsg(ret))

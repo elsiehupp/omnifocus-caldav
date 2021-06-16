@@ -3,5 +3,5 @@ import { NameSpace } from "../NameSpace"
 
 export class CalendarMultiGet extends BaseElement
 {
-    tag:NameSpace = new NameSpace("C", "calendar-multiget")
+    static tag:NameSpace = new NameSpace("C", "calendar-multiget")
 }

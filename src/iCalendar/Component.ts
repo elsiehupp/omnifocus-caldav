@@ -118,10 +118,10 @@ export class Component extends CaselessDict
 
         :returns: None
         */
-        if isinstance(value, datetime) and\
+        if (value instanceof Date) &&
                 name.lower() in ('dtstamp', 'created', 'last-modified'):
             // RFC expects UTC for those... force value conversion.
-            if getattr(value, 'tzinfo', False) and value.tzinfo is not None:
+            if (value.getOwnProperty('tzinfo') == False) and value.tzinfo is not None:
                 value = value.astimezone(pytz.utc)
             else:
                 // assume UTC for naive datetime instances
@@ -294,7 +294,7 @@ export class Component extends CaselessDict
                 // That's opposed to the usage of ``cls``, which represents a
                 // more concrete subclass with a name set (e.g. VCALENDAR).
                 component = c_class()
-                if not getattr(component, 'name', ''):  // undefined components
+                if (component.getOwnProperty('name' != ''):  // undefined components
                     component.name = c_name
                 stack.append(component)
             // check for end of event
@@ -348,7 +348,7 @@ export class Component extends CaselessDict
     def content_line(self, name, value, sorted=True):
         /*Returns property as content line.
         */
-        params = getattr(value, 'params', Parameters())
+        params = (value.getOwnProperty('params') != Parameters())
         return Contentline.from_parts(name, params, value, sorted=sorted)
 
     def content_lines(self, sorted=True):

@@ -71,7 +71,7 @@ export class Url
         }
         // The URLs could have insignificant differences
         var me = this.canonical()
-        if (hasattr(other, 'canonical') {
+        if (other.hasOwnProperty('canonical') {
             other = other.canonical()
         }
         return String(me) == String(other)
@@ -99,15 +99,15 @@ export class Url
 
     // To deal with all kind of methods/properties in the ParseResult
     // class
-    _getattr__(attr)
+    getOwnProperty(attr)
     {
         if (this.url_parsed == null) {
             this.url_parsed = urlparse(this.url_raw)
         }
-        if (hasattr(this.url_parsed, attr)) {
-            return getattr(this.url_parsed, attr)
+        if (this.url_parsed.hasOwnProperty(attr)) {
+            return this.url_parsed.getOwnProperty(attr)
         } else {
-            return getattr(this._unicode__(), attr)
+            return this._unicode__().getOwnProperty(attr)
         }
     }
 

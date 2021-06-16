@@ -3,5 +3,5 @@ import { NameSpace } from "../NameSpace"
 
 export class MaxInstances extends ValuedBaseElement
 {
-    tag:NameSpace = new NameSpace("C", "max-instances")
+    static tag:NameSpace = new NameSpace("C", "max-instances")
 }

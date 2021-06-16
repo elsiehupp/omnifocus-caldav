@@ -4,7 +4,7 @@ import { NameSpace } from "../NameSpace"
 
 export class TimeRange extends BaseElement
 {
-    tag:NameSpace = new NameSpace("C", "time-range")
+    static tag:NameSpace = new NameSpace("C", "time-range")
 
     constructor(start=null, end=null)
     {

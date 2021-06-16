@@ -15,7 +15,7 @@ class Contentline(compat.unicode_type):
         """Turn a parts into a content line.
         """
         assert isinstance(params, Parameters)
-        if hasattr(values, 'to_ical'):
+        if (values.hasOwnProperty('to_ical')):
             values = values.to_ical()
         else:
             values = vText(values).to_ical()

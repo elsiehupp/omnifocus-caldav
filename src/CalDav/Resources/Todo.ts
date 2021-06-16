@@ -22,13 +22,13 @@ export class Todo extends CalendarObjectResource
 
         Parameters) {
          * completion_timestamp - datetime object.  Defaults to
-           datetime.now().
+           Date().
 
         */
         if (!completion_timestamp) {
-            completion_timestamp = datetime.now()
+            completion_timestamp = new Date()
         }
-        if (!hasattr(this.vobject_instance.vtodo, 'status') {
+        if (!this.vobject_instance.vtodo.hasOwnProperty('status')) {
             this.vobject_instance.vtodo.add('status')
         }
         this.vobject_instance.vtodo.status.value = 'COMPLETED'

@@ -3,5 +3,5 @@ import { NameSpace } from "../NameSpace"
 
 export class PrincipalCollectionSet extends BaseElement
 {
-    tag:NameSpace = new NameSpace("D", "principal-collection-set")
+    static tag:NameSpace = new NameSpace("D", "principal-collection-set")
 }

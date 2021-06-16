@@ -77,7 +77,7 @@ export class CaselessDict extends OrderedDict
         // Multiple keys where key1.upper() == key2.upper() will be lost.
         mappings = list(args) + [kwargs]
         for mapping in mappings:
-            if hasattr(mapping, 'items'):
+            if (mapping.hasOwnProperty('items')):
                 mapping = iteritems(mapping)
             for key, value in mapping:
                 self[key] = value

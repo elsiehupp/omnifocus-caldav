@@ -1,4 +1,3 @@
-import { DateTime, TimeZone, TimeZoneLocal } from "DateTime"
 import { NamedBaseElement } from "./NamedBaseElement"
 
 // from lxml import etree
@@ -34,8 +33,7 @@ export class BaseElement
 
     toString()
     {
-        var utf8 = etree.tostring(this.xmlelement(), encoding="utf-8",
-                              xml_declaration=true, pretty_print=true)
+        var utf8 = etree.tostring(this.xmlelement(), encoding="utf-8", xml_declaration=true, pretty_print=true)
         return this.xmlelement().tostring()
     }
 
@@ -44,12 +42,12 @@ export class BaseElement
         if (this instanceof NamedBaseElement && this.attributes.get('name') == null) {
             raise Exception("name attribute must be defined")
         }
-        root = etree.Element(this.tag, nsmap=nsmap)
+        var root = etree.Element(this.tag, nsmap)
         if (this.value != null) {
             root.text = this.value
         }
-        if (len(this.attributes) > 0) {
-            for (k in list(this.attributes.keys()) {
+        if (this.attributes.length > 0) {
+            for (var k in this.attributes.keys()) {
                 root.set(k, this.attributes[k])
             }
         }

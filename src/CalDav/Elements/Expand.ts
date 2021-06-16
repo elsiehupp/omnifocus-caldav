@@ -4,7 +4,7 @@ import { NameSpace } from "../NameSpace"
 
 export class Expand extends BaseElement
 {
-    tag:NameSpace = new NameSpace("C", "expand")
+    static tag:NameSpace = new NameSpace("C", "expand")
 
     constructor(start, end=null)
     {

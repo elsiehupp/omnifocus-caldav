@@ -3,5 +3,5 @@ import { NameSpace } from "../NameSpace"
 
 export class SyncToken extends BaseElement
 {
-    tag:NameSpace = new NameSpace("D", "sync-token");
+    static tag:NameSpace = new NameSpace("D", "sync-token");
 }

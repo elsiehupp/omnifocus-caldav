@@ -1,7 +1,7 @@
 export class vCategory(object):
 
     def __init__(self, c_list):
-        if not hasattr(c_list, '__iter__'):
+        if (!c_list.hasOwnProperty('__iter__')):
             d_list = [c_list]
         self.cats = [vText(c) for c in c_list]
 

@@ -3,5 +3,5 @@ import { NameSpace } from "../NameSpace"
 
 export class Comp extends NamedBaseElement
 {
-    tag:NameSpace = new NameSpace("C", "comp")
+    static tag:NameSpace = new NameSpace("C", "comp")
 }

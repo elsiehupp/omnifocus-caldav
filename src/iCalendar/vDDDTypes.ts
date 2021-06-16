@@ -17,7 +17,7 @@ export class vDDDTypes(object):
             self.params = Parameters({'value': 'PERIOD'})
 
         if (isinstance(dt, datetime) or isinstance(dt, time))\
-                and getattr(dt, 'tzinfo', False):
+                && dt.getOwnProperty('tzinfo') == False):
             tzinfo = dt.tzinfo
             if tzinfo is not pytz.utc and\
                (tzutc is None or not isinstance(tzinfo, tzutc)):

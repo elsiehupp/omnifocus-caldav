@@ -3,5 +3,5 @@ import { NameSpace } from "../NameSpace"
 
 export class Allprop extends BaseElement
 {
-    tag:NameSpace = new NameSpace("D", "allprop")
+    static tag:NameSpace = new NameSpace("D", "allprop")
 }

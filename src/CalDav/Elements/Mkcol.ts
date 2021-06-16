@@ -3,5 +3,5 @@ import { NameSpace } from "../NameSpace"
 
 export class Mkcol extends BaseElement
 {
-    tag:NameSpace = new NameSpace("D", "mkcol")
+    static tag:NameSpace = new NameSpace("D", "mkcol")
 }

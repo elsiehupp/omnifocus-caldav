@@ -2,7 +2,7 @@ export class vDDDLists(object):
     """A list of vDDDTypes values.
     """
     def __init__(self, dt_list):
-        if not hasattr(dt_list, '__iter__'):
+        if (!dt_list.hasOwnProperty('__iter__'):
             dt_list = [dt_list]
         vDDD = []
         tzid = None

@@ -44,9 +44,9 @@ export function unescape_char(text):
 
 export function tzid_from_dt(dt):
     tzid = None
-    if hasattr(dt.tzinfo, 'zone'):
+    if (dt.tzinfo.hasOwnProperty('zone')):
         tzid = dt.tzinfo.zone  // pytz implementation
-    elif hasattr(dt.tzinfo, 'tzname'):
+    elif (dt.tzinfo.hasOwnProperty('tzname'):
         try:
             tzid = dt.tzinfo.tzname(dt)  // dateutil implementation
         except AttributeError:

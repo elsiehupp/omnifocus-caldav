@@ -3,5 +3,5 @@ import { NameSpace } from "../NameSpace"
 
 export class Href extends BaseElement
 {
-    tag:NameSpace = new NameSpace("D", "href")
+    static tag:NameSpace = new NameSpace("D", "href")
 }

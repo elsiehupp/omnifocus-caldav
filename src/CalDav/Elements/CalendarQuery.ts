@@ -3,5 +3,5 @@ import { NameSpace } from "../NameSpace"
 
 export class CalendarQuery extends BaseElement
 {
-    tag:NameSpace = new NameSpace("C", "calendar-query")
+    static tag:NameSpace = new NameSpace("C", "calendar-query")
 }

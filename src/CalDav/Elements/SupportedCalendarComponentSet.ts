@@ -3,5 +3,5 @@ import { NameSpace } from "../NameSpace"
 
 export class SupportedCalendarComponentSet extends ValuedBaseElement
 {
-    tag:NameSpace = new NameSpace("C", "supported-calendar-component-set")
+    static tag:NameSpace = new NameSpace("C", "supported-calendar-component-set")
 }

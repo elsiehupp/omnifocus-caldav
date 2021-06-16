@@ -3,5 +3,5 @@ import { NameSpace } from "../NameSpace"
 
 export class MaxResourceSize extends ValuedBaseElement
 {
-    tag:NameSpace = new NameSpace("C", "max-resource-size")
+    static tag:NameSpace = new NameSpace("C", "max-resource-size")
 }

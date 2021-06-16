@@ -3,5 +3,5 @@ import { NameSpace } from "../NameSpace"
 
 export class ScheduleTag extends BaseElement
 {
-    tag:NameSpace = new NameSpace("C", "schedule-tag")
+    static tag:NameSpace = new NameSpace("C", "schedule-tag")
 }

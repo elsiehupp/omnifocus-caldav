@@ -1,13 +1,13 @@
 import { assert } from "./Assert"
 import { Task } from "../OmniFocusAPI/Task";
-import { Todo } from "../CalDav/Todo";
+import { Todo } from "../CalDav/Resources/Todo";
 
 export class Field
 {
     /* Basic field representation.
 
     Allows to extract neutral values from GTG Task (attributes in integer or
-    tags without '@' for example) and from vTodo (translated datetime).
+    tags without '@' for example) and from vTodo (translated Date).
     */
 
     dav_name: string;

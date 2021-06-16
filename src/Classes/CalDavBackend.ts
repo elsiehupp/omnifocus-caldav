@@ -69,7 +69,7 @@ export class CalDavDackend extends PeriodicImportBackend
     do_periodic_import():void
     {
         console.log("Running periodic import");
-        var start = this.datetime.now();
+        var start = this.datetime;
         this.refreshCalendarListFromCalDav();
         // browsing calendars
         var counts = {'created': 0, 'updated': 0, 'unchanged': 0, 'deleted': 0};
@@ -193,7 +193,7 @@ export class CalDavDackend extends PeriodicImportBackend
 
     cleanTaskMissingFromBackend(uid: string,
                                          calendar_tasks: Set<Task>, counts: dict,
-                                         import_started_on: datetime)
+                                         import_started_on: Date)
     {
         /*or a given UID will decide if (we remove it from GTG or ignore the
         fact that it's missing*/
@@ -262,7 +262,7 @@ export class CalDavDackend extends PeriodicImportBackend
     }
 
     import_calendar_todos(calendar: Calendar,
-                               import_started_on: datetime, counts: Dictionary<K, V>)
+                               import_started_on: Date, counts: Dictionary<K, V>)
     {
         var todos = calendar.todos(!this.cache.initialized);
         var todo_uids = {UID_FIELD.get_dav(todo) for todo in todos};
@@ -299,7 +299,7 @@ export class CalDavDackend extends PeriodicImportBackend
         }
     }
 
-    update_task(task: Task, todo: Todo, force: bool = false)
+    update_task(task: Task, todo: Todo, force: boolean = false)
     {
         if (!force) {
             var task_seq = SEQUENCE.get_gtg(task, this.namespace)

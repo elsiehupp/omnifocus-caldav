@@ -3,5 +3,5 @@ import { NameSpace } from "../NameSpace"
 
 export class ParamFilter extends NamedBaseElement
 {
-    tag:NameSpace = new NameSpace("C", "param-filter")
+    static tag:NameSpace = new NameSpace("C", "param-filter")
 }

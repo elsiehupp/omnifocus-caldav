@@ -250,7 +250,7 @@ export class GenericBackend
         /*
         Returns the list of tags which are handled by this backend
         */
-        if (hasattr(this.parameters, this.KEY_DEFAULT_BACKEND) &&
+        if (this.parameters.hasOwnProperty(this.KEY_DEFAULT_BACKEND) &&
                 this.parameters[this.KEY_DEFAULT_BACKEND]) {
             // default backends should get all the tasks
             // NOTE: this shouldn't be needed, but it doesn't cost anything and

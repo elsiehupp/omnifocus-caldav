@@ -2,4 +2,4 @@
 // and newer versions of baikal gives 403 forbidden when this one is
 // encountered
 // class CalendarCollection extends BaseElement
-//     tag:NameSpace = new NameSpace("C", "calendar-collection")
+//     static tag:NameSpace = new NameSpace("C", "calendar-collection")

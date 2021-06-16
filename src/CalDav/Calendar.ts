@@ -445,6 +445,7 @@ export class Calendar extends DavObject
     doSortKeys(x) {
         var ret = []
         var vtodo = x.instance.vtodo
+        var now = new Date()
         var defaults = {
             'due': '2050-01-01',
             'dtstart': '1970-01-01',
@@ -456,26 +457,25 @@ export class Calendar extends DavObject
             // both dates and timestamps from the objects.
             // Python will yield an exception if (trying to compare
             // a timestamp with a date.
-
             'isnt_overdue':
-                !(hasattr(vtodo, 'due') &&
-                     vtodo.due.value.strftime('%F%H%M%S') <
-                     datetime.now().strftime('%F%H%M%S')),
+                !(vtodo.hasOwnProperty('due') &&
+                    vtodo.due.value.getTime() <
+                    now.getTime()),
 
             'hasnt_started':
-                (hasattr(vtodo, 'dtstart') &&
-                 vtodo.dtstart.value.strftime('%F%H%M%S') >
-                 datetime.now().strftime('%F%H%M%S'))
+                (vtodo.hasOwnProperty('dtstart') &&
+                    vtodo.dtstart.value.getTime() >
+                    now.getTime())
 
         }
         for (let sortKey of sortKeys) {
-            var val = getattr(vtodo, sortKey, null)
+            var val = vtodo.getOwnProperty(sortKey)
             if (val == null) {
                 ret.append(defaults.get(sortKey, '0'))
                 continue
             }
             val = val.value
-            if (hasattr(val, 'strftime')) {
+            if (val.hasOwnProperty('strftime')) {
                 ret.append(val.strftime('%F%H%M%S'))
             } else {
                 ret.append(val)
@@ -496,7 +496,7 @@ export class Calendar extends DavObject
             /// class it really is.  Assign the base class as for now.
             return CalendarObjectResource
         }
-        if (hasattr(data, 'split')) {
+        if (data.hasOwnProperty('split')) {
             for (let line of data.split('\n')) {
                 line = line.strip()
                 if (line == 'BEGIN:VEVENT') {
@@ -512,7 +512,7 @@ export class Calendar extends DavObject
                     return FreeBusy
                 }
             }
-        } else if (hasattr(data, 'subcomponents')) {
+        } else if (data.hasOwnProperty('subcomponents')) {
             if (!data.subcomponents.length) {
                 return CalendarObjectResource
             }

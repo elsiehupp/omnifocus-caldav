@@ -16,19 +16,19 @@ import { UTCDateTimeField } from "./UTCDateTimeField"
 
 export const SUMMARY:any;
 export const DESCRIPTION:any;
-export const DATETIME_DUE:any;
-export const DATETIME_START:any;
+export const DATETIME_DUE:Date;
+export const DATETIME_START:Date;
 export const RECURRENCE:any;
 export const STATUS:any;
 export const PERCENT_COMPLETED:any;
-export const DATETIME_COMPLETED:any;
+export const DATETIME_COMPLETED:Date;
 export const UID_FIELD:any;
 export const SEQUENCE:any;
 export const CATEGORIES:any;
 export const PARENT_FIELD:any;
 export const CHILDREN_FIELD:any;
-export const DATETIME_CREATED:any;
-export const DATETIME_MODIFIED:any;
+export const DATETIME_CREATED:Date;
+export const DATETIME_MODIFIED:Date;
 export const SORT_ORDER:any;
 
 
@@ -76,7 +76,7 @@ export class Translator
             vtodo = vcal.vtodo;
         }
         // always write a DTSTAMP field to the `now`
-        this.DTSTAMP_FIELD.write_dav(vtodo, DateTime.now(LOCAL_TIMEZONE));
+        this.DTSTAMP_FIELD.write_dav(vtodo, Date.now(LOCAL_TIMEZONE));
         for (let field of this.fields.values()) {
             if (field.dav_name == 'uid' && UID_FIELD.get_dav(vtodo=vtodo)) {
                 // not overriding if (already set from cache

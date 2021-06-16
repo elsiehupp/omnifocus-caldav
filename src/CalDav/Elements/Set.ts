@@ -3,5 +3,5 @@ import { NameSpace } from "../NameSpace"
 
 export class Set extends BaseElement
 {
-    tag:NameSpace = new NameSpace("D", "set")
+    static tag:NameSpace = new NameSpace("D", "set")
 }

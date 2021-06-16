@@ -223,8 +223,8 @@ export class CalendarObjectResource extends DavObject
         } else if (id == null) {
             for (var objectType in ['vevent', 'vtodo', 'vjournal', 'vfreebusy']) {
                 var obj = null
-                if (hasattr(this.vobject_instance, objectType)) {
-                    obj = getattr(this.vobject_instance, objectType)
+                if (this.vobject_instance.hasOwnProperty(objectType)) {
+                    obj = this.vobject_instance.getOwnProperty(objectType)
                 } else if (this.vobject_instance.name.lower() == objectType) {
                     obj = this.vobject_instance
                 }
@@ -242,13 +242,13 @@ export class CalendarObjectResource extends DavObject
         } else {
             for (let objectType of ['vevent', 'vtodo', 'vjournal', 'vfreebusy']) {
                 obj = null
-                if (hasattr(this.vobject_instance, objectType)) {
-                    obj = getattr(this.vobject_instance, objectType)
+                if (this.vobject_instance.hasOwnProperty(objectType)) {
+                    obj = this.vobject_instance.getOwnProperty(objectType)
                 } else if (this.vobject_instance.name.lower() == objectType) {
                     obj = this.vobject_instance
                 }
                 if (obj != null) {
-                    if (!hasattr(obj, 'uid')) {
+                    if (!obj.hasOwnProperty('uid')) {
                         obj.add('uid')
                     }
                     obj.uid.value = id
@@ -362,7 +362,7 @@ export class CalendarObjectResource extends DavObject
             /// some servers require one to explicitly search for the right kind of object.
             /// todo: would arguably be nicer to verify the type of the object and take it from there
             if (objectType) {
-                methods = (getattr(this.parent, "%s_by_uid" % objectType),)
+                methods = this.parent.getOwnProperty(`${objectType}_by_uid`),)
             } else {
                 methods = (this.parent.getObjectByUid, this.parent.getEventByUid, this.parent.getTodoByUid, this.parent.getJournalByUid)
             }

@@ -91,7 +91,7 @@ export class DavResponse
         }
 
         /// this if (will always be true as for now, see other comments on streaming.
-        if (hasattr('_raw')) {
+        if (this.hasOwnProperty('_raw')) {
             console.log(this.raw)
             // ref https://github.com/python-caldav/caldav/issues/112 stray CRs may cause problems
             if (type(this.raw) == bytes) {
@@ -115,7 +115,7 @@ export class DavResponse
     raw()
     {
         /// TODO: this should not really be needed?
-        if (!hasattr('_raw') {
+        if (!this.hasOwnProperty('_raw') {
             this.raw = etree.tostring(this.tree, pretty_print=true)
         }
         return this.raw
@@ -226,7 +226,7 @@ export class DavResponse
             }
             error.assert_(r.tag == Response.tag)
 
-            (href, propstats, status) = this.parse_response(r)
+            [href, propstats, status] = this.parse_response(r)
             /// I would like to do this assert here ...
             // error.assert_(not href in this.objects)
             /// but then there was https://github.com/python-caldav/caldav/issues/136
@@ -311,7 +311,7 @@ export class DavResponse
         Executes getObjectsAndProperties if (!run already, then
         modifies and returns this.objects.
         */
-        if (!hasattr('objects') {
+        if (!this.hasOwnProperty('objects') {
             this.getObjectsAndProperties()
         }
         for (let href of this.objects) {

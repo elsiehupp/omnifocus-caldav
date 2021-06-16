@@ -53,9 +53,9 @@ export class DateField extends Field
 
     write_dav(vtodo: Todo, value)
     {
-        /*Writing datetime as UTC naive*/
+        /*Writing Date as UTC naive*/
         var fuzzy_value, value = this.get_dt_for_dav_writing(value)
-        if (value instanceof datetime)) {
+        if (value instanceof Date)) {
             value = this.normalize(value)
             if (!value.tzinfo) {  // considering naive is local tz
                 value = value.replace(tzinfo=LOCAL_TIMEZONE);
@@ -65,7 +65,7 @@ export class DateField extends Field
             }
         }
         var vtodo_val = super().write_dav(vtodo, value);
-        if (value instanceof Date) && !(value instanceof DateTime)) {
+        if (value instanceof Date) && !(value instanceof Date)) {
             vtodo_val.params['VALUE'] = ['DATE'];
         }
         if (fuzzy_value) {
@@ -86,7 +86,7 @@ export class DateField extends Field
         if (todo_value && todo_value[0].params.get(this.FUZZY_MARK)) {
             return Date(todo_value[0].params[this.FUZZY_MARK][0]);
         }
-        if (value instanceof Date || value instanceof DateTime) {
+        if (value instanceof Date || value instanceof Date) {
             value = this.normalize(value);
         }
         try {
