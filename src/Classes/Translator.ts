@@ -68,7 +68,7 @@ export class Translator
     }
 
     // @classmethod
-    fillVTodo(task: Task, calendar_name: string, namespace: string, vtodo: Todo = null):Todo
+    fillVTodo(task: Task, object_name: string, namespace: string, vtodo: Todo = null):Todo
     {
         var vcal = null;
         if (vtodo == null) {
@@ -101,7 +101,7 @@ export class Translator
             }
             task.set_attribute("url", string(todo.url), nmspc);
             task.set_attribute("calendar_url", string(todo.parent.url), nmspc);
-            task.set_attribute("calendar_name", todo.parent.name, nmspc);
+            task.set_attribute("object_name", todo.parent.name, nmspc);
             if (CATEGORIES.hasCalendarTag(task, todo.parent)) {
                 task.add_tag(CATEGORIES.get_calendar_tag(todo.parent));
             }

@@ -19,7 +19,7 @@ export class hierarchy into a separate file)
 // import uuid
 // import re
 // from datetime import datetime, date
-// from lxml import etree
+import etree = require('elementtree')
 
 // try {
 //     // noinspection PyCompatibility
@@ -53,7 +53,7 @@ export class DavObject
     props;
     extraInitializationOptions;
 
-    constructor(client=null, url=null, parent=null, name=null, id=null, props=null, extra)
+    constructor(client=null, url=null, parent=null, object_name=null, id=null, props=null, extra=null)
     {
         /*
         Default constructor.
@@ -72,7 +72,7 @@ export class DavObject
         }
         this.client = client
         this.parent = parent
-        this.name = name
+        this.name = object_name
         this.id = id
         if (props == null) {
             this.props = {}

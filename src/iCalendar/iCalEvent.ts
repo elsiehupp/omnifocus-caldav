@@ -1,6 +1,6 @@
 import { Component } from "./Component"
 
-export class Event extends Component
+export class iCalEvent extends Component
 {
 
     name = 'VEVENT'

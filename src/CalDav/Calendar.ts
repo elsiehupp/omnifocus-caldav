@@ -26,7 +26,7 @@ import { Todo } from "./Resources/Todo"
 
 /// Late import, as icalendar is not yet on the official dependency list
 
-import iCalEvent = require("../iCalendar/Event");
+import iCalEvent = require("../iCalendar/iCalEvent");
 import iCalTodo = require("../iCalendar/Todo");
 import iCalJournal = require("../iCalendar/Journal");
 import iCalFreeBusy = require("../iCalendar/FreeBusy");
@@ -114,11 +114,11 @@ export class Calendar extends DavObject
     saveWithInvites(ical, attendees, attendeeOptions)
     {
         /*
-        sends a schedule request to the server.  Equivalent with saveEvent, addTodo, etc,
+        sends a schedule request to the server.  Equivalent with saveiCalEvent, addTodo, etc,
         but the attendees will be added to the ical object before sending it to the server.
         */
         /// TODO: method supports raw strings, probably not icalendar nor vobject.
-        var obj = this.childClassForData(ical)(data=ical, client=this.client)
+        var obj = new this.childClassForData(ical)(data=ical, client=this.client)
         obj.parent = this
         obj.addOrganizer()
         for (let attendee of attendees) {
@@ -128,7 +128,7 @@ export class Calendar extends DavObject
         obj.save()
     }
 
-    saveEvent(ical, noOverwrite=false, noCreate=false)
+    saveiCalEvent(ical, noOverwrite=false, noCreate=false)
     {
         /*
         Add a new event to the calendar, with the given ical.
@@ -136,7 +136,7 @@ export class Calendar extends DavObject
         Parameters) {
          * ical - ical object (text)
         */
-        var e = new Event(this.client, data=ical, parent=this)
+        var e = new iCalEvent(this.client, data=ical, parent=this)
         e.save(noOverwrite=noOverwrite, noCreate=noCreate, objectType='event')
         return e
     }
@@ -184,7 +184,7 @@ export class Calendar extends DavObject
         /*
         get multiple events' data
         @author mtorange@gmail.com
-        @type events list of Event
+        @type events list of iCalEvent
         */
         var rv=[]
         var prop = new Prop() + new CalendarData()
@@ -192,7 +192,7 @@ export class Calendar extends DavObject
         var response = this.query(root, 1, 'report')
         var results = this.handlePropertyResponse(response=response, props=[new CalendarData()])
         for (let r of results) {
-            rv.append( new Event(this.client, this.url.join(r), data=results[r][new CalendarData.tag], parent=this))
+            rv.append( new iCalEvent(this.client, this.url.join(r), data=results[r][new CalendarData.tag], parent=this))
         }
 
         return rv
@@ -264,7 +264,7 @@ export class Calendar extends DavObject
 
         var componentClass
         if (componentFilter == 'VEVENT') {
-            componentClass=Event
+            componentClass=iCalEvent
         } else {
             componentClass = null
         }
@@ -500,7 +500,7 @@ export class Calendar extends DavObject
             for (let line of data.split('\n')) {
                 line = line.strip()
                 if (line == 'BEGIN:VEVENT') {
-                    return Event
+                    return iCalEvent
                 }
                 if (line == 'BEGIN:VTODO') {
                     return Todo
@@ -519,7 +519,7 @@ export class Calendar extends DavObject
 
             for (let sc of data.subcomponents) {
                 if (sc instanceof iCalEvent) {
-                    return Event;
+                    return iCalEvent;
                 }
                 if (sc instanceof iCalTodo) {
                     return Todo;
@@ -535,12 +535,12 @@ export class Calendar extends DavObject
         return CalendarObjectResource
     }
 
-    getEventByUrl(href, data=null)
+    getiCalEventByUrl(href, data=null)
     {
         /*
         Returns the event with the given URL
         */
-        return new Event(url=href, data=data, parent=this).load()
+        return new iCalEvent(url=href, data=data, parent=this).load()
     }
 
     getObjectByUid(uid, componentFilter=null)
@@ -552,7 +552,7 @@ export class Calendar extends DavObject
          * uid: the event uid
 
         Returns) {
-         * Event() or null
+         * iCalEvent() or null
         */
         var data = new CalendarData()
         var prop = new Prop() + data
@@ -597,7 +597,7 @@ export class Calendar extends DavObject
         return this.getObjectByUid(uid, new CompFilter("VTODO"));
     }
 
-    getEventByUid(uid)
+    getiCalEventByUid(uid)
     {
         return this.getObjectByUid(uid, new CompFilter("VEVENT"))
     }
@@ -607,13 +607,13 @@ export class Calendar extends DavObject
         return this.getObjectByUid(uid, new CompFilter("VJOURNAL"))
     }
 
-    getAllEvents()
+    getAlliCalEvents()
     {
         /*
         List all events from the calendar.
 
         Returns) {
-         * [Event(), ...]
+         * [iCalEvent(), ...]
         */
         var data = new CalendarData()
         var prop = Prop() + data
@@ -622,7 +622,7 @@ export class Calendar extends DavObject
         var filter = new Filter() + vcalendar
         var root = new CalendarQuery() + [prop, filter]
         
-        return this.search(root, Event)
+        return this.search(root, iCalEvent)
     }
 
     getObjectsBySyncToken(syncToken=null, loadObjects=false)
@@ -681,7 +681,7 @@ export class Calendar extends DavObject
         Returns) {
          * [Journal(), ...]
         */
-        // TODO: this is basically a copy of getAllEvents() - can we do more
+        // TODO: this is basically a copy of getAlliCalEvents() - can we do more
         // refactoring and consolidation here?  Maybe it's wrong to do
         // separate methods for journals, todos and events?
         var data = new CalendarData()

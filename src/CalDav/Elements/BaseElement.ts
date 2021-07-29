@@ -1,7 +1,7 @@
 import { NamedBaseElement } from "./NamedBaseElement"
 
-// from lxml import etree
-// from caldav.lib.namespace import nsmap
+import { ElementTree } from "elementtree"
+import { NameSpace } from "../namespace"
 // from caldav.lib.python_utilities import to_unicode
 
 export class BaseElement
@@ -33,7 +33,11 @@ export class BaseElement
 
     toString()
     {
-        var utf8 = etree.tostring(this.xmlelement(), encoding="utf-8", xml_declaration=true, pretty_print=true)
+        var utf8 = ElementTree.tostring(
+            this.xmlelement(),
+            "utf-8",
+            /* xml_declaration */ true,
+            /* pretty_print */ true)
         return this.xmlelement().tostring()
     }
 
@@ -42,7 +46,7 @@ export class BaseElement
         if (this instanceof NamedBaseElement && this.attributes.get('name') == null) {
             console.error("name attribute must be defined")
         }
-        var root = etree.Element(this.tag, nsmap)
+        var root = ElementTree.Element(this.tag, NameSpace.nsmap)
         if (this.value != null) {
             root.text = this.value
         }

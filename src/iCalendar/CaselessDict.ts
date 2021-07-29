@@ -85,7 +85,7 @@ export class CaselessDict extends OrderedDict
 
     copy(self)
     {
-        return type(self)(OrderedDict.copy())
+        return type(self)(Object.assign({}, OrderedDict))
     }
 
     _repr__(self)

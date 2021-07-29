@@ -1,9 +1,9 @@
 import { CalendarObjectResource } from "./CalendarObjectResource"
 
-export class Event extends CalendarObjectResource
+export class CalDAvEvent extends CalendarObjectResource
 {
     /*
-    The `Event` object is used to represent an event (VEVENT).  
+    The `CalDAvEvent` object is used to represent an event (VEVENT).
 
     As of 2020-12 it adds nothing to the inherited class.  (I have
     frequently asked mythis if (we need those subclasses ... perhaps
@@ -27,7 +27,7 @@ export class Event extends CalendarObjectResource
     /// TODO: would be nice with proper documentation on what systems are
     /// generating broken data.  Compatibility issues should also be collected
     /// in the documentation. somewheRegExp.
-    export fixEvent(event)
+    export fixCalDavEvent(event)
     {
         /*This function receives some ical as it's given from the server, checks for
         breakages with the standard, and attempts to fix up known issues) {

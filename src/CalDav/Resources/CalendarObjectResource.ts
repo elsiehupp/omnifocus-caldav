@@ -1,5 +1,5 @@
 import { DavObject } from "../DavObject"
-import { Event } from "./Event"
+import { CalDavEvent } from "./CalDavEvent"
 import { GetEtag } from "../Elements/GetEtag"
 import { iCalendar } from "../../iCalendar/iCalendar"
 import { Principal } from "../Principal"
@@ -164,7 +164,7 @@ export class CalendarObjectResource extends DavObject
         this.change_attendee_status(partstat=partstat)
         this.getProperty(cdav.ScheduleTag(), use_cached=true)
         try {
-            calendar.saveEvent(this.data)
+            calendar.saveCalDavEvent(this.data)
         } catch (Exception as some_exception) {
             /// TODO - TODO - TODO
             /// RFC6638 does not seem to be very clear (or
@@ -204,7 +204,7 @@ export class CalendarObjectResource extends DavObject
         if (r.status == 404) {
             console.error(r)
         }
-        this.data = Event.fixEvent(r.raw)
+        this.data = CalDavEvent.fixEvent(r.raw)
         if ('Etag' in r.headers) {
             this.props[GetEtag.tag] = r.headers['Etag']
         }

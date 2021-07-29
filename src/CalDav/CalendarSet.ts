@@ -19,18 +19,18 @@ export class CalendarSet extends DavObject
 
         var data = this.children(Calendar.tag)
         for (var c_url, c_type, c_name in data) {
-            cals.add(new Calendar(this.client, c_url, parent=this, name=c_name))
+            cals.add(new Calendar(this.client, c_url, parent=this, object_name=c_name))
         }
         return cals
     }
 
-    make_calendar(name=null, cal_id=null, supported_calendar_component_set=null)
+    make_calendar(calendar_name=null, cal_id=null, supported_calendar_component_set=null)
     {
         /*
         Utility method for creating a new calendar.
 
         Parameters) {
-         * name: the name of the new calendar
+         * object_name: the name of the new calendar
          * cal_id: the uuid of the new calendar
          * supported_calendar_component_set: what kind of objects
            (EVENT, VTODO, VFREEBUSY, VJOURNAL) the calendar should handle.
@@ -41,7 +41,7 @@ export class CalendarSet extends DavObject
          * Calendar(...)-object
         */
         return new Calendar(
-            this.client, name=name, parent=this, id=cal_id,
+            this.client, object_name=calendar_name, parent=this, id=cal_id,
             supported_calendar_component_set=supported_calendar_component_set
         ).save()
     }

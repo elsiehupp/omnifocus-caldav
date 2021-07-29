@@ -11,7 +11,7 @@ import { SyncToken } from "./Elements/SyncToken"
 // import requests
 // import six
 // from caldav.lib.python_utilities import to_wire, to_unicode, to_normal_str
-// from lxml import etree
+import etree = require('elementtree')
 
 // from caldav.elements import dav, cdav, ical
 

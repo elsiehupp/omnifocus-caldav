@@ -150,7 +150,7 @@ export class CalDavDackend extends PeriodicImportBackend
     // Dav functions
     //
 
-    createTodoOnCalDav(task: Task, calendar: Calendar)
+    createTodoOnCalDav(this, task: Task, calendar: Calendar)
     {
         console.log(`SYNCING creating todo for ${task}`);
         var newTodo = null;
@@ -193,7 +193,7 @@ export class CalDavDackend extends PeriodicImportBackend
         }
     }
 
-    cleanTaskMissingFromBackend(uid: string,
+    cleanTaskMissingFromBackend(this, uid: string,
                                          calendar_tasks: Set<Task>, counts: dict,
                                          import_started_on: Date)
     {
@@ -253,14 +253,15 @@ export class CalDavDackend extends PeriodicImportBackend
         for (let todo of todos) {
             todos_by_uid = UID_FIELD.get_dav(todo)
         }
-        for (let uid, children of childrenByParent.items()) {
+        for (let uid, children of childrenByParent) {
             if (uid ! in todos_by_uid) {
                 continue;
             }
             var vtodo = todos_by_uid[uid].instance.vtodo;
-            children.sort(key=lambda v: string(SORT_ORDER.get_dav(v)) || '');
-            CHILDREN_FIELD.write_dav(vtodo, [UID_FIELD.get_dav(child)
-                                             for child in children]);
+            children.sort(SORT_ORDER.get_dav(v).toString() || '');
+            for (let child of children) {
+                CHILDREN_FIELD.write_dav(vtodo, UID_FIELD.get_dav(child));
+            }
         }
     }
 
@@ -268,7 +269,10 @@ export class CalDavDackend extends PeriodicImportBackend
                                import_started_on: Date, counts: Dictionary<K, V>)
     {
         var todos = calendar.todos(!this.cache.initialized);
-        var todo_uids = {UID_FIELD.get_dav(todo) for todo in todos};
+        var todo_uids: List
+        for (let todo of todos) {
+            todo_uids.push(UID_FIELD.get_dav(todo));
+        }
 
         // browsing all task linked to current calendar,
         // removing missed ones we don't see in fetched todos
@@ -311,11 +315,11 @@ export class CalDavDackend extends PeriodicImportBackend
                 return 'unchanged';
             }
         }
-        this.translator.fillTask(todo, task, this.namespace);
+        this.translator.fillTask(todo, task, this.namespace());
         return 'updated';
     }
 
-    sortTodos(todos: Set<Task>, max_depth: int = 500)
+    sortTodos(todos: Set<Task>, max_depth: Number = 500)
     {
         /*For a given list of todos, will return first the one without taskParent
         and then go deeper in the tree by browsing the tree.*/
@@ -371,7 +375,7 @@ export class CalDavDackend extends PeriodicImportBackend
                 return [todo, calendar];
             }
         }
-        var cname = task['calendar_name']; //namespace=this.namespace
+        var cname = task['object_name']; //namespace=this.namespace
         var curl = task["calendar_url"]; //namespace=this.namespace
         if (curl || cname) {
             calendar = this.cache.get_calendar(cname, curl)
